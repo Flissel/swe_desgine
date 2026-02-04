@@ -194,3 +194,6 @@ final_papers/
 # HF
 cache/
 huggingface/
+
+# Enterprise outputs
+enterprise_output/
