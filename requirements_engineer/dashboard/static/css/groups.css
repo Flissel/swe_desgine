@@ -1,0 +1,155 @@
+/* ============================================
+   RE System - Node Group Styles
+   Collapsed groups, thumbnails, expand buttons
+   ============================================ */
+
+/* ============================================
+   Node Groups (Collapsed)
+   ============================================ */
+
+.node-group {
+    background: var(--bg-tertiary);
+    border: 2px dashed var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.node-group:hover {
+    border-color: var(--accent-blue);
+    box-shadow: var(--shadow-md);
+}
+
+.node-group-diagram {
+    border-color: var(--accent-yellow);
+}
+
+.node-group-diagram:hover {
+    border-color: var(--accent-yellow);
+    box-shadow: 0 0 12px rgba(255, 212, 0, 0.3);
+}
+
+.node-group-test {
+    border-color: var(--accent-red);
+}
+
+.node-group-test:hover {
+    border-color: var(--accent-red);
+    box-shadow: 0 0 12px rgba(244, 33, 46, 0.3);
+}
+
+.node-group-user-story {
+    border-color: var(--accent-green);
+}
+
+.node-group-user-story:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 12px rgba(0, 186, 124, 0.3);
+}
+
+.node-group-task {
+    border-color: var(--accent-yellow);
+}
+
+.node-group-task:hover {
+    border-color: var(--accent-yellow);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+/* ============================================
+   Group Header
+   ============================================ */
+
+.group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.group-icon {
+    font-size: 16px;
+}
+
+.group-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Group Thumbnails (Mini SVG Previews)
+   ============================================ */
+
+.group-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 10px;
+    background: var(--bg-primary);
+}
+
+.thumb-cell {
+    width: 44px;
+    height: 44px;
+    background: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: transform 0.15s ease;
+}
+
+.thumb-cell:hover {
+    transform: scale(1.05);
+}
+
+.thumb-cell svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.thumb-icon {
+    font-size: 18px;
+    opacity: 0.6;
+}
+
+.thumb-error {
+    font-size: 14px;
+    color: var(--accent-red);
+}
+
+/* ============================================
+   Group Stats
+   ============================================ */
+
+.group-stats {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+}
+
+/* ============================================
+   Group Expand Button
+   ============================================ */
+
+.group-expand {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    cursor: pointer;
+    border-top: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.group-expand:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}

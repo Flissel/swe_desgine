@@ -1,0 +1,731 @@
+/* ============================================
+   RE System - Node Styles
+   All node types and their variants
+   ============================================ */
+
+/* ============================================
+   Base Node Card
+   ============================================ */
+
+.canvas-node {
+    position: absolute;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    /* PERFORMANCE: Only transition specific properties, NOT 'all' */
+    transition: transform var(--transition-fast),
+                box-shadow var(--transition-fast),
+                border-color var(--transition-fast);
+    animation: fadeIn 0.3s ease;
+    /* GPU layer promotion for smoother rendering */
+    transform: translateZ(0);
+}
+
+.canvas-node:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-blue);
+    z-index: 100;
+}
+
+.canvas-node.selected {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.3);
+}
+
+/* GPU-optimized dragging state */
+.canvas-node.dragging {
+    will-change: transform;
+    contain: layout style;
+    z-index: 1000;
+    /* PERFORMANCE: Simpler shadow during drag */
+    box-shadow: var(--shadow-md);
+    /* Disable ALL transitions during drag */
+    transition: none !important;
+    /* Force GPU layer */
+    backface-visibility: hidden;
+}
+
+/* Disable pointer events on non-essential elements during drag */
+body.is-dragging .connector,
+body.is-dragging .node-footer,
+body.is-dragging .diagram-preview {
+    pointer-events: none !important;
+}
+
+/* Disable expensive hover effects during drag */
+body.is-dragging .canvas-node:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+}
+
+/* Node Card Layout */
+.node-card {
+    position: relative;
+    padding: 16px;
+    min-width: 280px;
+    max-width: 380px;
+}
+
+.node-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.node-icon {
+    font-size: 18px;
+}
+
+.node-id {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+}
+
+.node-priority {
+    margin-left: auto;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.node-priority.must { background: var(--priority-must); color: white; }
+.node-priority.should { background: var(--priority-should); color: black; }
+.node-priority.could { background: var(--priority-could); color: white; }
+.node-priority.wont { background: var(--priority-wont); color: white; }
+.node-priority.data { background: var(--accent-purple); color: white; }
+
+.node-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.node-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.node-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+}
+
+.node-status {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Node Connectors
+   ============================================ */
+
+.connector {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    cursor: crosshair;
+    opacity: 0;
+    transition: all var(--transition-fast);
+    z-index: 10;
+}
+
+.canvas-node:hover .connector {
+    opacity: 1;
+}
+
+.connector:hover {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    transform: scale(1.2);
+}
+
+.connector-left { left: -6px; top: 50%; transform: translateY(-50%); }
+.connector-right { right: -6px; top: 50%; transform: translateY(-50%); }
+.connector-top { top: -6px; left: 50%; transform: translateX(-50%); }
+.connector-bottom { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+/* ============================================
+   Node Type: Requirement
+   ============================================ */
+
+.node-requirement {
+    border-left: 4px solid var(--accent-blue);
+    background: linear-gradient(135deg, var(--node-requirement) 0%, var(--bg-secondary) 100%);
+}
+
+.node-requirement .node-id {
+    color: var(--accent-blue);
+}
+
+/* ============================================
+   Node Type: User Story
+   ============================================ */
+
+.node-user-story {
+    border-left: 4px solid var(--accent-green);
+    background: linear-gradient(135deg, var(--node-user-story) 0%, var(--bg-secondary) 100%);
+}
+
+.node-user-story .node-id {
+    color: var(--accent-green);
+}
+
+.node-linked-tests {
+    margin-top: 6px;
+}
+
+.tests-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(244, 33, 46, 0.2);
+    border: 1px solid rgba(244, 33, 46, 0.4);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #f87171;
+    cursor: help;
+}
+
+.tests-badge:hover {
+    background: rgba(244, 33, 46, 0.3);
+}
+
+/* Arbeitspaket Badge for Epics */
+.ap-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px;
+    background: linear-gradient(135deg, #7856ff 0%, #5b3fd9 100%);
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    color: white;
+    margin-right: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   Node Type: Epic
+   ============================================ */
+
+.node-epic {
+    border-left: 4px solid var(--accent-purple);
+    background: linear-gradient(135deg, var(--node-epic) 0%, var(--bg-secondary) 100%);
+}
+
+.node-epic .node-id {
+    color: var(--accent-purple);
+}
+
+/* ============================================
+   Node Type: Diagram
+   ============================================ */
+
+.node-diagram {
+    border-left: 4px solid var(--accent-yellow);
+    background: linear-gradient(135deg, var(--node-diagram) 0%, var(--bg-secondary) 100%);
+}
+
+.node-diagram .node-id {
+    color: var(--accent-yellow);
+}
+
+.diagram-preview {
+    margin-top: 8px;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    max-height: 120px;
+    overflow: hidden;
+}
+
+.diagram-preview svg {
+    max-width: 100%;
+    max-height: 100px;
+}
+
+/* ============================================
+   Node Type: Test
+   ============================================ */
+
+.node-test {
+    border-left: 4px solid var(--accent-red);
+    background: linear-gradient(135deg, var(--node-test) 0%, var(--bg-secondary) 100%);
+}
+
+.node-test .node-id {
+    color: var(--accent-red);
+}
+
+/* Tag Badges */
+.tag-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    margin: 2px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.tag-smoke { background: #16a34a; color: white; }
+.tag-regression { background: #2563eb; color: white; }
+.tag-happy { background: #22c55e; color: white; }
+.tag-negative { background: #dc2626; color: white; }
+.tag-edge { background: #f59e0b; color: black; }
+.tag-default { background: var(--bg-tertiary); color: var(--text-secondary); }
+
+.node-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 4px;
+}
+
+.node-scenario-count {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* ============================================
+   Node Type: Tech Stack
+   ============================================ */
+
+.node-tech-stack {
+    border-left: 4px solid #06b6d4;
+    background: linear-gradient(135deg, #164e63 0%, var(--bg-secondary) 100%);
+}
+
+.node-tech-stack .node-id {
+    color: #06b6d4;
+}
+
+.tech-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11px;
+}
+
+.tech-frontend,
+.tech-backend,
+.tech-db,
+.tech-deploy,
+.tech-monitor {
+    padding: 4px 8px;
+    background: rgba(6, 182, 212, 0.1);
+    border-radius: 4px;
+    color: var(--text-secondary);
+}
+
+.tech-deploy {
+    background: rgba(168, 85, 247, 0.15);
+}
+
+.tech-monitor {
+    background: rgba(34, 197, 94, 0.15);
+}
+
+/* ============================================
+   Node Type: Persona
+   ============================================ */
+
+.node-persona {
+    border-left: 4px solid #f97316;
+    background: linear-gradient(135deg, #7c2d12 0%, var(--bg-secondary) 100%);
+}
+
+.node-persona .node-id {
+    color: #f97316;
+}
+
+.persona-role {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.persona-goals {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Node Type: User Flow
+   ============================================ */
+
+.node-user-flow {
+    border-left: 4px solid #ec4899;
+    background: linear-gradient(135deg, #701a4e 0%, var(--bg-secondary) 100%);
+}
+
+.node-user-flow .node-id {
+    color: #ec4899;
+}
+
+.flow-steps {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.flow-trigger {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: Component
+   ============================================ */
+
+.node-component {
+    border-left: 4px solid #84cc16;
+    background: linear-gradient(135deg, #365314 0%, var(--bg-secondary) 100%);
+}
+
+.node-component .node-id {
+    color: #84cc16;
+}
+
+.component-type {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(132, 204, 22, 0.2);
+    border-radius: 4px;
+    font-size: 10px;
+    color: #84cc16;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.component-variants {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Node Type: Screen
+   ============================================ */
+
+.node-screen {
+    border-left: 4px solid #8b5cf6;
+    background: linear-gradient(135deg, #3b0764 0%, var(--bg-secondary) 100%);
+}
+
+.node-screen .node-id {
+    color: #8b5cf6;
+}
+
+.screen-route {
+    font-family: 'SF Mono', 'Monaco', monospace;
+    font-size: 11px;
+    padding: 3px 6px;
+    background: rgba(139, 92, 246, 0.15);
+    border-radius: 4px;
+    color: #a78bfa;
+    margin-top: 6px;
+}
+
+.screen-layout {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: Task
+   ============================================ */
+
+.node-task {
+    border-left: 4px solid #f59e0b;
+    background: linear-gradient(135deg, #78350f 0%, var(--bg-secondary) 100%);
+}
+
+.node-task .node-id {
+    color: #f59e0b;
+}
+
+.task-estimate {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 4px;
+    font-size: 11px;
+    color: #fbbf24;
+    margin-top: 6px;
+}
+
+.task-complexity {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.task-complexity.trivial { color: #86efac; }
+.task-complexity.simple { color: #6ee7b7; }
+.task-complexity.medium { color: #fcd34d; }
+.task-complexity.complex { color: #fb923c; }
+.task-complexity.epic { color: #f87171; }
+
+/* ============================================
+   Node Type: Aggregation
+   ============================================ */
+
+.node-aggregation {
+    border-left: 4px solid var(--accent-purple);
+    background: linear-gradient(135deg, rgba(120, 86, 255, 0.15) 0%, var(--bg-secondary) 100%);
+    min-width: 250px;
+}
+
+.node-aggregation .node-id {
+    color: var(--accent-purple);
+}
+
+.node-aggregation .node-count {
+    margin-left: auto;
+    padding: 2px 8px;
+    background: rgba(120, 86, 255, 0.2);
+    border-radius: 10px;
+    font-size: 11px;
+    color: var(--accent-purple);
+}
+
+.expand-aggregation-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.expand-aggregation-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Traceability Indicators
+   ============================================ */
+
+.node-links-indicator {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* ============================================
+   Processing State
+   ============================================ */
+
+.canvas-node.kilo-processing {
+    position: relative;
+}
+
+.canvas-node.kilo-processing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(29, 155, 240, 0.3),
+        transparent
+    );
+    border-radius: 12px;
+    animation: shimmer 1.5s infinite;
+    pointer-events: none;
+}
+
+/* Package Highlight Animation */
+.node-card.package-highlight {
+    box-shadow: 0 0 20px rgba(29, 155, 240, 0.6) !important;
+    animation: pulse-highlight 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-highlight {
+    0%, 100% { box-shadow: 0 0 20px rgba(29, 155, 240, 0.4); }
+    50% { box-shadow: 0 0 30px rgba(29, 155, 240, 0.8); }
+}
+
+/* ============================================
+   Diagram Group Controls
+   ============================================ */
+
+.diagram-group-controls {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    z-index: 10;
+}
+
+.diagram-group-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(120, 86, 255, 0.2);
+    border: 1px solid rgba(120, 86, 255, 0.4);
+    border-radius: 12px;
+}
+
+.badge-count {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-purple);
+}
+
+.badge-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.diagram-group-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-collapse,
+.btn-rework {
+    padding: 4px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-collapse {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.btn-collapse:hover {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+.btn-rework {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.btn-rework:hover {
+    background: var(--accent-orange);
+    color: white;
+    border-color: var(--accent-orange);
+}
+
+.node.diagram.collapsed-similar {
+    opacity: 0.6;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+.node.diagram.has-similar-group::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    background: var(--accent-purple);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+}
+
+/* ============================================
+   Node Type: Entity (Data Model)
+   ============================================ */
+
+.node-entity {
+    border-left: 4px solid #14b8a6;
+    background: linear-gradient(135deg, #134e4a 0%, var(--bg-secondary) 100%);
+}
+
+.node-entity .node-id {
+    color: #14b8a6;
+}
+
+.node-entity .node-type {
+    color: #5eead4;
+}
+
+.node-entity .node-attributes {
+    font-size: 11px;
+    padding: 3px 6px;
+    background: rgba(20, 184, 166, 0.15);
+    border-radius: 4px;
+    color: #2dd4bf;
+    margin-top: 6px;
+}

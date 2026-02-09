@@ -197,3 +197,23 @@ huggingface/
 
 # Enterprise outputs
 enterprise_output/
+
+# Local configs and outputs
+.claude/
+nul
+kilo_result_*.json
+llm_costs.jsonl
+re_ideas/
+user_kilo_agent_config.json
+Seb/
+
+# Node.js / Electron
+node_modules/
+requirements_engineer/electron/
+requirements_engineer/dashboard-electron/
+package-lock.json
+
+# Local docs (not part of main project)
+INSTALLATION_ANLEITUNG.md
+QUICKSTART.md
+sakana-ai-repos-uebersicht.md

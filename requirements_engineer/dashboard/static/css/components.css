@@ -1,0 +1,348 @@
+/* ============================================
+   RE System - Component Styles
+   Buttons, badges, notifications, forms
+   ============================================ */
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.btn-icon.btn-small {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+}
+
+.btn-danger {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+}
+
+.btn-danger:hover {
+    opacity: 0.9;
+}
+
+.btn-approve,
+.btn-reject {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-approve {
+    background: var(--accent-green);
+    color: white;
+}
+
+.btn-approve:hover {
+    background: #22c55e;
+}
+
+.btn-reject {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.btn-reject:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+/* ============================================
+   Badge
+   ============================================ */
+
+.badge {
+    margin-left: auto;
+    padding: 2px 8px;
+    background: var(--bg-active);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ============================================
+   Indicators
+   ============================================ */
+
+.indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    margin-left: 8px;
+}
+
+.indicator.active {
+    background: var(--accent-green);
+    animation: pulse 2s infinite;
+}
+
+/* ============================================
+   Notifications
+   ============================================ */
+
+#notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.notification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+    animation: slideIn 0.3s ease-out;
+    max-width: 400px;
+}
+
+.notification-info {
+    border-left: 4px solid var(--accent-blue);
+}
+
+.notification-success {
+    border-left: 4px solid var(--accent-green);
+}
+
+.notification-warn {
+    border-left: 4px solid var(--accent-yellow);
+}
+
+.notification-error {
+    border-left: 4px solid var(--accent-red);
+}
+
+.notification-icon {
+    font-size: 16px;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    line-height: 1;
+}
+
+.notification-close:hover {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Propagation & Auto-Link Suggestions
+   ============================================ */
+
+.propagation-section,
+.autolink-section {
+    border-top: 1px solid var(--border-color);
+}
+
+.propagation-controls,
+.autolink-controls {
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.suggestions-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.empty-state {
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 12px;
+    text-align: center;
+    font-style: italic;
+}
+
+.suggestion-card {
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px;
+    border-left: 3px solid var(--accent-blue);
+}
+
+.suggestion-card.link-suggestion {
+    border-left-color: var(--accent-purple);
+}
+
+.suggestion-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.suggestion-source,
+.orphan-node {
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+.suggestion-arrow {
+    color: var(--text-secondary);
+}
+
+.suggestion-target,
+.target-node {
+    color: var(--accent-green);
+    font-weight: 500;
+}
+
+.suggestion-link-type,
+.link-type-badge {
+    display: inline-block;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.suggestion-target-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.suggestion-reasoning {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.suggestion-confidence {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.confidence-label {
+    color: var(--text-secondary);
+}
+
+.confidence-value {
+    font-weight: 600;
+}
+
+.confidence-value.high { color: var(--accent-green); }
+.confidence-value.medium { color: var(--accent-yellow); }
+.confidence-value.low { color: var(--accent-red); }
+
+.suggestion-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ============================================
+   Detail Panel - Test/Gherkin Specific
+   ============================================ */
+
+.detail-scenario-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 8px 0;
+    padding: 4px 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 8px 0;
+}

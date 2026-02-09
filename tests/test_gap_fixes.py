@@ -1,0 +1,720 @@
+"""
+Tests for RE-Pipeline gap fixes (20 gaps across all generators).
+
+Tests the dataclass extensions, prompt improvements, post-processing logic,
+and new generators added to close the identified gaps.
+"""
+
+import json
+import pytest
+import yaml
+from dataclasses import fields
+from unittest.mock import MagicMock, patch
+from datetime import datetime
+
+
+# ============================================================================
+# 1. API Spec Generator Tests (Gaps #1, #2, #5, #6, #16)
+# ============================================================================
+
+class TestAPISpecGaps:
+    """Test API Spec Generator gap fixes."""
+
+    def test_endpoint_has_is_public_field(self):
+        """Gap #5: APIEndpoint should have is_public field."""
+        from requirements_engineer.generators.api_spec_generator import APIEndpoint
+        ep = APIEndpoint(path="/auth/login", method="POST", summary="Login")
+        assert hasattr(ep, "is_public")
+        assert ep.is_public is False
+
+    def test_endpoint_has_content_type_field(self):
+        """Gap #6: APIEndpoint should have content_type field."""
+        from requirements_engineer.generators.api_spec_generator import APIEndpoint
+        ep = APIEndpoint(path="/upload", method="POST", summary="Upload")
+        assert hasattr(ep, "content_type")
+        assert ep.content_type == "application/json"
+
+    def test_public_endpoint_security_override(self):
+        """Gap #5: Public endpoints should have security: [] in OpenAPI dict."""
+        from requirements_engineer.generators.api_spec_generator import APIEndpoint
+        ep = APIEndpoint(
+            path="/auth/register",
+            method="POST",
+            summary="Register",
+            is_public=True,
+            responses={"201": "Created"},
+        )
+        openapi = ep.to_openapi_dict()
+        assert openapi.get("security") == []
+
+    def test_non_public_endpoint_no_security_override(self):
+        """Gap #5: Non-public endpoints should NOT have security key."""
+        from requirements_engineer.generators.api_spec_generator import APIEndpoint
+        ep = APIEndpoint(
+            path="/users/me",
+            method="GET",
+            summary="Get profile",
+            responses={"200": "OK"},
+        )
+        openapi = ep.to_openapi_dict()
+        assert "security" not in openapi
+
+    def test_multipart_content_type(self):
+        """Gap #6: File upload endpoints should use multipart/form-data."""
+        from requirements_engineer.generators.api_spec_generator import (
+            APIEndpoint, APISchema,
+        )
+        ep = APIEndpoint(
+            path="/media/upload",
+            method="POST",
+            summary="Upload file",
+            content_type="multipart/form-data",
+            request_body=APISchema(
+                name="FileUpload",
+                properties={"file": {"type": "string", "format": "binary"}},
+            ),
+            responses={"201": "Created"},
+        )
+        openapi = ep.to_openapi_dict()
+        assert "multipart/form-data" in openapi["requestBody"]["content"]
+
+    def test_error_response_schema_ref(self):
+        """Gap #1: 4xx/5xx responses should reference ErrorResponse schema."""
+        from requirements_engineer.generators.api_spec_generator import APIEndpoint
+        ep = APIEndpoint(
+            path="/users",
+            method="POST",
+            summary="Create user",
+            responses={
+                "201": "Created",
+                "400": "Bad Request",
+                "500": "Internal Server Error",
+            },
+        )
+        openapi = ep.to_openapi_dict()
+        assert "#/components/schemas/ErrorResponse" in json.dumps(
+            openapi["responses"]["400"]
+        )
+        assert "#/components/schemas/ErrorResponse" in json.dumps(
+            openapi["responses"]["500"]
+        )
+
+    def test_201_response_schema(self):
+        """Gap #2: POST 201 responses should reference response schema."""
+        from requirements_engineer.generators.api_spec_generator import (
+            APIEndpoint, APISchema,
+        )
+        ep = APIEndpoint(
+            path="/users",
+            method="POST",
+            summary="Create user",
+            response_schema=APISchema(name="UserResponse"),
+            responses={"201": "Created"},
+        )
+        openapi = ep.to_openapi_dict()
+        assert "#/components/schemas/UserResponse" in json.dumps(
+            openapi["responses"]["201"]
+        )
+
+    def test_endpoint_prompt_has_new_fields(self):
+        """Prompt should include is_public and content_type fields."""
+        from requirements_engineer.generators.api_spec_generator import APISpecGenerator
+        prompt = APISpecGenerator.ENDPOINT_PROMPT
+        assert "is_public" in prompt
+        assert "content_type" in prompt
+        assert "response_body" in prompt
+        assert "multipart/form-data" in prompt
+
+
+# ============================================================================
+# 2. Data Dictionary Generator Tests (Gaps #3, #4, #7, #8, #9, #17, #19)
+# ============================================================================
+
+class TestDataDictionaryGaps:
+    """Test Data Dictionary Generator gap fixes."""
+
+    def test_attribute_has_max_length(self):
+        """Gap #8: Attribute should have max_length field."""
+        from requirements_engineer.generators.data_dictionary_generator import Attribute
+        attr = Attribute(name="email", data_type="string", max_length=255)
+        assert attr.max_length == 255
+
+    def test_attribute_has_enum_values(self):
+        """Gap #7: Attribute should have enum_values field."""
+        from requirements_engineer.generators.data_dictionary_generator import Attribute
+        attr = Attribute(
+            name="status", data_type="enum", enum_values=["active", "inactive"]
+        )
+        assert attr.enum_values == ["active", "inactive"]
+
+    def test_attribute_has_indexed(self):
+        """Gap #9: Attribute should have is_indexed field."""
+        from requirements_engineer.generators.data_dictionary_generator import Attribute
+        attr = Attribute(name="email", data_type="string", is_indexed=True)
+        assert attr.is_indexed is True
+
+    def test_attribute_has_foreign_key(self):
+        """Gap #4: Attribute should have is_foreign_key and foreign_key_target."""
+        from requirements_engineer.generators.data_dictionary_generator import Attribute
+        attr = Attribute(
+            name="user_id",
+            data_type="uuid",
+            is_foreign_key=True,
+            foreign_key_target="User.id",
+        )
+        assert attr.is_foreign_key is True
+        assert attr.foreign_key_target == "User.id"
+
+    def test_relationship_has_junction_table(self):
+        """Gap #3: Relationship should have junction_table for N:M."""
+        from requirements_engineer.generators.data_dictionary_generator import Relationship
+        rel = Relationship(
+            name="has_roles",
+            source_entity="User",
+            target_entity="Role",
+            cardinality="N:M",
+            junction_table="user_roles",
+            source_fk="user_id",
+            target_fk="role_id",
+        )
+        assert rel.junction_table == "user_roles"
+        assert rel.source_fk == "user_id"
+        assert rel.target_fk == "role_id"
+
+    def test_er_diagram_junction_table(self):
+        """Gap #3: ER diagram should include junction table for N:M."""
+        from requirements_engineer.generators.data_dictionary_generator import (
+            DataDictionary, Entity, Attribute, Relationship,
+        )
+        dd = DataDictionary(
+            title="Test",
+            entities={
+                "User": Entity(
+                    name="User",
+                    description="A user",
+                    attributes=[Attribute(name="id", data_type="uuid")],
+                ),
+                "Role": Entity(
+                    name="Role",
+                    description="A role",
+                    attributes=[Attribute(name="id", data_type="uuid")],
+                ),
+            },
+            relationships=[
+                Relationship(
+                    name="has_roles",
+                    source_entity="User",
+                    target_entity="Role",
+                    cardinality="N:M",
+                    junction_table="user_roles",
+                    source_fk="user_id",
+                    target_fk="role_id",
+                )
+            ],
+        )
+        er = dd.to_er_diagram()
+        assert "user_roles" in er
+        assert "user_id FK" in er
+        assert "role_id FK" in er
+
+    def test_er_mermaid_fk_marker(self):
+        """Gap #4: ER diagram should show FK markers on attributes."""
+        from requirements_engineer.generators.data_dictionary_generator import (
+            Entity, Attribute,
+        )
+        entity = Entity(
+            name="Order",
+            description="An order",
+            attributes=[
+                Attribute(name="id", data_type="uuid"),
+                Attribute(
+                    name="user_id",
+                    data_type="uuid",
+                    is_foreign_key=True,
+                    foreign_key_target="User.id",
+                ),
+            ],
+        )
+        mermaid = entity.to_er_mermaid()
+        assert "user_id FK" in mermaid
+
+    def test_snake_case_conversion(self):
+        """Gap #19: _to_snake_case should convert camelCase/PascalCase."""
+        from requirements_engineer.generators.data_dictionary_generator import (
+            DataDictionaryGenerator,
+        )
+        assert DataDictionaryGenerator._to_snake_case("userId") == "user_id"
+        assert DataDictionaryGenerator._to_snake_case("UserName") == "user_name"
+        assert DataDictionaryGenerator._to_snake_case("firstName") == "first_name"
+        assert DataDictionaryGenerator._to_snake_case("already_snake") == "already_snake"
+
+    def test_ensure_audit_fields(self):
+        """Gap #17: _ensure_audit_fields should add created_at/updated_at."""
+        from requirements_engineer.generators.data_dictionary_generator import (
+            DataDictionaryGenerator, Entity, Attribute,
+        )
+        entity = Entity(
+            name="Product",
+            description="A product",
+            attributes=[Attribute(name="id", data_type="uuid")],
+        )
+        DataDictionaryGenerator._ensure_audit_fields(entity)
+        names = [a.name for a in entity.attributes]
+        assert "created_at" in names
+        assert "updated_at" in names
+
+    def test_ensure_audit_fields_no_duplicate(self):
+        """Gap #17: _ensure_audit_fields should not duplicate if already present."""
+        from requirements_engineer.generators.data_dictionary_generator import (
+            DataDictionaryGenerator, Entity, Attribute,
+        )
+        entity = Entity(
+            name="Product",
+            description="A product",
+            attributes=[
+                Attribute(name="id", data_type="uuid"),
+                Attribute(name="created_at", data_type="datetime"),
+            ],
+        )
+        DataDictionaryGenerator._ensure_audit_fields(entity)
+        count = sum(1 for a in entity.attributes if a.name == "created_at")
+        assert count == 1
+
+    def test_markdown_has_extended_columns(self):
+        """Gap #8/#9: Markdown table should show MaxLen, FK, Indexed, Enum columns."""
+        from requirements_engineer.generators.data_dictionary_generator import (
+            Entity, Attribute,
+        )
+        entity = Entity(
+            name="User",
+            description="A user",
+            attributes=[
+                Attribute(
+                    name="email",
+                    data_type="string",
+                    max_length=255,
+                    is_indexed=True,
+                ),
+                Attribute(
+                    name="status",
+                    data_type="enum",
+                    enum_values=["active", "inactive"],
+                ),
+            ],
+        )
+        md = entity.to_markdown()
+        assert "MaxLen" in md
+        assert "FK Target" in md
+        assert "Indexed" in md
+        assert "Enum Values" in md
+        assert "255" in md
+        assert "active, inactive" in md
+
+
+# ============================================================================
+# 3. UI Design Generator Tests (Gaps #10, #11, #12, #20)
+# ============================================================================
+
+class TestUIDesignGaps:
+    """Test UI Design Generator gap fixes."""
+
+    def test_screen_has_state_bindings(self):
+        """Gap #11: Screen should have state_bindings field."""
+        from requirements_engineer.generators.ui_design_generator import Screen
+        screen = Screen(
+            id="SCREEN-001",
+            name="Login",
+            route="/login",
+            state_bindings={"COMP-001": "auth.phoneNumber"},
+        )
+        assert screen.state_bindings == {"COMP-001": "auth.phoneNumber"}
+
+    def test_screen_has_navigation_rules(self):
+        """Gap #12: Screen should have navigation_rules field."""
+        from requirements_engineer.generators.ui_design_generator import Screen
+        screen = Screen(
+            id="SCREEN-001",
+            name="Login",
+            route="/login",
+            navigation_rules=[{"trigger": "submit", "target": "/dashboard"}],
+        )
+        assert len(screen.navigation_rules) == 1
+
+    def test_screen_has_responsive(self):
+        """Gap #20: Screen should have responsive field."""
+        from requirements_engineer.generators.ui_design_generator import Screen
+        screen = Screen(
+            id="SCREEN-001",
+            name="Login",
+            route="/login",
+            responsive={"mobile": {"layout": "stack"}},
+        )
+        assert "mobile" in screen.responsive
+
+    def test_screen_has_auth_required(self):
+        """Screen should have auth_required field."""
+        from requirements_engineer.generators.ui_design_generator import Screen
+        screen = Screen(id="SCREEN-001", name="Login", route="/login", auth_required=False)
+        assert screen.auth_required is False
+
+    def test_ui_spec_has_navigation_map(self):
+        """Gap #12: UIDesignSpec should have navigation_map."""
+        from requirements_engineer.generators.ui_design_generator import UIDesignSpec
+        spec = UIDesignSpec(project_name="Test", navigation_map=[{"path": "/login"}])
+        assert len(spec.navigation_map) == 1
+
+    def test_ui_spec_has_state_architecture(self):
+        """Gap #11: UIDesignSpec should have state_architecture."""
+        from requirements_engineer.generators.ui_design_generator import UIDesignSpec
+        spec = UIDesignSpec(
+            project_name="Test",
+            state_architecture={"auth": {"slice": "authSlice"}},
+        )
+        assert "auth" in spec.state_architecture
+
+    def test_select_diverse_stories(self):
+        """Gap #10: _select_diverse_stories should pick from different categories."""
+        from requirements_engineer.generators.ui_design_generator import UIDesignGenerator
+
+        stories = [
+            {"title": "User Login", "description": "Login with password"},
+            {"title": "User Register", "description": "Create account"},
+            {"title": "Send Message", "description": "Chat with contacts"},
+            {"title": "Receive Message", "description": "Get notifications"},
+            {"title": "View Profile", "description": "Show user info"},
+            {"title": "Edit Settings", "description": "Change preferences"},
+            {"title": "Upload Photo", "description": "Share media"},
+            {"title": "Voice Call", "description": "Call a contact"},
+            {"title": "Search Users", "description": "Find people"},
+            {"title": "Admin Dashboard", "description": "Manage users"},
+        ]
+
+        selected = UIDesignGenerator._select_diverse_stories(stories, 5)
+        assert len(selected) == 5
+
+        # Should pick from different categories, not just first 5
+        titles = [s["title"] for s in selected]
+        categories_hit = set()
+        if any("login" in t.lower() or "register" in t.lower() for t in titles):
+            categories_hit.add("auth")
+        if any("message" in t.lower() for t in titles):
+            categories_hit.add("messaging")
+        if any("profile" in t.lower() for t in titles):
+            categories_hit.add("profile")
+        if any("setting" in t.lower() for t in titles):
+            categories_hit.add("settings")
+        if any("photo" in t.lower() for t in titles):
+            categories_hit.add("media")
+        # Should cover at least 3 categories
+        assert len(categories_hit) >= 3
+
+    def test_select_diverse_stories_small_list(self):
+        """If stories <= max_screens, return all."""
+        from requirements_engineer.generators.ui_design_generator import UIDesignGenerator
+        stories = [{"title": "A"}, {"title": "B"}]
+        selected = UIDesignGenerator._select_diverse_stories(stories, 5)
+        assert len(selected) == 2
+
+    def test_build_navigation_map(self):
+        """Gap #12: _build_navigation_map should create route entries."""
+        from requirements_engineer.generators.ui_design_generator import (
+            UIDesignGenerator, Screen,
+        )
+        screens = [
+            Screen(
+                id="SCREEN-001",
+                name="Login",
+                route="/login",
+                auth_required=False,
+                navigation_rules=[
+                    {"trigger": "submit", "target": "/dashboard", "condition": ""},
+                ],
+            ),
+            Screen(
+                id="SCREEN-002",
+                name="Dashboard",
+                route="/dashboard",
+                auth_required=True,
+            ),
+        ]
+        nav_map = UIDesignGenerator._build_navigation_map(screens)
+        assert len(nav_map) == 2
+        assert nav_map[0]["path"] == "/login"
+        assert nav_map[0]["auth_required"] is False
+        assert len(nav_map[0]["transitions"]) == 1
+        assert nav_map[1]["auth_required"] is True
+
+
+# ============================================================================
+# 4. Screen Generator Agent Tests (Gap #10)
+# ============================================================================
+
+class TestScreenGeneratorAgentGaps:
+    """Test Screen Generator Agent gap fixes."""
+
+    def test_select_diverse_stories(self):
+        """Gap #10: Agent should have _select_diverse_stories method."""
+        from requirements_engineer.stages.agents.screen_generator_agent import (
+            ScreenGeneratorAgent,
+        )
+        stories = [
+            {"title": "Login"},
+            {"title": "Register"},
+            {"title": "Send Message"},
+            {"title": "View Profile"},
+            {"title": "Upload Photo"},
+        ]
+        selected = ScreenGeneratorAgent._select_diverse_stories(stories, 3)
+        assert len(selected) == 3
+
+
+# ============================================================================
+# 5. Tech Stack Generator Tests (Gap #14)
+# ============================================================================
+
+class TestTechStackGaps:
+    """Test Tech Stack Generator gap fixes."""
+
+    def test_tech_stack_has_versions(self):
+        """Gap #14: TechStack should have versions field."""
+        from requirements_engineer.generators.tech_stack_generator import TechStack
+        ts = TechStack(
+            project_name="Test",
+            versions={"React": "19.0.0", "TypeScript": "5.7.2"},
+        )
+        assert ts.versions["React"] == "19.0.0"
+
+    def test_tech_stack_has_package_names(self):
+        """Gap #14: TechStack should have package_names field."""
+        from requirements_engineer.generators.tech_stack_generator import TechStack
+        ts = TechStack(
+            project_name="Test",
+            package_names={"React": "react", "FastAPI": "fastapi"},
+        )
+        assert ts.package_names["FastAPI"] == "fastapi"
+
+    def test_prompt_mentions_versions(self):
+        """Gap #14: Prompt should ask for specific versions."""
+        from requirements_engineer.generators.tech_stack_generator import TechStackGenerator
+        prompt = TechStackGenerator.TECH_STACK_PROMPT
+        assert "versions" in prompt.lower()
+        assert "package_names" in prompt.lower()
+
+
+# ============================================================================
+# 6. Test Case Generator Tests (Gap #18)
+# ============================================================================
+
+class TestTestCaseGaps:
+    """Test Test Case Generator gap fixes."""
+
+    def test_feature_has_test_framework(self):
+        """Gap #18: GherkinFeature should have test_framework field."""
+        from requirements_engineer.generators.test_case_generator import GherkinFeature
+        feature = GherkinFeature(name="Login", test_framework="vitest")
+        assert feature.test_framework == "vitest"
+
+    def test_feature_has_mock_strategy(self):
+        """Gap #18: GherkinFeature should have mock_strategy field."""
+        from requirements_engineer.generators.test_case_generator import GherkinFeature
+        feature = GherkinFeature(
+            name="Login",
+            mock_strategy={"sms_service": "mock", "biometric": "stub"},
+        )
+        assert feature.mock_strategy["sms_service"] == "mock"
+
+    def test_prompt_mentions_test_strategy(self):
+        """Gap #18: Prompt should ask for test_strategy."""
+        from requirements_engineer.generators.test_case_generator import TestCaseGenerator
+        prompt = TestCaseGenerator.GHERKIN_PROMPT
+        assert "test_strategy" in prompt
+        assert "test_framework" in prompt
+        assert "mock_strategy" in prompt
+
+
+# ============================================================================
+# 7. UX Design Generator Tests (Gap #15)
+# ============================================================================
+
+class TestUXDesignGaps:
+    """Test UX Design Generator gap fixes."""
+
+    def test_ux_spec_has_validation_rules(self):
+        """Gap #15: UXDesignSpec should have validation_rules field."""
+        from requirements_engineer.generators.ux_design_generator import UXDesignSpec
+        spec = UXDesignSpec(
+            project_name="Test",
+            validation_rules=[
+                {"field": "email", "screen": "Registration", "rules": [{"type": "required"}]}
+            ],
+        )
+        assert len(spec.validation_rules) == 1
+
+    def test_validation_prompt_exists(self):
+        """Gap #15: UXDesignGenerator should have VALIDATION_PROMPT."""
+        from requirements_engineer.generators.ux_design_generator import UXDesignGenerator
+        assert hasattr(UXDesignGenerator, "VALIDATION_PROMPT")
+        assert "validations" in UXDesignGenerator.VALIDATION_PROMPT
+
+
+# ============================================================================
+# 8. Realtime Spec Generator Tests (Gap #13)
+# ============================================================================
+
+class TestRealtimeSpecGaps:
+    """Test Realtime Spec Generator."""
+
+    def test_import(self):
+        """Gap #13: RealtimeSpecGenerator should be importable."""
+        from requirements_engineer.generators.realtime_spec_generator import (
+            RealtimeSpecGenerator, RealtimeSpec, Channel, ChannelMessage,
+        )
+        gen = RealtimeSpecGenerator()
+        assert gen.model_name == "openai/gpt-4o-mini"
+
+    def test_filter_realtime_requirements(self):
+        """Gap #13: Should correctly filter requirements with RT keywords."""
+        from requirements_engineer.generators.realtime_spec_generator import (
+            RealtimeSpecGenerator,
+        )
+        req_rt = MagicMock()
+        req_rt.title = "Real-time chat messaging"
+        req_rt.description = "Users send messages in real-time"
+
+        req_normal = MagicMock()
+        req_normal.title = "User Registration"
+        req_normal.description = "Create new account"
+
+        rt_reqs = RealtimeSpecGenerator.filter_realtime_requirements([req_rt, req_normal])
+        assert len(rt_reqs) == 1
+        assert rt_reqs[0].title == "Real-time chat messaging"
+
+    def test_asyncapi_yaml_structure(self):
+        """Gap #13: Generated YAML should have AsyncAPI 2.6 structure."""
+        from requirements_engineer.generators.realtime_spec_generator import (
+            RealtimeSpecGenerator, RealtimeSpec, Channel, ChannelMessage,
+        )
+        gen = RealtimeSpecGenerator()
+        spec = RealtimeSpec(
+            title="Test API",
+            channels=[
+                Channel(
+                    name="chat/messages",
+                    subscribe=ChannelMessage(
+                        name="ChatMessage",
+                        fields={"content": {"type": "string"}},
+                    ),
+                )
+            ],
+        )
+        yaml_str = gen._to_asyncapi_yaml(spec)
+        data = yaml.safe_load(yaml_str)
+        assert data["asyncapi"] == "2.6.0"
+        assert "chat/messages" in data["channels"]
+        assert "ChatMessage" in data["components"]["messages"]
+
+    def test_to_markdown(self):
+        """Gap #13: to_markdown should produce readable docs."""
+        from requirements_engineer.generators.realtime_spec_generator import (
+            RealtimeSpecGenerator, RealtimeSpec, Channel, ChannelMessage,
+        )
+        gen = RealtimeSpecGenerator()
+        spec = RealtimeSpec(
+            title="Test API",
+            channels=[
+                Channel(
+                    name="chat/messages",
+                    subscribe=ChannelMessage(
+                        name="ChatMsg",
+                        fields={"content": {"type": "string", "description": "Message text"}},
+                    ),
+                )
+            ],
+        )
+        yaml_str = gen._to_asyncapi_yaml(spec)
+        md = gen.to_markdown(yaml_str)
+        assert "chat/messages" in md
+        assert "ChatMsg" in md
+        assert "content" in md
+
+    def test_exported_from_package(self):
+        """Gap #13: Should be in generators __init__.py."""
+        from requirements_engineer.generators import RealtimeSpecGenerator, RealtimeSpec
+        assert RealtimeSpecGenerator is not None
+        assert RealtimeSpec is not None
+
+
+# ============================================================================
+# 9. Link Config Generator Tests (Dashboard graph enhancement)
+# ============================================================================
+
+class TestLinkConfigGaps:
+    """Test extended link types for dashboard graph."""
+
+    def test_new_link_types_exist(self):
+        """New link types should be in DEFAULT_LINK_TYPES."""
+        from requirements_engineer.generators.link_config_generator import DEFAULT_LINK_TYPES
+        link_ids = [lt.id for lt in DEFAULT_LINK_TYPES]
+        # New link types for graph enhancement
+        assert "req-api" in link_ids
+        assert "api-screen" in link_ids
+        assert "test-api" in link_ids
+        assert "req-entity" in link_ids
+        assert "screen-entity" in link_ids
+        assert "entity-api" in link_ids
+        assert "persona-screen" in link_ids
+
+    def test_link_type_count_increased(self):
+        """Should have more link types than before (was 16)."""
+        from requirements_engineer.generators.link_config_generator import DEFAULT_LINK_TYPES
+        assert len(DEFAULT_LINK_TYPES) >= 20
+
+
+# ============================================================================
+# 10. Traceability Matrix Tests
+# ============================================================================
+
+class TestTraceabilityMatrix:
+    """Test extended traceability matrix."""
+
+    def test_matrix_with_api_endpoints(self):
+        """Matrix should include API Endpoints column."""
+        from run_re_system import create_traceability_matrix
+
+        req = MagicMock()
+        req.requirement_id = "REQ-001"
+        req.type = "functional"
+        req.priority = "must"
+
+        us = MagicMock()
+        us.id = "US-001"
+        us.parent_requirement_id = "REQ-001"
+
+        tc = MagicMock()
+        tc.id = "TC-001"
+        tc.parent_user_story_id = "US-001"
+
+        ep = MagicMock()
+        ep.parent_requirement_id = "REQ-001"
+        ep.method = "POST"
+        ep.path = "/api/users"
+
+        md = create_traceability_matrix(
+            [req], [us], [tc],
+            api_endpoints=[ep],
+        )
+        assert "API Endpoints" in md
+        assert "POST /api/users" in md
+
+    def test_matrix_without_extra_artifacts(self):
+        """Matrix should work with only req/us/tc (backwards compatible)."""
+        from run_re_system import create_traceability_matrix
+
+        req = MagicMock()
+        req.requirement_id = "REQ-001"
+        req.type = "functional"
+        req.priority = "must"
+
+        md = create_traceability_matrix([req], [], [])
+        assert "Traceability Matrix" in md
+        assert "API Endpoints" in md  # Column header should still be there

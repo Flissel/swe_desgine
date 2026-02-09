@@ -1,0 +1,63 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9', 'primaryTextColor': '#fff', 'primaryBorderColor': '#2d5a87', 'lineColor': '#5c6bc0'}}}%%
+flowchart TB
+    subgraph Orchestrator["MagenticOrchestrator"]
+        MO["run()<br/>_revise_plan()<br/>_execute_next_action()"]
+    end
+
+    subgraph Core["Core Components"]
+        direction LR
+        LM["LedgerManager<br/>- TaskLedger<br/>- ProgressLedger<br/>- get_combined_context()"]
+        AD["AgentDispatcher<br/>- dispatch()<br/>- dispatch_parallel()<br/>- select_best_agent()"]
+        RP["ResearchPlan<br/>- actions[]<br/>- advance()<br/>- is_complete"]
+    end
+
+    subgraph Agents["Specialized Research Agents"]
+        direction LR
+        subgraph CodeGen["Code Generation"]
+            CA["CoderAgent<br/>DRAFT, IMPROVE"]
+        end
+        subgraph Debug["Debugging"]
+            DA["DebuggerAgent<br/>DEBUG"]
+        end
+        subgraph Analysis["Analysis"]
+            AA["AnalystAgent<br/>ANALYZE"]
+        end
+        subgraph Tuning["Optimization"]
+            TA["TunerAgent<br/>TUNE"]
+            ABA["AblationAgent<br/>ABLATE"]
+        end
+        subgraph Review["Quality"]
+            RA["ReviewerAgent<br/>REVIEW"]
+        end
+    end
+
+    subgraph Results["Output"]
+        AR["AgentResult<br/>success, code, notes"]
+        J["Journal<br/>nodes, best_node"]
+    end
+
+    MO --> LM
+    MO --> AD
+    MO --> RP
+
+    AD --> CA
+    AD --> DA
+    AD --> AA
+    AD --> TA
+    AD --> ABA
+    AD --> RA
+
+    CA --> AR
+    DA --> AR
+    AA --> AR
+    TA --> AR
+    ABA --> AR
+    RA --> AR
+
+    AR --> J
+    AR --> LM
+
+    style Orchestrator fill:#e3f2fd,stroke:#1976d2
+    style Core fill:#f3e5f5,stroke:#7b1fa2
+    style Agents fill:#e8f5e9,stroke:#388e3c
+    style Results fill:#fff3e0,stroke:#f57c00

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import time
 
 from .utils import FunctionSpec, OutputType, opt_messages_to_list, backoff_create
@@ -17,10 +18,26 @@ OPENAI_TIMEOUT_EXCEPTIONS = (
     openai.InternalServerError,
 )
 
+def _is_openrouter_model(model: str) -> bool:
+    """Check if model uses OpenRouter provider/model format (e.g. google/gemini-3-flash-preview)."""
+    if "/" not in model:
+        return False
+    if model.startswith("ollama/") or model.startswith("openrouter/"):
+        return False
+    # OpenRouter models use provider/model format and we have an API key
+    return bool(os.environ.get("OPENROUTER_API_KEY"))
+
+
 def get_ai_client(model: str, max_retries=2) -> openai.OpenAI:
     if model.startswith("ollama/"):
         client = openai.OpenAI(
-            base_url="http://localhost:11434/v1", 
+            base_url="http://localhost:11434/v1",
+            max_retries=max_retries
+        )
+    elif model.startswith("openrouter/") or _is_openrouter_model(model):
+        client = openai.OpenAI(
+            api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+            base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
             max_retries=max_retries
         )
     else:
@@ -46,6 +63,8 @@ def query(
 
     if filtered_kwargs.get("model", "").startswith("ollama/"):
        filtered_kwargs["model"] = filtered_kwargs["model"].replace("ollama/", "")
+    elif filtered_kwargs.get("model", "").startswith("openrouter/"):
+       filtered_kwargs["model"] = filtered_kwargs["model"].replace("openrouter/", "")
 
     t0 = time.time()
     completion = backoff_create(

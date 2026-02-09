@@ -51,6 +51,25 @@ AVAILABLE_LLMS = [
     "gemini-2.0-flash",
     "gemini-2.5-flash-preview-04-17",
     "gemini-2.5-pro-preview-03-25",
+    # OpenRouter models
+    "openrouter/anthropic/claude-3.5-sonnet",
+    "openrouter/anthropic/claude-3.5-sonnet:beta",
+    "openrouter/anthropic/claude-3.5-haiku",
+    "openrouter/anthropic/claude-3.5-haiku:beta",
+    "openrouter/anthropic/claude-3-opus",
+    "openrouter/openai/gpt-4o",
+    "openrouter/openai/gpt-4o-mini",
+    "openrouter/openai/o1-mini",
+    "openrouter/openai/o3-mini",
+    "openrouter/meta-llama/llama-3.1-405b-instruct",
+    "openrouter/meta-llama/llama-3.1-70b-instruct",
+    "openrouter/google/gemini-2.0-flash-exp",
+    "openrouter/google/gemini-2.5-pro-exp",
+    "openrouter/deepseek/deepseek-chat",
+    "openrouter/deepseek/deepseek-coder",
+    "openrouter/qwen/qwen-2.5-72b-instruct",
+    "openrouter/mistralai/mistral-large",
+    "openrouter/mistralai/mistral-small",
     # GPT-OSS models via Ollama
     "ollama/gpt-oss:20b",
     "ollama/gpt-oss:120b",
@@ -102,6 +121,23 @@ def get_batch_responses_from_llm(
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
             model=model.replace("ollama/", ""),
+            messages=[
+                {"role": "system", "content": system_message},
+                *new_msg_history,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+            n=n_responses,
+            stop=None,
+        )
+        content = [r.message.content for r in response.choices]
+        new_msg_history = [
+            new_msg_history + [{"role": "assistant", "content": c}] for c in content
+        ]
+    elif model.startswith("openrouter/"):
+        new_msg_history = msg_history + [{"role": "user", "content": msg}]
+        response = client.chat.completions.create(
+            model=model.replace("openrouter/", ""),
             messages=[
                 {"role": "system", "content": system_message},
                 *new_msg_history,
@@ -226,6 +262,18 @@ def make_llm_call(client, model, temperature, system_message, prompt):
             n=1,
             stop=None,
         )
+    elif model.startswith("openrouter/"):
+        return client.chat.completions.create(
+            model=model.replace("openrouter/", ""),
+            messages=[
+                {"role": "system", "content": system_message},
+                *prompt,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+            n=1,
+            stop=None,
+        )
     elif "gpt" in model:
         return client.chat.completions.create(
             model=model,
@@ -313,6 +361,21 @@ def get_response_from_llm(
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
             model=model.replace("ollama/", ""),
+            messages=[
+                {"role": "system", "content": system_message},
+                *new_msg_history,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+            n=1,
+            stop=None,
+        )
+        content = response.choices[0].message.content
+        new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
+    elif model.startswith("openrouter/"):
+        new_msg_history = msg_history + [{"role": "user", "content": msg}]
+        response = client.chat.completions.create(
+            model=model.replace("openrouter/", ""),
             messages=[
                 {"role": "system", "content": system_message},
                 *new_msg_history,
@@ -495,6 +558,15 @@ def create_client(model) -> tuple[Any, str]:
             api_key=os.environ.get("OLLAMA_API_KEY", ""),
             base_url="http://localhost:11434/v1",
         ), model
+    elif model.startswith("openrouter/"):
+        print(f"Using OpenRouter API with model {model}.")
+        return (
+            openai.OpenAI(
+                api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+                base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+            ),
+            model.replace("openrouter/", ""),
+        )
     elif "gpt" in model:
         print(f"Using OpenAI API with model {model}.")
         return openai.OpenAI(), model
@@ -523,11 +595,11 @@ def create_client(model) -> tuple[Any, str]:
             model,
         )
     elif model == "llama3.1-405b":
-        print(f"Using OpenAI API with {model}.")
+        print(f"Using OpenRouter API with {model}.")
         return (
             openai.OpenAI(
-                api_key=os.environ["OPENROUTER_API_KEY"],
-                base_url="https://openrouter.ai/api/v1",
+                api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+                base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
             ),
             "meta-llama/llama-3.1-405b-instruct",
         )

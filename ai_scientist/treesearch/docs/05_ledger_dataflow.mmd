@@ -1,0 +1,75 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9', 'primaryTextColor': '#fff', 'lineColor': '#5c6bc0'}}}%%
+flowchart TB
+    subgraph Input["Input Sources"]
+        TD["Task Description<br/>Title, Abstract, Hypothesis"]
+        AR["Agent Results<br/>success, notes, metrics"]
+        EXP["Experiment Results<br/>metrics, plots, errors"]
+    end
+
+    subgraph LM["LedgerManager"]
+        direction TB
+
+        subgraph TL["TaskLedger - Knowledge Repository"]
+            direction LR
+            F["facts[]<br/>Confirmed findings"]
+            H["hypotheses[]<br/>To be tested"]
+            C["constraints[]<br/>Known limitations"]
+            Q["open_questions[]<br/>Unresolved issues"]
+            R["resources{}<br/>Available assets"]
+        end
+
+        subgraph PL["ProgressLedger - Execution Tracking"]
+            direction LR
+            CA["completed_actions[]<br/>ActionRecord list"]
+            FA["failed_attempts[]<br/>FailedAttempt list"]
+            SC["stagnation_counter<br/>int"]
+            LI["last_improvement_step<br/>int"]
+            BN["current_best_node<br/>node_id"]
+        end
+
+        subgraph Methods["Core Methods"]
+            direction LR
+            AF["add_fact()"]
+            AH["add_hypothesis()"]
+            CH["confirm_hypothesis()"]
+            RA["record_action()"]
+            DS["detect_stagnation()"]
+            SR["should_replan()"]
+        end
+    end
+
+    subgraph Output["Output"]
+        GCC["get_combined_context()<br/>→ LLM Prompt"]
+        GPS["get_progress_summary()<br/>→ Status Report"]
+        STG["Stagnation Signal<br/>→ Trigger Re-Plan"]
+    end
+
+    TD --> F
+    TD --> H
+    TD --> C
+
+    AR --> CA
+    AR --> FA
+    AR --> F
+
+    EXP --> CA
+    EXP --> BN
+
+    AF --> F
+    AH --> H
+    CH --> F
+    RA --> CA
+    DS --> SC
+    SR --> STG
+
+    TL --> GCC
+    PL --> GCC
+    PL --> GPS
+    SC --> STG
+
+    style Input fill:#e3f2fd,stroke:#1976d2
+    style LM fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style TL fill:#fff3e0,stroke:#f57c00
+    style PL fill:#e8f5e9,stroke:#388e3c
+    style Methods fill:#f3e5f5,stroke:#7b1fa2
+    style Output fill:#c8e6c9,stroke:#2e7d32

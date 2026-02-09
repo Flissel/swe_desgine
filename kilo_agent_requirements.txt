@@ -1,0 +1,17 @@
+# AutoGen 0.4 Kilo Agent Requirements
+
+# AutoGen Core und AgentChat
+autogen-core>=0.4.0
+autogen-agentchat>=0.4.0
+
+# OpenAI API Client
+openai>=1.0.0
+
+# Async Support
+aiohttp>=3.9.0
+
+# JSON Handling (wird für Tool-Rückgaben verwendet)
+# json ist in Python Standardbibliothek enthalten
+
+# Subprocess (wird für Kilo-CMD verwendet)
+# subprocess ist in Python Standardbibliothek enthalten

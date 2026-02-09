@@ -117,6 +117,9 @@ class Node(DataClassJsonMixin):
     is_seed_node: bool = field(default=False, kw_only=True)
     is_seed_agg_node: bool = field(default=False, kw_only=True)
 
+    # ---- Magentic-One Ledger context ----
+    ledger_context: Optional[str] = field(default=None, kw_only=True)
+
     def __post_init__(self) -> None:
         # Ensure children is a set even if initialized with a list
         if isinstance(self.children, list):
@@ -288,6 +291,7 @@ class Node(DataClassJsonMixin):
             "is_seed_node": self.is_seed_node,
             "is_seed_agg_node": self.is_seed_agg_node,
             "exec_time_feedback": self.exec_time_feedback,
+            "ledger_context": self.ledger_context,
         }
 
     @classmethod
@@ -610,3 +614,54 @@ class Journal:
 
         with open(os.path.join(notes_dir, f"{stage_name}_summary.txt"), "w") as f:
             f.write(stage_summary)
+
+    def get_progress_summary(self) -> str:
+        """
+        Generate a progress summary for the Magentic-One ledger system.
+
+        Returns a structured summary of experiment progress including:
+        - Total experiments and success/failure counts
+        - Best performing node info
+        - Recent activity summary
+        """
+        if not self.nodes:
+            return "No experiments conducted yet."
+
+        total = len(self.nodes)
+        good = len(self.good_nodes)
+        buggy = len(self.buggy_nodes)
+        success_rate = good / total if total > 0 else 0
+
+        lines = [
+            f"Total Experiments: {total}",
+            f"Successful: {good} ({success_rate:.1%})",
+            f"Failed: {buggy}",
+        ]
+
+        # Best node info
+        best = self.get_best_node(only_good=True)
+        if best:
+            lines.append(f"Best Node ID: {best.id[:8]}...")
+            if best.metric:
+                lines.append(f"Best Metric: {best.metric}")
+            if best.plan:
+                plan_preview = best.plan[:100] + "..." if len(best.plan) > 100 else best.plan
+                lines.append(f"Best Plan: {plan_preview}")
+
+        # Recent activity (last 5 nodes)
+        recent = self.nodes[-5:] if len(self.nodes) >= 5 else self.nodes
+        lines.append("\nRecent Activity:")
+        for node in recent:
+            status = "OK" if not node.is_buggy else "FAIL"
+            stage = node.stage_name
+            metric_str = str(node.metric) if node.metric else "N/A"
+            lines.append(f"  [{status}] {stage} - {metric_str}")
+
+        # Ledger context from nodes (if any)
+        nodes_with_context = [n for n in self.nodes if n.ledger_context]
+        if nodes_with_context:
+            lines.append("\nLedger Insights:")
+            for node in nodes_with_context[-3:]:
+                lines.append(f"  - {node.ledger_context[:80]}...")
+
+        return "\n".join(lines)

@@ -1,0 +1,67 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9', 'primaryTextColor': '#fff', 'lineColor': '#5c6bc0'}}}%%
+flowchart TB
+    subgraph Dispatch["AgentDispatcher"]
+        AD["dispatch()<br/>dispatch_parallel()<br/>dispatch_sequence()"]
+        SBA["select_best_agent()"]
+    end
+
+    subgraph TaskTypes["Task Type Matching"]
+        direction LR
+        TT["TaskType"]
+        DRAFT["DRAFT"]
+        IMPROVE["IMPROVE"]
+        DEBUG["DEBUG"]
+        ANALYZE["ANALYZE"]
+        TUNE["TUNE"]
+        ABLATE["ABLATE"]
+        REVIEW["REVIEW"]
+    end
+
+    subgraph Agents["Agent Selection"]
+        direction TB
+        CA["CoderAgent<br/>can_handle: DRAFT, IMPROVE"]
+        DA["DebuggerAgent<br/>can_handle: DEBUG"]
+        AA["AnalystAgent<br/>can_handle: ANALYZE"]
+        TA["TunerAgent<br/>can_handle: TUNE"]
+        ABA["AblationAgent<br/>can_handle: ABLATE"]
+        RA["ReviewerAgent<br/>can_handle: REVIEW"]
+    end
+
+    subgraph Context["Agent Context"]
+        AC["AgentContext<br/>- task_description<br/>- stage_name<br/>- parent_node<br/>- ledger_summaries"]
+    end
+
+    subgraph Result["Agent Result"]
+        AR["AgentResult<br/>- success: bool<br/>- code: str<br/>- plan: str<br/>- recommendations: list<br/>- confidence: float"]
+    end
+
+    AD --> SBA
+    SBA --> TT
+
+    TT --> DRAFT --> CA
+    TT --> IMPROVE --> CA
+    TT --> DEBUG --> DA
+    TT --> ANALYZE --> AA
+    TT --> TUNE --> TA
+    TT --> ABLATE --> ABA
+    TT --> REVIEW --> RA
+
+    AC --> CA
+    AC --> DA
+    AC --> AA
+    AC --> TA
+    AC --> ABA
+    AC --> RA
+
+    CA --> AR
+    DA --> AR
+    AA --> AR
+    TA --> AR
+    ABA --> AR
+    RA --> AR
+
+    style Dispatch fill:#e3f2fd,stroke:#1976d2
+    style TaskTypes fill:#f3e5f5,stroke:#7b1fa2
+    style Agents fill:#e8f5e9,stroke:#388e3c
+    style Context fill:#fff3e0,stroke:#f57c00
+    style Result fill:#c8e6c9,stroke:#2e7d32

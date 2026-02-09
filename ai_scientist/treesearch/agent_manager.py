@@ -1,11 +1,14 @@
 from typing import List, Optional, Dict, Callable, Any, Tuple
 import pickle
+import time
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 import logging
 from .parallel_agent import ParallelAgent
 from .journal import Journal, Node
+from .ledger import LedgerManager, ActionRecord, FailedAttempt
+from .magentic_orchestrator import MagenticOrchestrator
 import copy
 import re
 from .backend import query, FunctionSpec
@@ -13,6 +16,7 @@ import json
 from rich import print
 from .utils.serialize import parse_markdown_to_dict
 from .utils.metric import WorstMetricValue
+from ai_scientist.tools.kilo_cmd_tool import KiloCmdTool
 
 
 logger = logging.getLogger(__name__)
@@ -121,7 +125,23 @@ class StageTransition:
 
 
 class AgentManager:
-    def __init__(self, task_desc: str, cfg: Any, workspace_dir: Path):
+    """
+    Manages the multi-stage research experiment pipeline.
+
+    Supports two orchestration modes:
+    - Legacy mode (default): Uses existing ParallelAgent-based orchestration
+    - Magentic mode: Uses MagenticOrchestrator with specialized agents
+
+    Set use_magentic=True to enable the Magentic-One inspired orchestration.
+    """
+
+    def __init__(
+        self,
+        task_desc: str,
+        cfg: Any,
+        workspace_dir: Path,
+        use_magentic: bool = False,
+    ):
         self.task_desc = json.loads(task_desc)
         for k in [
             "Title",
@@ -134,6 +154,17 @@ class AgentManager:
                 raise ValueError(f"Key {k} not found in task_desc")
         self.cfg = cfg
         self.workspace_dir = workspace_dir
+        self.use_magentic = use_magentic
+
+        # Initialize Magentic Orchestrator if enabled
+        self._magentic_orchestrator: Optional[MagenticOrchestrator] = None
+        if use_magentic:
+            logger.info("Magentic-One orchestration mode enabled")
+            self._magentic_orchestrator = MagenticOrchestrator(
+                task_desc=self.task_desc,
+                cfg=cfg,
+                workspace_dir=workspace_dir,
+            )
         self.current_stage_number = 0
         self.stages: List[Stage] = []
         self.current_stage: Optional[Stage] = None
@@ -165,6 +196,12 @@ class AgentManager:
                 - Conduct systematic component analysis that reveals the contribution of each part
                 - Use the same datasets you used from the previous stage""",
         }
+
+        # Initialize Magentic-One inspired Ledger System
+        self.ledger_manager = LedgerManager()
+        self.ledger_manager.initialize_from_task(self.task_desc)
+        logger.info(f"LedgerManager initialized: {self.ledger_manager}")
+
         # Create initial stage
         self._create_initial_stage()
 
@@ -266,10 +303,98 @@ Your research idea:\n\n
             "cfg": self.cfg,
             "workspace_dir": self.workspace_dir,
             "current_stage": self.current_stage,
+            "ledger_manager": self.ledger_manager,  # Magentic-One Ledger
         }
         print("Saving checkpoint to ", save_path)
         with open(save_path, "wb") as f:
             pickle.dump(checkpoint, f)
+
+    def _update_ledger_for_node(self, node: Node, stage: Stage, duration: float = 0.0) -> None:
+        """
+        Update the Magentic-One ledger system after processing a node.
+
+        This is part of Phase 1 of the Magentic-One integration.
+        """
+        # Determine action type from node stage
+        action_type = node.stage_name  # draft, debug, improve
+
+        # Serialize metrics for storage
+        metrics_dict = None
+        if node.metric is not None:
+            metrics_dict = {
+                "value": node.metric.value if hasattr(node.metric, "value") else None,
+                "maximize": node.metric.maximize if hasattr(node.metric, "maximize") else None,
+                "name": node.metric.name if hasattr(node.metric, "name") else None,
+            }
+
+        # Determine success
+        success = not node.is_buggy and node.exc_type is None
+
+        # Create notes from node analysis
+        notes = ""
+        if node.analysis:
+            notes = node.analysis[:200]
+        elif node.plan:
+            notes = f"Plan: {node.plan[:150]}"
+
+        # Record in ledger
+        action = self.ledger_manager.record_experiment_result(
+            agent_name="parallel_agent",
+            action_type=action_type,
+            node_id=node.id,
+            success=success,
+            notes=notes,
+            metrics_after=metrics_dict,
+            duration=duration,
+            error_info={
+                "type": node.exc_type,
+                "message": str(node.exc_info) if node.exc_info else "",
+            } if node.exc_type else None
+        )
+
+        # Update best node tracking
+        if success and metrics_dict:
+            current_best = self.ledger_manager.progress_ledger.current_best_metric
+            if current_best is None:
+                self.ledger_manager.progress_ledger.update_best(node.id, metrics_dict)
+            elif node.metric and hasattr(node.metric, "__gt__"):
+                # Use metric comparison
+                from .utils.metric import MetricValue
+                try:
+                    current_metric = MetricValue(
+                        value=current_best.get("value"),
+                        maximize=current_best.get("maximize", True)
+                    )
+                    if node.metric > current_metric:
+                        self.ledger_manager.progress_ledger.update_best(node.id, metrics_dict)
+                except Exception:
+                    pass
+
+        # Add insights from successful experiments
+        if success and node.vlm_feedback_summary:
+            for summary in node.vlm_feedback_summary[:2]:  # Limit to avoid noise
+                self.ledger_manager.task_ledger.add_insight(summary[:150])
+
+        # Store ledger context in node for traceability
+        node.ledger_context = self.ledger_manager.get_combined_context(max_items=3)
+
+        logger.debug(f"Ledger updated for node {node.id[:8]}: {action}")
+
+    def _check_for_stagnation(self) -> bool:
+        """
+        Check if the experiment is stagnating using the Progress Ledger.
+
+        Returns True if stagnation is detected and a replan might be beneficial.
+        """
+        return self.ledger_manager.should_trigger_replan()
+
+    def _get_ledger_context_for_prompt(self) -> str:
+        """
+        Get ledger context to include in LLM prompts for better decision-making.
+
+        This provides the agent with awareness of past experiments and current progress.
+        """
+        return self.ledger_manager.get_combined_context(max_items=5)
 
     def _create_agent_for_stage(self, stage: Stage) -> ParallelAgent:
         """Create a ParallelAgent configured for the given stage"""
@@ -690,7 +815,42 @@ Your research idea:\n\n
         )
 
     def run(self, exec_callback, step_callback=None):
-        """Run the experiment through generated stages"""
+        """
+        Run the experiment through generated stages.
+
+        If use_magentic=True was set during initialization, delegates to
+        the MagenticOrchestrator for Magentic-One style orchestration.
+        Otherwise, uses the legacy ParallelAgent-based orchestration.
+
+        Args:
+            exec_callback: Callback for code execution
+            step_callback: Optional callback after each step
+        """
+        # Use Magentic-One orchestration if enabled
+        if self.use_magentic and self._magentic_orchestrator:
+            logger.info("Running with Magentic-One orchestration")
+            print("[magenta]Running with Magentic-One orchestration mode[/magenta]")
+
+            # Run Magentic orchestrator
+            max_iters = self.cfg.agent.get("steps", 100)
+            journal = self._magentic_orchestrator.run(
+                exec_callback=exec_callback,
+                step_callback=step_callback,
+                max_iterations=max_iters,
+            )
+
+            # Store results in the first journal
+            initial_stage_name = "1_initial_implementation_1_preliminary"
+            self.journals[initial_stage_name] = journal
+
+            # Get status
+            status = self._magentic_orchestrator.get_status()
+            logger.info(f"Magentic orchestration complete: {status}")
+            print(f"[green]Magentic orchestration complete: {status['step_count']} steps[/green]")
+
+            return
+
+        # Legacy orchestration
         while self.current_stage:  # Main stage loop
             main_stage = self.parse_stage_names(self.current_stage.name)[0]
             print(f"[green]Starting main stage: {main_stage}[/green]")
@@ -719,7 +879,28 @@ Your research idea:\n\n
 
                     # Run until sub-stage completion
                     while True:
+                        step_start_time = time.time()
                         agent.step(exec_callback)
+                        step_duration = time.time() - step_start_time
+
+                        # Update Magentic-One Ledger for the latest node
+                        journal = self.journals[current_substage.name]
+                        if journal.nodes:
+                            latest_node = journal.nodes[-1]
+                            self._update_ledger_for_node(
+                                latest_node, current_substage, step_duration
+                            )
+
+                            # Check for stagnation (Magentic-One pattern)
+                            if self._check_for_stagnation():
+                                logger.warning(
+                                    f"Stagnation detected at step {self.ledger_manager.progress_ledger.total_steps}"
+                                )
+                                print(
+                                    f"[yellow]Magentic-One: Stagnation detected. "
+                                    f"Progress: {self.ledger_manager.progress_ledger.get_progress_summary()}[/yellow]"
+                                )
+
                         if step_callback:
                             step_callback(
                                 current_substage, self.journals[current_substage.name]

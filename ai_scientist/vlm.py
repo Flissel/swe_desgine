@@ -17,6 +17,14 @@ AVAILABLE_VLMS = [
     "gpt-4o-mini-2024-07-18",
     "o3-mini",
 
+    # OpenRouter models
+    "openrouter/openai/gpt-4o",
+    "openrouter/openai/gpt-4o-mini",
+    "openrouter/openai/o3-mini",
+    "openrouter/google/gemini-2.0-flash-exp",
+    "openrouter/google/gemini-2.5-pro-exp",
+    "openrouter/qwen/qwen-2.5-vl-72b-instruct",
+
     # Ollama models
 
     # llama4
@@ -104,6 +112,16 @@ def make_vlm_call(client, model, temperature, system_message, prompt):
             temperature=temperature,
             max_tokens=MAX_NUM_TOKENS,
         )
+    elif model.startswith("openrouter/"):
+        return client.chat.completions.create(
+            model=model.replace("openrouter/", ""),
+            messages=[
+                {"role": "system", "content": system_message},
+                *prompt,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+        )
     elif "gpt" in model:
         return client.chat.completions.create(
             model=model,
@@ -177,6 +195,39 @@ def get_response_from_vlm(
 
         content = response.choices[0].message.content
         new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
+    elif model.startswith("openrouter/"):
+        # Convert single image path to list for consistent handling
+        if isinstance(image_paths, str):
+            image_paths = [image_paths]
+
+        # Create content list starting with the text message
+        content = [{"type": "text", "text": msg}]
+
+        # Add each image to the content list
+        for image_path in image_paths[:max_images]:
+            base64_image = encode_image_to_base64(image_path)
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}",
+                        "detail": "low",
+                    },
+                }
+            )
+        # Construct message with all images
+        new_msg_history = msg_history + [{"role": "user", "content": content}]
+
+        response = make_vlm_call(
+            client,
+            model,
+            temperature,
+            system_message=system_message,
+            prompt=new_msg_history,
+        )
+
+        content = response.choices[0].message.content
+        new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
     else:
         raise ValueError(f"Model {model} not supported.")
 
@@ -209,6 +260,15 @@ def create_client(model: str) -> tuple[Any, str]:
             api_key=os.environ.get("OLLAMA_API_KEY", ""),
             base_url="http://localhost:11434/v1"
         ), model
+    elif model.startswith("openrouter/"):
+        print(f"Using OpenRouter API with model {model}.")
+        return (
+            openai.OpenAI(
+                api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+                base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+            ),
+            model.replace("openrouter/", ""),
+        )
     else:
         raise ValueError(f"Model {model} not supported.")
 
@@ -304,6 +364,18 @@ def get_batch_responses_from_vlm(
         if model.startswith("ollama/"):
             response = client.chat.completions.create(
                 model=model.replace("ollama/", ""),
+                messages=[
+                    {"role": "system", "content": system_message},
+                    *new_msg_history,
+                ],
+                temperature=temperature,
+                max_tokens=MAX_NUM_TOKENS,
+                n=n_responses,
+                seed=0,
+            )
+        elif model.startswith("openrouter/"):
+            response = client.chat.completions.create(
+                model=model.replace("openrouter/", ""),
                 messages=[
                     {"role": "system", "content": system_message},
                     *new_msg_history,

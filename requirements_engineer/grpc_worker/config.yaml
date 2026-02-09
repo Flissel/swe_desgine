@@ -1,0 +1,43 @@
+# gRPC Change Propagation Worker Configuration
+
+grpc:
+  host: "localhost"
+  port: 50051
+  max_workers: 4
+  max_message_length: 104857600  # 100MB
+
+propagation:
+  max_depth: 2                    # How far to propagate changes
+  min_confidence: 0.5             # Minimum confidence to suggest change
+  auto_approve_threshold: 0.95    # Not used (all manual approval)
+  batch_size: 5                   # Process nodes in batches
+
+kilo:
+  enabled: true
+  timeout_seconds: 60
+  mode: "code"                    # Kilo CLI mode
+  yolo_mode: true                 # Auto-approve permissions
+  max_retries: 2
+
+llm:
+  model: "anthropic/claude-sonnet-4-20250514"
+  temperature: 0.3
+  max_tokens: 4000
+  fallback_model: "openai/gpt-4o-mini"
+
+# Connection types for domino effect
+connection_types:
+  epic:
+    - user_story
+    - requirement
+  requirement:
+    - user_story
+    - diagram
+    - test
+  user_story:
+    - test
+    - task
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s"

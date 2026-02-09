@@ -1,0 +1,40 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9', 'primaryTextColor': '#fff', 'lineColor': '#5c6bc0'}}}%%
+flowchart TB
+    subgraph Outer["OUTER LOOP - Re-Planning"]
+        direction TB
+
+        subgraph Inner["INNER LOOP - Execution"]
+            direction LR
+            P["Get Next<br/>Action"] --> S["Select<br/>Agent"]
+            S --> E["Execute<br/>Agent"]
+            E --> U["Update<br/>Ledger"]
+            U --> C{"Action<br/>Successful?"}
+            C -->|Yes| N{"More<br/>Actions?"}
+            C -->|No| R["Record<br/>Failure"]
+            R --> N
+            N -->|Yes| P
+        end
+
+        N -->|No| ST{"Stagnation<br/>Detected?"}
+        ST -->|No| DONE["Stage<br/>Complete"]
+        ST -->|Yes| REPLAN["_revise_plan()<br/>LLM generates new plan"]
+        REPLAN --> RESET["Reset<br/>Stagnation Counter"]
+        RESET --> P
+    end
+
+    subgraph Monitor["Progress Monitoring"]
+        TL["TaskLedger<br/>Facts & Hypotheses"]
+        PL["ProgressLedger<br/>Actions & Failures"]
+        SC["Stagnation<br/>Counter"]
+    end
+
+    U --> TL
+    U --> PL
+    PL --> SC
+    SC --> ST
+
+    style Outer fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    style Inner fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style Monitor fill:#fff3e0,stroke:#f57c00
+    style REPLAN fill:#ffcdd2,stroke:#c62828
+    style DONE fill:#c8e6c9,stroke:#2e7d32
