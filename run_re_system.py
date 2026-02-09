@@ -1030,10 +1030,20 @@ def create_traceability_matrix(
             screen_id = screen.get("id", "") if isinstance(screen, dict) else getattr(screen, "id", "")
             us_to_screen[parent_us].append(screen_id)
 
+    # Build mapping: requirement_id -> entity names (via API path matching)
+    req_to_entity: Dict[str, set] = {}
+    for ent in entity_list:
+        ent_name = ent.name if hasattr(ent, 'name') else str(ent)
+        ent_lower = ent_name.lower().rstrip('s')  # simple singular
+        for req_id, api_list in req_to_api.items():
+            for api_str in api_list:
+                if ent_lower in api_str.lower():
+                    req_to_entity.setdefault(req_id, set()).add(ent_name)
+
     # Full Traceability Table
     md += "---\n\n## Full Traceability\n\n"
-    md += "| Requirement | Type | Priority | User Stories | Test Cases | API Endpoints | Screens |\n"
-    md += "|-------------|------|----------|--------------|------------|---------------|----------|\n"
+    md += "| Requirement | Type | Priority | User Stories | Test Cases | API Endpoints | Screens | Entities |\n"
+    md += "|-------------|------|----------|--------------|------------|---------------|---------|----------|\n"
 
     for req in requirements:
         req_id = req.requirement_id
@@ -1065,7 +1075,13 @@ def create_traceability_matrix(
         if len(scr_ids) > 3:
             scr_str += f" (+{len(scr_ids) - 3})"
 
-        md += f"| {req_id} | {req_type} | {req_priority} | {us_str} | {tc_str} | {api_str} | {scr_str} |\n"
+        # Entities linked to this requirement (via API paths)
+        ent_names = req_to_entity.get(req_id, set())
+        ent_str = ', '.join(sorted(ent_names)[:3]) if ent_names else '-'
+        if len(ent_names) > 3:
+            ent_str += f" (+{len(ent_names) - 3})"
+
+        md += f"| {req_id} | {req_type} | {req_priority} | {us_str} | {tc_str} | {api_str} | {scr_str} | {ent_str} |\n"
 
     # Coverage Statistics
     md += "\n---\n\n## Coverage Statistics\n\n"
@@ -1621,6 +1637,64 @@ async def run_enterprise_mode(
         print("\n[8/15] [DRY RUN] Skipping Gherkin Test Cases")
     else:
         print("\n[8/15] Skipping Gherkin Test Cases (disabled or no user stories)")
+
+    # ── Step 8.5: Iterative Trace Refinement ─────────────────────
+    treesearch_cfg = config.get("treesearch", {})
+    if not dry_run and treesearch_cfg.get("enabled", False) and epics and requirements:
+        print("\n[8.5/15] Running Iterative Trace Refinement...")
+        try:
+            from requirements_engineer.treesearch.trace_walker import TraceWalker, write_trace_refinement_report
+
+            llm_config = config.get("kilo_agent", {})
+            # Initialize LLM call function for tree search
+            trace_llm_client = None
+            try:
+                from openai import AsyncOpenAI
+                trace_llm_client = AsyncOpenAI(
+                    base_url=llm_config.get("base_url", "https://openrouter.ai/api/v1"),
+                    api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+                )
+            except ImportError:
+                pass
+
+            async def trace_llm_call(prompt: str) -> str:
+                if trace_llm_client is None:
+                    return '{"scores": {}, "issues": ["No LLM client"]}'
+                resp = await trace_llm_client.chat.completions.create(
+                    model=llm_config.get("model", "openai/gpt-4o-mini"),
+                    messages=[
+                        {"role": "system", "content": "You are a Requirements Engineering expert. Return valid JSON."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.3,
+                    max_tokens=2000,
+                )
+                return resp.choices[0].message.content or ""
+
+            walker = TraceWalker(config=treesearch_cfg, llm_call=trace_llm_call)
+
+            walk_results = []
+            for epic in epics:
+                result = await walker.walk_epic(epic, {
+                    "requirements": requirements,
+                    "user_stories": user_stories,
+                    "test_cases": test_cases,
+                })
+                walk_results.append(result)
+                print(f"   {result.epic_id}: {result.nodes_refined}/{result.nodes_total} refined, "
+                      f"avg quality {result.avg_quality:.0%}")
+
+            # Write refinement audit trail
+            write_trace_refinement_report(walk_results, str(output_dir / "quality"))
+            total_refined = sum(r.nodes_refined for r in walk_results)
+            total_complete = sum(r.nodes_complete for r in walk_results)
+            total_nodes = sum(r.nodes_total for r in walk_results)
+            print(f"   Trace refinement complete: {total_refined} nodes refined, "
+                  f"{total_complete}/{total_nodes} complete")
+        except Exception as e:
+            print(f"   [WARN] Trace refinement failed: {e}")
+    elif dry_run and treesearch_cfg.get("enabled", False):
+        print("\n[8.5/15] [DRY RUN] Skipping Iterative Trace Refinement")
 
     # Generate UX Design
     ux_spec = None

@@ -60,7 +60,12 @@ import {
     applyScreenComponentLinks,
     applyFeatureTaskLinks,
     applyMetadataLinks,
-    applyTestStoryLinks
+    applyTestStoryLinks,
+    applyApiRequirementLinks,
+    applyApiScreenLinks,
+    applyEntityApiLinks,
+    applyScreenEntityLinks,
+    applyTestApiLinks
 } from './modules/autoLinker.js';
 import { addSidebarItem, focusNode, updateCounts, setSidebarCallbacks } from './modules/ui/sidebar.js';
 import { updateMinimap, clearMinimap } from './modules/ui/minimap.js';
@@ -1037,6 +1042,16 @@ async function loadProject(projectId) {
             if (data.screens && data.user_stories) applyScreenStoryLinks(data.screens);
             if (data.screens && data.ui_components) applyScreenComponentLinks(data.screens, data.ui_components);
             if (data.tasks) applyFeatureTaskLinks(data.tasks);
+            // Cross-artifact links (API, Entity, Screen)
+            if (data.api_endpoints?.length) {
+                applyApiRequirementLinks(data.api_endpoints);
+                if (data.screens?.length) applyApiScreenLinks(data.api_endpoints, data.screens);
+                if (data.data_dictionary?.entities?.length) applyEntityApiLinks(data.data_dictionary.entities, data.api_endpoints);
+                if (data.tests?.length) applyTestApiLinks(data.tests, data.api_endpoints);
+            }
+            if (data.screens?.length && data.data_dictionary?.entities?.length) {
+                applyScreenEntityLinks(data.screens, data.data_dictionary.entities);
+            }
             applyMetadataLinks();
             updateConnections();
             // Update user stories to show linked tests as metadata

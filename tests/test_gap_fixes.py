@@ -705,6 +705,40 @@ class TestTraceabilityMatrix:
         )
         assert "API Endpoints" in md
         assert "POST /api/users" in md
+        assert "Entities" in md  # Entities column header
+
+    def test_matrix_with_entities(self):
+        """Matrix should link entities to requirements via API paths."""
+        from run_re_system import create_traceability_matrix
+
+        req = MagicMock()
+        req.requirement_id = "REQ-001"
+        req.type = "functional"
+        req.priority = "must"
+
+        us = MagicMock()
+        us.id = "US-001"
+        us.parent_requirement_id = "REQ-001"
+
+        tc = MagicMock()
+        tc.id = "TC-001"
+        tc.parent_user_story_id = "US-001"
+
+        ep = MagicMock()
+        ep.parent_requirement_id = "REQ-001"
+        ep.method = "GET"
+        ep.path = "/api/users"
+
+        entity = MagicMock()
+        entity.name = "User"
+
+        md = create_traceability_matrix(
+            [req], [us], [tc],
+            api_endpoints=[ep],
+            entities={"User": entity},
+        )
+        assert "Entities" in md
+        assert "User" in md
 
     def test_matrix_without_extra_artifacts(self):
         """Matrix should work with only req/us/tc (backwards compatible)."""
@@ -718,3 +752,4 @@ class TestTraceabilityMatrix:
         md = create_traceability_matrix([req], [], [])
         assert "Traceability Matrix" in md
         assert "API Endpoints" in md  # Column header should still be there
+        assert "Entities" in md  # Entities column header should still be there

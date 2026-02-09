@@ -597,3 +597,231 @@ export function applyTestStoryLinks(tests, userStories) {
 
     console.log(`[Auto-Link] Created ${linkCount} test -> user story links`);
 }
+
+// ============================================
+// API / Entity / Screen Cross-Links (Graph Enhancement)
+// ============================================
+
+/**
+ * Link API endpoints to their parent requirements.
+ * Uses parent_requirement_id or linked_requirements from endpoint data.
+ * @param {Array} apiEndpoints - API endpoint data
+ */
+export function applyApiRequirementLinks(apiEndpoints) {
+    if (!apiEndpoints || apiEndpoints.length === 0) return;
+
+    let linkCount = 0;
+    apiEndpoints.forEach(ep => {
+        const epId = ep.id || ep.path;
+        const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
+        if (!epNode) return;
+        const epNodeId = epNode.element?.dataset?.nodeId || epId;
+
+        // Primary: parent_requirement_id
+        const parentReq = ep.parent_requirement_id || ep.requirement_id;
+        if (parentReq) {
+            const reqNode = state.nodes[parentReq] || findNodeByPartialId('requirement', parentReq);
+            if (reqNode) {
+                const reqNodeId = reqNode.element?.dataset?.nodeId || parentReq;
+                addConnection(reqNodeId, epNodeId);
+                linkCount++;
+            }
+        }
+
+        // Secondary: linked_requirements array
+        const linkedReqs = ep.linked_requirements || [];
+        linkedReqs.forEach(reqId => {
+            const reqNode = state.nodes[reqId] || findNodeByPartialId('requirement', reqId);
+            if (reqNode) {
+                const reqNodeId = reqNode.element?.dataset?.nodeId || reqId;
+                addConnection(reqNodeId, epNodeId);
+                linkCount++;
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} requirement -> API links`);
+}
+
+/**
+ * Link API endpoints to screens that consume them.
+ * Matches screen.data_requirements against endpoint paths.
+ * @param {Array} apiEndpoints - API endpoint data
+ * @param {Array} screens - Screen data
+ */
+export function applyApiScreenLinks(apiEndpoints, screens) {
+    if (!apiEndpoints || !screens) return;
+
+    // Build path lookup
+    const pathToEpId = {};
+    apiEndpoints.forEach(ep => {
+        const path = ep.path || '';
+        if (path) pathToEpId[path.toLowerCase()] = ep.id || ep.path;
+    });
+
+    let linkCount = 0;
+    screens.forEach(screen => {
+        const screenId = screen.id;
+        const screenNode = state.nodes[screenId] || findNodeByPartialId('screen', screenId);
+        if (!screenNode) return;
+        const screenNodeId = screenNode.element?.dataset?.nodeId || screenId;
+
+        const dataReqs = screen.data_requirements || [];
+        dataReqs.forEach(apiRef => {
+            // apiRef is like "GET /api/users" or "/api/users"
+            const pathPart = apiRef.replace(/^(GET|POST|PUT|DELETE|PATCH|WS)\s+/i, '').trim().toLowerCase();
+            const epId = pathToEpId[pathPart];
+            if (epId) {
+                const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
+                if (epNode) {
+                    const epNodeId = epNode.element?.dataset?.nodeId || epId;
+                    addConnection(epNodeId, screenNodeId);
+                    linkCount++;
+                }
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} API -> screen links`);
+}
+
+/**
+ * Link entities to API endpoints that manage them.
+ * Derives entity name from API path segments.
+ * @param {Array} entities - Entity/data dictionary entries
+ * @param {Array} apiEndpoints - API endpoint data
+ */
+export function applyEntityApiLinks(entities, apiEndpoints) {
+    if (!entities || !apiEndpoints) return;
+
+    // Build entity name lookup (lowercase, singular forms)
+    const entityMap = {};
+    entities.forEach(ent => {
+        const name = ent.name || ent.id || '';
+        if (name) {
+            entityMap[name.toLowerCase()] = ent.id || ent.name;
+            // Also register singular form (strip trailing 's')
+            if (name.toLowerCase().endsWith('s')) {
+                entityMap[name.toLowerCase().slice(0, -1)] = ent.id || ent.name;
+            }
+        }
+    });
+
+    let linkCount = 0;
+    apiEndpoints.forEach(ep => {
+        const path = ep.path || '';
+        // Extract resource name from path: /api/users/{id} -> "users", "user"
+        const segments = path.split('/').filter(s => s && !s.startsWith('{'));
+        segments.forEach(seg => {
+            const segLower = seg.toLowerCase();
+            const entId = entityMap[segLower] || entityMap[segLower.replace(/s$/, '')];
+            if (entId) {
+                const entNode = state.nodes[entId] || findNodeByPartialId('entity', entId);
+                const epId = ep.id || ep.path;
+                const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
+                if (entNode && epNode) {
+                    const entNodeId = entNode.element?.dataset?.nodeId || entId;
+                    const epNodeId = epNode.element?.dataset?.nodeId || epId;
+                    addConnection(entNodeId, epNodeId);
+                    linkCount++;
+                }
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} entity -> API links`);
+}
+
+/**
+ * Link screens to entities they display.
+ * Derives entity names from screen.data_requirements API paths.
+ * @param {Array} screens - Screen data
+ * @param {Array} entities - Entity/data dictionary entries
+ */
+export function applyScreenEntityLinks(screens, entities) {
+    if (!screens || !entities) return;
+
+    const entityMap = {};
+    entities.forEach(ent => {
+        const name = ent.name || ent.id || '';
+        if (name) {
+            entityMap[name.toLowerCase()] = ent.id || ent.name;
+            if (name.toLowerCase().endsWith('s')) {
+                entityMap[name.toLowerCase().slice(0, -1)] = ent.id || ent.name;
+            }
+        }
+    });
+
+    let linkCount = 0;
+    screens.forEach(screen => {
+        const screenId = screen.id;
+        const screenNode = state.nodes[screenId] || findNodeByPartialId('screen', screenId);
+        if (!screenNode) return;
+        const screenNodeId = screenNode.element?.dataset?.nodeId || screenId;
+
+        const dataReqs = screen.data_requirements || [];
+        const linkedEntities = new Set();
+
+        dataReqs.forEach(apiRef => {
+            const pathPart = apiRef.replace(/^(GET|POST|PUT|DELETE|PATCH|WS)\s+/i, '').trim();
+            const segments = pathPart.split('/').filter(s => s && !s.startsWith('{'));
+            segments.forEach(seg => {
+                const segLower = seg.toLowerCase();
+                const entId = entityMap[segLower] || entityMap[segLower.replace(/s$/, '')];
+                if (entId && !linkedEntities.has(entId)) {
+                    linkedEntities.add(entId);
+                    const entNode = state.nodes[entId] || findNodeByPartialId('entity', entId);
+                    if (entNode) {
+                        const entNodeId = entNode.element?.dataset?.nodeId || entId;
+                        addConnection(screenNodeId, entNodeId);
+                        linkCount++;
+                    }
+                }
+            });
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} screen -> entity links`);
+}
+
+/**
+ * Link tests to API endpoints they validate.
+ * Searches test content for API path patterns.
+ * @param {Array} tests - Test data
+ * @param {Array} apiEndpoints - API endpoint data
+ */
+export function applyTestApiLinks(tests, apiEndpoints) {
+    if (!tests || !apiEndpoints) return;
+
+    const pathToEpId = {};
+    apiEndpoints.forEach(ep => {
+        const path = ep.path || '';
+        if (path) pathToEpId[path.toLowerCase()] = ep.id || ep.path;
+    });
+    const apiPaths = Object.keys(pathToEpId);
+
+    let linkCount = 0;
+    tests.forEach(test => {
+        const testId = test.id;
+        const testNode = state.nodes[testId] || findNodeByPartialId('test', testId);
+        if (!testNode) return;
+        const testNodeId = testNode.element?.dataset?.nodeId || testId;
+
+        // Search in gherkin content or title for API paths
+        const content = (test.gherkin_content || test.title || '').toLowerCase();
+
+        apiPaths.forEach(path => {
+            if (content.includes(path)) {
+                const epId = pathToEpId[path];
+                const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
+                if (epNode) {
+                    const epNodeId = epNode.element?.dataset?.nodeId || epId;
+                    addConnection(testNodeId, epNodeId);
+                    linkCount++;
+                }
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} test -> API links`);
+}

@@ -1225,6 +1225,33 @@ WICHTIG:
             except Exception as e:
                 print(f"  [WARN] Could not load openapi_spec.yaml: {e}")
 
+        # Load api/asyncapi_spec.yaml (WebSocket channels)
+        asyncapi_file = project_dir / "api" / "asyncapi_spec.yaml"
+        if asyncapi_file.exists():
+            try:
+                import yaml
+                spec = yaml.safe_load(asyncapi_file.read_text(encoding="utf-8"))
+                channels = []
+                for ch_name, ch_data in (spec.get("channels", {}) or {}).items():
+                    channel = {
+                        "id": f"ws-{ch_name.replace('/', '-')}",
+                        "name": ch_name,
+                        "type": "api",
+                        "method": "WS",
+                        "path": f"ws://{ch_name}",
+                        "description": (ch_data or {}).get("description", ""),
+                        "subscribe": (ch_data or {}).get("subscribe", {}),
+                        "publish": (ch_data or {}).get("publish", {}),
+                    }
+                    channels.append(channel)
+                if channels:
+                    if not result.get("api_endpoints"):
+                        result["api_endpoints"] = []
+                    result["api_endpoints"].extend(channels)
+                    print(f"  [INFO] Loaded {len(channels)} WebSocket channels from AsyncAPI")
+            except Exception as e:
+                print(f"  [WARN] Could not load asyncapi_spec.yaml: {e}")
+
         # Load user_stories.json (structured format - richer than MD)
         us_json_file = project_dir / "user_stories.json"
         if us_json_file.exists():
@@ -1814,89 +1841,104 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
 
     async def _handle_wizard_generate_json(self, request: web.Request) -> web.Response:
         """
-        Generate input_v2.json from wizard data.
+        Generate RE-System input JSON from wizard data.
 
-        Accepts JSON with project data and requirements.
-        Handles both arch_team extracted requirements and manually added ones.
-        Returns formatted input JSON ready for RE System.
+        Accepts two formats:
+        1. RE-System format (has "Name" key) - passed through directly
+        2. Legacy arch_team format (has "extracted_requirements") - converted
+
+        Saves to re_ideas/ directory for use with run_re_system.py.
         """
         try:
             data = await request.json()
 
-            # Get extracted requirements (from arch_team) and manual requirements
-            extracted_reqs = data.get("extracted_requirements", [])
-            manual_reqs = data.get("manual_requirements", [])
-            direct_reqs = data.get("requirements", [])  # Already in v2 format
-
-            # Build constraints
-            constraints = {
-                "technical": data.get("technical_constraints", []),
-                "regulatory": data.get("regulatory_constraints", []),
-                "timeline": data.get("timeline", "")
-            }
-
-            # If we have arch_team extracted requirements, use the converter
-            if extracted_reqs:
-                from requirements_engineer.importers.arch_team_converter import (
-                    convert_arch_team_to_v2,
-                    merge_requirements,
-                    validate_v2_output
-                )
-
-                # Merge extracted and manual requirements
-                all_arch_team_reqs = merge_requirements(extracted_reqs, manual_reqs)
-
-                # Convert using the converter
-                output = convert_arch_team_to_v2(
-                    items=all_arch_team_reqs,
-                    project_name=data.get("project_name", "Unnamed Project"),
-                    project_domain=data.get("domain", "custom"),
-                    project_description=data.get("description", ""),
-                    autonomy_level=data.get("autonomy_level", "medium"),
-                    target_users=data.get("target_users", []),
-                    constraints=constraints,
-                    agents=data.get("agents", []),
-                    integrations=data.get("integrations", []),
-                    renumber_ids=True,
-                    preserve_metadata=True
-                )
-
-                # Validate output
-                validation_errors = validate_v2_output(output)
-                if validation_errors:
-                    print(f"  [WIZARD] Validation warnings: {validation_errors}")
-
+            # Check if already in RE-System format (from updated wizard)
+            if "Name" in data:
+                # New format: already RE-System compatible
+                output = {k: v for k, v in data.items() if k != "save_path"}
+                save_requested = data.get("save_path", False)
             else:
-                # No arch_team requirements, build v2 format directly
-                output = {
-                    "project": {
-                        "name": data.get("project_name", "Unnamed Project"),
-                        "version": data.get("version", "1.0.0"),
-                        "description": data.get("description", ""),
-                        "domain": data.get("domain", "custom"),
-                        "autonomy_level": data.get("autonomy_level", "medium"),
-                        "target_users": data.get("target_users", [])
-                    },
-                    "requirements": direct_reqs or manual_reqs,
-                    "constraints": constraints,
-                    "agents": data.get("agents", []),
-                    "integrations": data.get("integrations", [])
-                }
+                # Legacy format: arch_team extracted or old wizard format
+                extracted_reqs = data.get("extracted_requirements", [])
+                manual_reqs = data.get("manual_requirements", [])
+                direct_reqs = data.get("requirements", [])
 
-            # Optionally save to file
-            save_path = data.get("save_path")
-            if save_path:
+                if extracted_reqs:
+                    from requirements_engineer.importers.arch_team_converter import (
+                        convert_arch_team_to_v2,
+                        merge_requirements,
+                        validate_v2_output
+                    )
+                    all_arch_team_reqs = merge_requirements(extracted_reqs, manual_reqs)
+                    output = convert_arch_team_to_v2(
+                        items=all_arch_team_reqs,
+                        project_name=data.get("project_name", "Unnamed Project"),
+                        project_domain=data.get("domain", "custom"),
+                        project_description=data.get("description", ""),
+                        autonomy_level=data.get("autonomy_level", "medium"),
+                        target_users=data.get("target_users", []),
+                        constraints={
+                            "technical": data.get("technical_constraints", []),
+                            "regulatory": data.get("regulatory_constraints", []),
+                            "timeline": data.get("timeline", "")
+                        },
+                        agents=data.get("agents", []),
+                        integrations=data.get("integrations", []),
+                        renumber_ids=True,
+                        preserve_metadata=True
+                    )
+                    validation_errors = validate_v2_output(output)
+                    if validation_errors:
+                        print(f"  [WIZARD] Validation warnings: {validation_errors}")
+                else:
+                    # Convert old wizard format to RE-System format
+                    project_name = data.get("project_name", data.get("name", "Unnamed Project"))
+                    output = {
+                        "Name": project_name.replace(' ', '_').lower(),
+                        "Title": project_name,
+                        "Domain": data.get("domain", "custom"),
+                        "Context": {"summary": data.get("description", "")},
+                        "Stakeholders": [],
+                        "Initial Requirements": [
+                            r if isinstance(r, str) else r.get("title", "")
+                            for r in (direct_reqs or manual_reqs)
+                        ],
+                        "Constraints": {
+                            "technical": data.get("technical_constraints", []),
+                            "regulatory": data.get("regulatory_constraints", []),
+                            "timeline": data.get("timeline", "")
+                        },
+                        "Work Division": "per_feature",
+                        "Enterprise Options": {
+                            "generate_user_stories": True,
+                            "generate_api_spec": True,
+                            "generate_data_dictionary": True,
+                            "generate_gherkin": True,
+                            "enable_self_critique": True,
+                            "max_passes": 5,
+                            "output_format": "markdown"
+                        }
+                    }
+                save_requested = data.get("save_path", False)
+
+            # Save to re_ideas/ directory
+            file_path_str = None
+            if save_requested:
                 output_dir = Path(__file__).parent.parent.parent / "re_ideas"
                 output_dir.mkdir(parents=True, exist_ok=True)
-                safe_name = output['project']['name'].replace(' ', '_').replace('/', '_')
+                safe_name = output.get("Name", output.get("Title", "unnamed")).replace(' ', '_').replace('/', '_')
                 file_path = output_dir / f"{safe_name}_input.json"
                 file_path.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding='utf-8')
-                print(f"  [WIZARD] Saved input JSON to: {file_path}")
+                file_path_str = str(file_path)
+                print(f"  [WIZARD] Saved RE-System input to: {file_path}")
+
+            req_count = len(output.get("Initial Requirements", output.get("requirements", [])))
 
             return web.json_response({
                 "success": True,
                 "json": output,
-                "requirement_count": len(output.get("requirements", []))
+                "requirement_count": req_count,
+                "file_path": file_path_str
             })
 
         except Exception as e:
