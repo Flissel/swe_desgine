@@ -905,3 +905,150 @@ class TestAutoLinkerPhase3:
         }
         assert isinstance(feature["requirements"], list)
         assert len(feature["requirements"]) == 2
+
+
+# ============================================================================
+# 12. API Documentation Parser Fix (Regex for new format)
+# ============================================================================
+
+class TestApiDocumentationParser:
+    """Tests for parse_api_documentation_md with both old and new markdown formats."""
+
+    def test_parse_new_format_with_backticks(self, tmp_path):
+        """Parser should handle #### `METHOD` /path format (new generator output)."""
+        from requirements_engineer.dashboard.markdown_parser import parse_api_documentation_md
+
+        md = tmp_path / "api_documentation.md"
+        md.write_text("""# API Documentation
+
+## Endpoints
+
+### BankAccounts
+
+#### `POST` /api/v1/bank-accounts
+
+**Create bank account**
+
+Securely create a new bank account with encryption.
+
+*Requirement:* FR-FE-BANK-ACCOUNT-SETUP
+
+**Request Body:** `CreateBankAccountRequest`
+
+**Responses:**
+- `201`: Created
+- `400`: Bad Request
+
+---
+
+#### `GET` /api/v1/bank-accounts
+
+**List bank accounts**
+
+Retrieve a paginated list of bank accounts.
+
+*Requirement:* FR-FE-BANK-ACCOUNT-SETUP
+
+**Responses:**
+- `200`: Success
+""", encoding="utf-8")
+
+        eps = parse_api_documentation_md(md)
+        assert len(eps) == 2
+
+        assert eps[0]["method"] == "POST"
+        assert eps[0]["path"] == "/api/v1/bank-accounts"
+        assert "bank account" in eps[0]["description"].lower()
+        assert eps[0]["parent_requirement_id"] == "FR-FE-BANK-ACCOUNT-SETUP"
+
+        assert eps[1]["method"] == "GET"
+        assert eps[1]["path"] == "/api/v1/bank-accounts"
+        assert eps[1]["parent_requirement_id"] == "FR-FE-BANK-ACCOUNT-SETUP"
+
+    def test_parse_old_format_still_works(self, tmp_path):
+        """Parser should still handle ### METHOD /path format (backwards compat)."""
+        from requirements_engineer.dashboard.markdown_parser import parse_api_documentation_md
+
+        md = tmp_path / "api_documentation.md"
+        md.write_text("""# API Documentation
+
+### GET /api/users
+
+**List users**
+
+Returns all users.
+
+### POST /api/users
+
+**Create user**
+
+Creates a new user.
+""", encoding="utf-8")
+
+        eps = parse_api_documentation_md(md)
+        assert len(eps) == 2
+        assert eps[0]["method"] == "GET"
+        assert eps[0]["path"] == "/api/users"
+        assert eps[1]["method"] == "POST"
+
+    def test_parse_extracts_requirement_id(self, tmp_path):
+        """Parser should extract parent_requirement_id from *Requirement:* line."""
+        from requirements_engineer.dashboard.markdown_parser import parse_api_documentation_md
+
+        md = tmp_path / "api_documentation.md"
+        md.write_text("""# API
+
+#### `DELETE` /api/v1/invoices/{id}
+
+**Delete invoice**
+
+Permanently deletes an invoice.
+
+*Requirement:* REQ-INV-003
+
+**Responses:**
+- `204`: No Content
+""", encoding="utf-8")
+
+        eps = parse_api_documentation_md(md)
+        assert len(eps) == 1
+        assert eps[0]["parent_requirement_id"] == "REQ-INV-003"
+
+    def test_parse_without_requirement(self, tmp_path):
+        """Endpoints without *Requirement:* should not have parent_requirement_id."""
+        from requirements_engineer.dashboard.markdown_parser import parse_api_documentation_md
+
+        md = tmp_path / "api_documentation.md"
+        md.write_text("""# API
+
+#### `GET` /api/v1/health
+
+**Health check**
+
+Returns service health status.
+
+**Responses:**
+- `200`: OK
+""", encoding="utf-8")
+
+        eps = parse_api_documentation_md(md)
+        assert len(eps) == 1
+        assert eps[0]["method"] == "GET"
+        assert eps[0]["path"] == "/api/v1/health"
+        assert "parent_requirement_id" not in eps[0]
+
+    def test_parse_real_project_file(self):
+        """Parser should find endpoints in actual generated project files."""
+        from requirements_engineer.dashboard.markdown_parser import parse_api_documentation_md
+        from pathlib import Path
+
+        api_file = Path("enterprise_output/Vollautonomer Abrechnungsservice_20260202_030125/api/api_documentation.md")
+        if not api_file.exists():
+            pytest.skip("No enterprise_output available")
+
+        eps = parse_api_documentation_md(api_file)
+        assert len(eps) > 10, f"Expected >10 endpoints, got {len(eps)}"
+        # All should have method and path
+        for ep in eps:
+            assert ep["method"] in ("GET", "POST", "PUT", "DELETE", "PATCH")
+            assert ep["path"].startswith("/api/")

@@ -410,18 +410,28 @@ def parse_api_documentation_md(filepath: Path) -> List[Dict]:
     content = filepath.read_text(encoding="utf-8")
     endpoints = []
 
-    # Pattern: ### METHOD /path\n**Description:** ...\n**Request Body:**
-    endpoint_pattern = r'### (GET|POST|PUT|DELETE|PATCH)\s+([^\n]+)\n+(?:\*\*Description:\*\*\s*([^\n]*))?'
+    # Supports both old format (### METHOD /path) and new format (#### `METHOD` /path)
+    endpoint_pattern = (
+        r'#{3,4}\s+`?(GET|POST|PUT|DELETE|PATCH)`?\s+([^\n]+)\n+'
+        r'(?:\*\*([^\n*]+)\*\*\n+)?'          # **Bold title** (optional)
+        r'(?:([^\n*][^\n]*)\n+)?'              # Description line (optional, non-bold)
+        r'(?:\*Requirement:\*\s*([^\n]*))?'    # *Requirement:* ID (optional)
+    )
 
     for match in re.finditer(endpoint_pattern, content):
         method = match.group(1).strip()
         path = match.group(2).strip()
-        description = match.group(3).strip() if match.group(3) else ""
+        title = match.group(3).strip() if match.group(3) else ""
+        description = match.group(4).strip() if match.group(4) else title
+        req_id = match.group(5).strip() if match.group(5) else ""
 
-        endpoints.append({
+        ep = {
             "method": method,
             "path": path,
-            "description": description
-        })
+            "description": description or title,
+        }
+        if req_id:
+            ep["parent_requirement_id"] = req_id
+        endpoints.append(ep)
 
     return endpoints
