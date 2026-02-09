@@ -825,3 +825,323 @@ export function applyTestApiLinks(tests, apiEndpoints) {
 
     console.log(`[Auto-Link] Created ${linkCount} test -> API links`);
 }
+
+// ============================================
+// Phase 3: Complete all 24 link types
+// ============================================
+
+/**
+ * Link personas to screens via user story intermediary.
+ * Persona -> UserStory (role match) -> Screen (parent_user_story match).
+ * @param {Array} personas - Persona data
+ * @param {Array} userStories - User story data
+ * @param {Array} screens - Screen data
+ */
+export function applyPersonaScreenLinks(personas, userStories, screens) {
+    if (!personas || !userStories || !screens) return;
+
+    // Build story-id -> screen-ids lookup
+    const storyToScreens = {};
+    screens.forEach(screen => {
+        const storyId = screen.parent_user_story;
+        if (storyId) {
+            if (!storyToScreens[storyId]) storyToScreens[storyId] = [];
+            storyToScreens[storyId].push(screen.id);
+        }
+    });
+
+    let linkCount = 0;
+    personas.forEach(persona => {
+        const personaNode = state.nodes[persona.id];
+        if (!personaNode) return;
+
+        const personaRole = (persona.role || '').toLowerCase();
+        const personaName = (persona.name || '').toLowerCase();
+
+        // Find stories matching this persona
+        userStories.forEach(story => {
+            const storyPersona = (story.persona || '').toLowerCase();
+            if (!storyPersona.includes(personaRole) && !storyPersona.includes(personaName)) return;
+
+            // Find screens linked to this story
+            const screenIds = storyToScreens[story.id] || [];
+            screenIds.forEach(screenId => {
+                const screenNode = state.nodes[screenId] || findNodeByPartialId('screen', screenId);
+                if (screenNode) {
+                    const screenNodeId = screenNode.element?.dataset?.nodeId || screenId;
+                    addConnection(persona.id, screenNodeId);
+                    linkCount++;
+                }
+            });
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} persona -> screen links`);
+}
+
+/**
+ * Link UI components to API endpoints via parent screen's data_requirements.
+ * Component -> Screen (parent_screen_ids) -> data_requirements -> API.
+ * @param {Array} components - UI component data
+ * @param {Array} screens - Screen data
+ * @param {Array} apiEndpoints - API endpoint data
+ */
+export function applyComponentApiLinks(components, screens, apiEndpoints) {
+    if (!components || !screens || !apiEndpoints) return;
+
+    // Build screen-id -> screen lookup
+    const screenById = {};
+    screens.forEach(s => { screenById[s.id] = s; });
+
+    // Build API path lookup
+    const pathToEpId = {};
+    apiEndpoints.forEach(ep => {
+        const path = ep.path || '';
+        if (path) pathToEpId[path.toLowerCase()] = ep.id || ep.path;
+    });
+
+    let linkCount = 0;
+    components.forEach(comp => {
+        const compNode = state.nodes[comp.id] || findNodeByPartialId('component', comp.id);
+        if (!compNode) return;
+        const compNodeId = compNode.element?.dataset?.nodeId || comp.id;
+
+        const parentScreenIds = comp.parent_screen_ids || [];
+        const linkedApis = new Set();
+
+        parentScreenIds.forEach(screenId => {
+            const screen = screenById[screenId];
+            if (!screen) return;
+
+            const dataReqs = screen.data_requirements || [];
+            dataReqs.forEach(apiRef => {
+                const pathPart = apiRef.replace(/^(GET|POST|PUT|DELETE|PATCH|WS)\s+/i, '').trim().toLowerCase();
+                const epId = pathToEpId[pathPart];
+                if (epId && !linkedApis.has(epId)) {
+                    linkedApis.add(epId);
+                    const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
+                    if (epNode) {
+                        const epNodeId = epNode.element?.dataset?.nodeId || epId;
+                        addConnection(compNodeId, epNodeId);
+                        linkCount++;
+                    }
+                }
+            });
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} component -> API links`);
+}
+
+/**
+ * Link API endpoints to entities they manage (API -> Entity direction).
+ * Derives entity name from API path segments.
+ * @param {Array} apiEndpoints - API endpoint data
+ * @param {Array} entities - Entity/data dictionary entries
+ */
+export function applyApiEntityLinks(apiEndpoints, entities) {
+    if (!apiEndpoints || !entities) return;
+
+    // Build entity name lookup
+    const entityMap = {};
+    entities.forEach(ent => {
+        const name = ent.name || ent.id || '';
+        if (name) {
+            entityMap[name.toLowerCase()] = ent.id || ent.name;
+            if (name.toLowerCase().endsWith('s')) {
+                entityMap[name.toLowerCase().slice(0, -1)] = ent.id || ent.name;
+            }
+        }
+    });
+
+    let linkCount = 0;
+    apiEndpoints.forEach(ep => {
+        const path = ep.path || '';
+        const epId = ep.id || ep.path;
+        const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
+        if (!epNode) return;
+        const epNodeId = epNode.element?.dataset?.nodeId || epId;
+
+        const segments = path.split('/').filter(s => s && !s.startsWith('{'));
+        segments.forEach(seg => {
+            const segLower = seg.toLowerCase();
+            const entId = entityMap[segLower] || entityMap[segLower.replace(/s$/, '')];
+            if (entId) {
+                const entNode = state.nodes[entId] || findNodeByPartialId('entity', entId);
+                if (entNode) {
+                    const entNodeId = entNode.element?.dataset?.nodeId || entId;
+                    addConnection(epNodeId, entNodeId);
+                    linkCount++;
+                }
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} API -> entity links`);
+}
+
+/**
+ * Link diagrams to entities they visualize.
+ * Parses ER diagram mermaid code for entity references.
+ * @param {Array} diagrams - Diagram data (with mermaid_code)
+ * @param {Array} entities - Entity/data dictionary entries
+ */
+export function applyDiagramEntityLinks(diagrams, entities) {
+    if (!diagrams || !entities) return;
+
+    const entityNames = entities.map(e => (e.name || e.id || '').toLowerCase()).filter(Boolean);
+
+    let linkCount = 0;
+    diagrams.forEach(diagram => {
+        const code = diagram.mermaid_code || diagram.code || '';
+        if (!code) return;
+
+        const diagramId = diagram.id;
+        const diagramNode = state.nodes[diagramId] || findNodeByPartialId('diagram', diagramId);
+        if (!diagramNode) return;
+        const diagramNodeId = diagramNode.element?.dataset?.nodeId || diagramId;
+
+        const linkedEntities = new Set();
+        const codeLower = code.toLowerCase();
+
+        if (codeLower.includes('erdiagram')) {
+            // ER diagram: extract entity definitions like "User {" or "User ||"
+            const erEntityPattern = /^\s*(\w+)\s*(?:\{|\|\||\|o|o\|)/gm;
+            let match;
+            while ((match = erEntityPattern.exec(code)) !== null) {
+                const name = match[1].toLowerCase();
+                if (entityNames.includes(name) && !linkedEntities.has(name)) {
+                    linkedEntities.add(name);
+                }
+            }
+        }
+
+        // Fallback: search for entity names in any diagram code
+        if (linkedEntities.size === 0) {
+            entityNames.forEach(name => {
+                if (name.length > 2 && codeLower.includes(name) && !linkedEntities.has(name)) {
+                    linkedEntities.add(name);
+                }
+            });
+        }
+
+        // Create links for matched entities
+        linkedEntities.forEach(entName => {
+            const entity = entities.find(e => (e.name || e.id || '').toLowerCase() === entName);
+            if (!entity) return;
+            const entId = entity.id || entity.name;
+            const entNode = state.nodes[entId] || findNodeByPartialId('entity', entId);
+            if (entNode) {
+                const entNodeId = entNode.element?.dataset?.nodeId || entId;
+                addConnection(diagramNodeId, entNodeId);
+                linkCount++;
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} diagram -> entity links`);
+}
+
+/**
+ * Link requirements to features via feature.requirements[] array.
+ * @param {Array} features - Feature data with requirements arrays
+ */
+export function applyRequirementFeatureLinks(features) {
+    if (!features) return;
+
+    let linkCount = 0;
+    features.forEach(feature => {
+        const featureId = feature.id;
+        const featureNode = state.nodes[featureId] || findNodeByPartialId('feature', featureId);
+        if (!featureNode) return;
+        const featureNodeId = featureNode.element?.dataset?.nodeId || featureId;
+
+        const reqIds = feature.requirements || [];
+        reqIds.forEach(reqId => {
+            const reqNode = state.nodes[reqId] || findNodeByPartialId('requirement', reqId);
+            if (reqNode) {
+                const reqNodeId = reqNode.element?.dataset?.nodeId || reqId;
+                addConnection(reqNodeId, featureNodeId);
+                linkCount++;
+            }
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} requirement -> feature links`);
+}
+
+/**
+ * Link features to user stories via shared requirements.
+ * Feature -> feature.requirements[] -> story.linked_requirement match.
+ * @param {Array} features - Feature data
+ * @param {Array} userStories - User story data
+ */
+export function applyFeatureStoryLinks(features, userStories) {
+    if (!features || !userStories) return;
+
+    // Build requirement-id -> story-ids lookup
+    const reqToStories = {};
+    userStories.forEach(story => {
+        const reqId = story.linked_requirement;
+        if (reqId) {
+            if (!reqToStories[reqId]) reqToStories[reqId] = [];
+            reqToStories[reqId].push(story.id);
+        }
+    });
+
+    let linkCount = 0;
+    features.forEach(feature => {
+        const featureId = feature.id;
+        const featureNode = state.nodes[featureId] || findNodeByPartialId('feature', featureId);
+        if (!featureNode) return;
+        const featureNodeId = featureNode.element?.dataset?.nodeId || featureId;
+
+        const reqIds = feature.requirements || [];
+        const linkedStories = new Set();
+
+        reqIds.forEach(reqId => {
+            const storyIds = reqToStories[reqId] || [];
+            storyIds.forEach(storyId => {
+                if (linkedStories.has(storyId)) return;
+                linkedStories.add(storyId);
+
+                const storyNode = state.nodes[storyId] || findNodeByPartialId('user-story', storyId);
+                if (storyNode) {
+                    const storyNodeId = storyNode.element?.dataset?.nodeId || storyId;
+                    addConnection(featureNodeId, storyNodeId);
+                    linkCount++;
+                }
+            });
+        });
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} feature -> story links`);
+}
+
+/**
+ * Link tech stack to UI components it enables.
+ * All UI components are built on the tech stack, so link tech node to each component.
+ * @param {Object} techStack - Tech stack data (single object)
+ * @param {Array} components - UI component data
+ */
+export function applyTechComponentLinks(techStack, components) {
+    if (!techStack || !components) return;
+
+    // Find tech-stack node (could be single global or by ID)
+    const techId = techStack.id || 'tech-stack';
+    const techNode = state.nodes[techId] || findNodeByPartialId('tech-stack', techId);
+    if (!techNode) return;
+    const techNodeId = techNode.element?.dataset?.nodeId || techId;
+
+    let linkCount = 0;
+    components.forEach(comp => {
+        const compNode = state.nodes[comp.id] || findNodeByPartialId('component', comp.id);
+        if (compNode) {
+            const compNodeId = compNode.element?.dataset?.nodeId || comp.id;
+            addConnection(techNodeId, compNodeId);
+            linkCount++;
+        }
+    });
+
+    console.log(`[Auto-Link] Created ${linkCount} tech-stack -> component links`);
+}

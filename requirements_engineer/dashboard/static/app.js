@@ -65,7 +65,14 @@ import {
     applyApiScreenLinks,
     applyEntityApiLinks,
     applyScreenEntityLinks,
-    applyTestApiLinks
+    applyTestApiLinks,
+    applyPersonaScreenLinks,
+    applyComponentApiLinks,
+    applyApiEntityLinks,
+    applyDiagramEntityLinks,
+    applyRequirementFeatureLinks,
+    applyFeatureStoryLinks,
+    applyTechComponentLinks
 } from './modules/autoLinker.js';
 import { addSidebarItem, focusNode, updateCounts, setSidebarCallbacks } from './modules/ui/sidebar.js';
 import { updateMinimap, clearMinimap } from './modules/ui/minimap.js';
@@ -74,6 +81,12 @@ import { showNotification } from './modules/ui/notifications.js';
 import { openEditModal, handleKiloResponse } from './modules/ui/editModal.js';
 import { handleCascadeProgress, handleCascadeNodeResult, handleCascadeComplete } from './modules/ui/diagramKiloPanel.js';
 import { showChangeRequestNotification, handleChangeRequestEvent } from './modules/ui/changeRequestNotification.js';
+import {
+    showWizardSuggestion,
+    handleAutoApplied,
+    handleEnrichmentStarted,
+    handleEnrichmentComplete,
+} from './modules/ui/wizardNotifications.js';
 import {
     openModal,
     closeModal,
@@ -1052,6 +1065,28 @@ async function loadProject(projectId) {
             if (data.screens?.length && data.data_dictionary?.entities?.length) {
                 applyScreenEntityLinks(data.screens, data.data_dictionary.entities);
             }
+            // Phase 3: Complete all 24 link types
+            if (data.personas?.length && data.user_stories?.length && data.screens?.length) {
+                applyPersonaScreenLinks(data.personas, data.user_stories, data.screens);
+            }
+            if (data.ui_components?.length && data.screens?.length && data.api_endpoints?.length) {
+                applyComponentApiLinks(data.ui_components, data.screens, data.api_endpoints);
+            }
+            if (data.api_endpoints?.length && data.data_dictionary?.entities?.length) {
+                applyApiEntityLinks(data.api_endpoints, data.data_dictionary.entities);
+            }
+            if (data.diagrams?.length && data.data_dictionary?.entities?.length) {
+                applyDiagramEntityLinks(data.diagrams, data.data_dictionary.entities);
+            }
+            if (data.features?.length) {
+                applyRequirementFeatureLinks(data.features);
+                if (data.user_stories?.length) {
+                    applyFeatureStoryLinks(data.features, data.user_stories);
+                }
+            }
+            if (data.tech_stack && data.ui_components?.length) {
+                applyTechComponentLinks(data.tech_stack, data.ui_components);
+            }
             applyMetadataLinks();
             updateConnections();
             // Update user stories to show linked tests as metadata
@@ -1279,6 +1314,32 @@ function handleMessage(message) {
             break;
 
         case 'cascade_node_rejected':
+            break;
+
+        // Wizard AutoGen Agent Events
+        case 'wizard_suggestion_pending':
+            showWizardSuggestion(data);
+            break;
+
+        case 'wizard_suggestion_auto_applied':
+            handleAutoApplied(data);
+            break;
+
+        case 'wizard_suggestion_approved':
+            console.log('[WS] Wizard suggestion approved:', data.id);
+            showNotification('Vorschlag angenommen', 'success');
+            break;
+
+        case 'wizard_suggestion_rejected':
+            console.log('[WS] Wizard suggestion rejected:', data.id);
+            break;
+
+        case 'wizard_enrichment_started':
+            handleEnrichmentStarted(data);
+            break;
+
+        case 'wizard_enrichment_complete':
+            handleEnrichmentComplete(data);
             break;
 
         default:
