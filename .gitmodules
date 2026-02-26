@@ -1,0 +1,3 @@
+[submodule "external/arch_team"]
+	path = external/arch_team
+	url = https://github.com/Flissel/-req-orchestrator.git
