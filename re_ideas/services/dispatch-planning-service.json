@@ -1,0 +1,1851 @@
+{
+  "Name": "dispatch-planning-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Disposition.md",
+    "requirement_count": 226,
+    "categories": {
+      "functional": 190,
+      "performance": 35,
+      "security": 1
+    },
+    "priorities": {
+      "should": 226
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-daa1b1-000",
+      "title": "The Disposition Service must create optimal tours based on orders using algorithm-based planning",
+      "description": "The Disposition Service must create optimal tours based on orders using algorithm-based planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-a",
+      "title": "The Disposition Service must assign drivers and vehicles to tours",
+      "description": "The Disposition Service must assign drivers and vehicles to tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-b",
+      "title": "The Disposition Service must optimize routes using Vehicle Routing Problem (VRP) solver",
+      "description": "The Disposition Service must optimize routes using Vehicle Routing Problem (VRP) solver",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-c",
+      "title": "The Disposition Service must consider vehicle capacities and time windows during planning",
+      "description": "The Disposition Service must consider vehicle capacities and time windows during planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-d",
+      "title": "The Disposition Service must dynamically adjust tours when changes occur",
+      "description": "The Disposition Service must dynamically adjust tours when changes occur",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-e",
+      "title": "The Disposition Service must support manual adjustment of tours through a dispatcher interface",
+      "description": "The Disposition Service must support manual adjustment of tours through a dispatcher interface",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-f",
+      "title": "The Disposition Service must support multi-depot tour planning across multiple locations",
+      "description": "The Disposition Service must support multi-depot tour planning across multiple locations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-g",
+      "title": "The Disposition Service must manage driver availability, qualifications, and working hours",
+      "description": "The Disposition Service must manage driver availability, qualifications, and working hours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-h",
+      "title": "The Disposition Service must manage vehicle capacities, equipment, and maintenance cycles",
+      "description": "The Disposition Service must manage vehicle capacities, equipment, and maintenance cycles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-i",
+      "title": "The Disposition Service must automatically match qualifications between resources and tour requirements",
+      "description": "The Disposition Service must automatically match qualifications between resources and tour requirements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-j",
+      "title": "The Disposition Service must calculate total resource costs including fuel, personnel, and vehicle expenses",
+      "description": "The Disposition Service must calculate total resource costs including fuel, personnel, and vehicle expenses",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-k",
+      "title": "The Disposition Service must verify compliance with driving hours, rest periods, and hazmat qualifications",
+      "description": "The Disposition Service must verify compliance with driving hours, rest periods, and hazmat qualifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-l",
+      "title": "The Disposition Service must consider all constraints during route optimization",
+      "description": "The Disposition Service must consider all constraints during route optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-m",
+      "title": "The Disposition Service must balance multiple objectives including costs, time, and service quality",
+      "description": "The Disposition Service must balance multiple objectives including costs, time, and service quality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-n",
+      "title": "The Disposition Service must provide what-if scenario simulation for different planning options",
+      "description": "The Disposition Service must provide what-if scenario simulation for different planning options",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-o",
+      "title": "The Disposition Service must support CRUD operations for tour management",
+      "description": "The Disposition Service must support CRUD operations for tour management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-p",
+      "title": "The Disposition Service must validate tours for feasibility and compliance before execution",
+      "description": "The Disposition Service must validate tours for feasibility and compliance before execution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-q",
+      "title": "The Disposition Service must compare different planning scenarios",
+      "description": "The Disposition Service must compare different planning scenarios",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-r",
+      "title": "The Disposition Service must provide reusable tour templates",
+      "description": "The Disposition Service must provide reusable tour templates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-s",
+      "title": "The Disposition Service must check resource availability before assignment",
+      "description": "The Disposition Service must check resource availability before assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-t",
+      "title": "The Disposition Service must optimize load distribution across vehicles",
+      "description": "The Disposition Service must optimize load distribution across vehicles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-u",
+      "title": "The Disposition Service must optimize time windows for tour stops",
+      "description": "The Disposition Service must optimize time windows for tour stops",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-v",
+      "title": "The Disposition Service must provide real-time updates of tour status",
+      "description": "The Disposition Service must provide real-time updates of tour status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-w",
+      "title": "The Disposition Service must handle disruptions and changes to existing tours",
+      "description": "The Disposition Service must handle disruptions and changes to existing tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-x",
+      "title": "The Disposition Service must perform emergency replanning for critical events",
+      "description": "The Disposition Service must perform emergency replanning for critical events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-y",
+      "title": "The Disposition Service must track tour progress in real-time",
+      "description": "The Disposition Service must track tour progress in real-time",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-z",
+      "title": "The Disposition Service must monitor planning quality metrics",
+      "description": "The Disposition Service must monitor planning quality metrics",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-27",
+      "title": "The Tour entity must store tour identification, date, status, and priority information",
+      "description": "The Tour entity must store tour identification, date, status, and priority information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-28",
+      "title": "The Tour entity must store assigned driver, vehicle, and equipment information",
+      "description": "The Tour entity must store assigned driver, vehicle, and equipment information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-29",
+      "title": "The Tour entity must store planned route with stops and timing information",
+      "description": "The Tour entity must store planned route with stops and timing information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-30",
+      "title": "The Tour entity must store capacity information including weight, volume, and shipment count",
+      "description": "The Tour entity must store capacity information including weight, volume, and shipment count",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-31",
+      "title": "The Tour entity must store calculated costs for fuel, personnel, and vehicle expenses",
+      "description": "The Tour entity must store calculated costs for fuel, personnel, and vehicle expenses",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-32",
+      "title": "The Tour entity must store optimization parameters and results",
+      "description": "The Tour entity must store optimization parameters and results",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-33",
+      "title": "The Tour Stop entity must store location address, GPS coordinates, and geofence information",
+      "description": "The Tour Stop entity must store location address, GPS coordinates, and geofence information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-34",
+      "title": "The Tour Stop entity must store planned arrival time, departure time, and service duration",
+      "description": "The Tour Stop entity must store planned arrival time, departure time, and service duration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-35",
+      "title": "The Tour Stop entity must store associated orders for pickup and delivery",
+      "description": "The Tour Stop entity must store associated orders for pickup and delivery",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-36",
+      "title": "The Tour Stop entity must store special requirements such as hazmat and refrigeration needs",
+      "description": "The Tour Stop entity must store special requirements such as hazmat and refrigeration needs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-37",
+      "title": "The Tour Stop entity must store current processing status",
+      "description": "The Tour Stop entity must store current processing status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-38",
+      "title": "The Tour Stop entity must store time window and access restriction constraints",
+      "description": "The Tour Stop entity must store time window and access restriction constraints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-39",
+      "title": "The Driver resource entity must store qualifications, availability, working hours, and costs",
+      "description": "The Driver resource entity must store qualifications, availability, working hours, and costs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-40",
+      "title": "The Vehicle resource entity must store capacities, equipment, maintenance status, and operating costs",
+      "description": "The Vehicle resource entity must store capacities, equipment, maintenance status, and operating costs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-000-41",
+      "title": "The Equipment resource entity must store special equipment type, availability, and assignment information",
+      "description": "The Equipment resource entity must store special equipment type, availability, and assignment information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001",
+      "title": "The system must store Tour entities with basic data including Tour-ID, Datum, Status, and Priorität",
+      "description": "The system must store Tour entities with basic data including Tour-ID, Datum, Status, and Priorität",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-a",
+      "title": "The system must store Tour resource information including assigned driver, vehicle, and equipment",
+      "description": "The system must store Tour resource information including assigned driver, vehicle, and equipment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-b",
+      "title": "The system must store Tour route information with planned route, stops, and timing",
+      "description": "The system must store Tour route information with planned route, stops, and timing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-c",
+      "title": "The system must store Tour capacity information including weight, volume, and number of shipments",
+      "description": "The system must store Tour capacity information including weight, volume, and number of shipments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-d",
+      "title": "The system must store Tour cost information including calculated costs for fuel, personnel, and vehicle",
+      "description": "The system must store Tour cost information including calculated costs for fuel, personnel, and vehicle",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-e",
+      "title": "The system must store Tour optimization parameters and results",
+      "description": "The system must store Tour optimization parameters and results",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-f",
+      "title": "The system must store Tour Stop location information including address, GPS coordinates, and geofence",
+      "description": "The system must store Tour Stop location information including address, GPS coordinates, and geofence",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-g",
+      "title": "The system must store Tour Stop timing information including planned arrival, departure, and service time",
+      "description": "The system must store Tour Stop timing information including planned arrival, departure, and service time",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-h",
+      "title": "The system must store Tour Stop order assignments for pickup and delivery operations",
+      "description": "The system must store Tour Stop order assignments for pickup and delivery operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-i",
+      "title": "The system must store Tour Stop special requirements including hazardous materials and cooling needs",
+      "description": "The system must store Tour Stop special requirements including hazardous materials and cooling needs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-j",
+      "title": "The system must store Tour Stop current processing status",
+      "description": "The system must store Tour Stop current processing status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-k",
+      "title": "The system must store Tour Stop constraints including time windows and access restrictions",
+      "description": "The system must store Tour Stop constraints including time windows and access restrictions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-l",
+      "title": "The system must store Driver resource information including qualifications, availability, working hours, and costs",
+      "description": "The system must store Driver resource information including qualifications, availability, working hours, and costs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-m",
+      "title": "The system must store Vehicle resource information including capacities, equipment, maintenance status, and operating costs",
+      "description": "The system must store Vehicle resource information including capacities, equipment, maintenance status, and operating costs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-n",
+      "title": "The system must store Equipment resource information including specialization, availability, and assignment",
+      "description": "The system must store Equipment resource information including specialization, availability, and assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-o",
+      "title": "The system must store Optimization Request information including parameters, constraints, and objective functions",
+      "description": "The system must store Optimization Request information including parameters, constraints, and objective functions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-p",
+      "title": "The system must store Optimization Result information including optimized tours, metrics, and improvements",
+      "description": "The system must store Optimization Result information including optimized tours, metrics, and improvements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-q",
+      "title": "The system must store Scenario information for different planning scenarios to enable comparison",
+      "description": "The system must store Scenario information for different planning scenarios to enable comparison",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-r",
+      "title": "The system must implement a Tour Planning Engine as the central planning logic component",
+      "description": "The system must implement a Tour Planning Engine as the central planning logic component",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-s",
+      "title": "The system must implement an Optimization Service for algorithm-based optimization",
+      "description": "The system must implement an Optimization Service for algorithm-based optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-t",
+      "title": "The system must implement a Resource Manager for managing drivers and vehicles",
+      "description": "The system must implement a Resource Manager for managing drivers and vehicles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-u",
+      "title": "The system must implement a Constraint Solver for handling complex constraints",
+      "description": "The system must implement a Constraint Solver for handling complex constraints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-v",
+      "title": "The system must implement a Real-time Processor for processing live updates",
+      "description": "The system must implement a Real-time Processor for processing live updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-w",
+      "title": "The system must integrate with Order Service to retrieve new orders for planning",
+      "description": "The system must integrate with Order Service to retrieve new orders for planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-x",
+      "title": "The system must integrate with Transport Service to transfer planned tours",
+      "description": "The system must integrate with Transport Service to transfer planned tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-y",
+      "title": "The system must integrate with Resource Service to query available resources",
+      "description": "The system must integrate with Resource Service to query available resources",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-z",
+      "title": "The system must integrate with external APIs for traffic data and mapping services",
+      "description": "The system must integrate with external APIs for traffic data and mapping services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-27",
+      "title": "The system must implement Vehicle Routing Problem solver algorithms",
+      "description": "The system must implement Vehicle Routing Problem solver algorithms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-28",
+      "title": "The system must implement genetic algorithm optimization for evolutionary optimization",
+      "description": "The system must implement genetic algorithm optimization for evolutionary optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-29",
+      "title": "The system must implement simulated annealing metaheuristic for complex optimization problems",
+      "description": "The system must implement simulated annealing metaheuristic for complex optimization problems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-30",
+      "title": "The system must implement machine learning algorithms for improved predictions",
+      "description": "The system must implement machine learning algorithms for improved predictions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-31",
+      "title": "The system must cache calculated routes to improve performance",
+      "description": "The system must cache calculated routes to improve performance",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-32",
+      "title": "The system must cache optimization results for reuse",
+      "description": "The system must cache optimization results for reuse",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-33",
+      "title": "The system must process real-time updates using stream-based processing",
+      "description": "The system must process real-time updates using stream-based processing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-34",
+      "title": "The system must execute background jobs for asynchronous optimization of large problems",
+      "description": "The system must execute background jobs for asynchronous optimization of large problems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-35",
+      "title": "The system must trigger automatic tour planning when new orders are received or planning is requested",
+      "description": "The system must trigger automatic tour planning when new orders are received or planning is requested",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-36",
+      "title": "The system must collect all relevant planning data for tour planning workflows",
+      "description": "The system must collect all relevant planning data for tour planning workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-37",
+      "title": "The system must execute optimization algorithms within tour planning workflows",
+      "description": "The system must execute optimization algorithms within tour planning workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-38",
+      "title": "The system must validate planning results before approval",
+      "description": "The system must validate planning results before approval",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-39",
+      "title": "The system must notify dispatchers of planning results",
+      "description": "The system must notify dispatchers of planning results",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-40",
+      "title": "The system must check resource availability when requested or when status changes",
+      "description": "The system must check resource availability when requested or when status changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-41",
+      "title": "The system must query current resource availability",
+      "description": "The system must query current resource availability",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-42",
+      "title": "The system must verify required qualifications for resource assignments",
+      "description": "The system must verify required qualifications for resource assignments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-43",
+      "title": "The system must detect resource conflicts",
+      "description": "The system must detect resource conflicts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-44",
+      "title": "The system must suggest alternative resources when conflicts are detected",
+      "description": "The system must suggest alternative resources when conflicts are detected",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-45",
+      "title": "The system must trigger real-time tour updates on status changes or incident reports",
+      "description": "The system must trigger real-time tour updates on status changes or incident reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-46",
+      "title": "The system must analyze the impact of changes on tour planning",
+      "description": "The system must analyze the impact of changes on tour planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-47",
+      "title": "The system must automatically replan tours when necessary",
+      "description": "The system must automatically replan tours when necessary",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-48",
+      "title": "The system must notify all stakeholders of tour changes",
+      "description": "The system must notify all stakeholders of tour changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-49",
+      "title": "The system must document all tour changes",
+      "description": "The system must document all tour changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-50",
+      "title": "The system must collect planning and execution data for performance monitoring",
+      "description": "The system must collect planning and execution data for performance monitoring",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-51",
+      "title": "The system must calculate key performance indicators from collected data",
+      "description": "The system must calculate key performance indicators from collected data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-52",
+      "title": "The system must analyze planning quality trends over time",
+      "description": "The system must analyze planning quality trends over time",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-53",
+      "title": "The system must generate alerts when planning quality degrades",
+      "description": "The system must generate alerts when planning quality degrades",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-54",
+      "title": "The system must automatically generate performance reports",
+      "description": "The system must automatically generate performance reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-55",
+      "title": "The system must integrate with Order Management to retrieve new orders for tour planning",
+      "description": "The system must integrate with Order Management to retrieve new orders for tour planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-56",
+      "title": "The system must integrate with Business Partner service to access customer and supplier data",
+      "description": "The system must integrate with Business Partner service to access customer and supplier data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-57",
+      "title": "The system must integrate with Transport Service to transfer planned tours for execution",
+      "description": "The system must integrate with Transport Service to transfer planned tours for execution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-58",
+      "title": "The system must integrate with Resource Management to query available drivers and vehicles",
+      "description": "The system must integrate with Resource Management to query available drivers and vehicles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-59",
+      "title": "The system must integrate with Billing Service to transfer cost data for invoicing",
+      "description": "The system must integrate with Billing Service to transfer cost data for invoicing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-60",
+      "title": "The system must integrate with mapping services including Google Maps, HERE, and OpenStreetMap for route calculation",
+      "description": "The system must integrate with mapping services including Google Maps, HERE, and OpenStreetMap for route calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-61",
+      "title": "The system must integrate with real-time traffic data services for realistic travel time estimation",
+      "description": "The system must integrate with real-time traffic data services for realistic travel time estimation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-62",
+      "title": "The system must integrate with weather services for planning adjustments",
+      "description": "The system must integrate with weather services for planning adjustments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-63",
+      "title": "The system must integrate with fuel price APIs for cost calculation",
+      "description": "The system must integrate with fuel price APIs for cost calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-001-64",
+      "title": "The system must integrate with toll road APIs for route optimization",
+      "description": "The system must integrate with toll road APIs for route optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002",
+      "title": "The system must integrate with Order Management to retrieve new orders for tour planning",
+      "description": "The system must integrate with Order Management to retrieve new orders for tour planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-a",
+      "title": "The system must integrate with Business Partner service to access customer and supplier data",
+      "description": "The system must integrate with Business Partner service to access customer and supplier data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-b",
+      "title": "The system must transfer planned tours to Transport Service for execution",
+      "description": "The system must transfer planned tours to Transport Service for execution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-c",
+      "title": "The system must query Resource Management to retrieve available drivers and vehicles",
+      "description": "The system must query Resource Management to retrieve available drivers and vehicles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-d",
+      "title": "The system must transfer cost data to Billing Service for invoicing",
+      "description": "The system must transfer cost data to Billing Service for invoicing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-e",
+      "title": "The system must integrate with mapping services (Google Maps, HERE, OpenStreetMap) for route calculation",
+      "description": "The system must integrate with mapping services (Google Maps, HERE, OpenStreetMap) for route calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-f",
+      "title": "The system must integrate with traffic data APIs to obtain real-time traffic information for realistic travel times",
+      "description": "The system must integrate with traffic data APIs to obtain real-time traffic information for realistic travel times",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-g",
+      "title": "The system must integrate with weather services to obtain weather data for planning adjustments",
+      "description": "The system must integrate with weather services to obtain weather data for planning adjustments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-h",
+      "title": "The system must integrate with fuel price APIs to obtain current fuel prices for cost calculation",
+      "description": "The system must integrate with fuel price APIs to obtain current fuel prices for cost calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-i",
+      "title": "The system must integrate with toll road APIs to obtain toll fees for route optimization",
+      "description": "The system must integrate with toll road APIs to obtain toll fees for route optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-j",
+      "title": "The system must process live GPS tracking data from vehicles",
+      "description": "The system must process live GPS tracking data from vehicles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-k",
+      "title": "The system must process real-time traffic updates and disruptions",
+      "description": "The system must process real-time traffic updates and disruptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-l",
+      "title": "The system must process short-notice order changes",
+      "description": "The system must process short-notice order changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-m",
+      "title": "The system must process resource availability updates",
+      "description": "The system must process resource availability updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-n",
+      "title": "The system must process emergency events including accidents, road closures, and emergencies",
+      "description": "The system must process emergency events including accidents, road closures, and emergencies",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-o",
+      "title": "The system must support Classic Vehicle Routing Problem (VRP) optimization",
+      "description": "The system must support Classic Vehicle Routing Problem (VRP) optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-p",
+      "title": "The system must support Capacitated VRP (CVRP) with capacity constraints",
+      "description": "The system must support Capacitated VRP (CVRP) with capacity constraints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-q",
+      "title": "The system must support VRP with Time Windows (VRPTW) for time-constrained deliveries",
+      "description": "The system must support VRP with Time Windows (VRPTW) for time-constrained deliveries",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-r",
+      "title": "The system must support Multi-Depot VRP (MDVRP) for multiple depot locations",
+      "description": "The system must support Multi-Depot VRP (MDVRP) for multiple depot locations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-s",
+      "title": "The system must support Dynamic VRP (DVRP) for real-time adjustments",
+      "description": "The system must support Dynamic VRP (DVRP) for real-time adjustments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-t",
+      "title": "The system must implement exact algorithms including Branch-and-Bound and Dynamic Programming",
+      "description": "The system must implement exact algorithms including Branch-and-Bound and Dynamic Programming",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-u",
+      "title": "The system must implement heuristic algorithms including Nearest Neighbor and Savings Algorithm",
+      "description": "The system must implement heuristic algorithms including Nearest Neighbor and Savings Algorithm",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-v",
+      "title": "The system must implement metaheuristic algorithms including Genetic Algorithm and Simulated Annealing",
+      "description": "The system must implement metaheuristic algorithms including Genetic Algorithm and Simulated Annealing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-w",
+      "title": "The system must support machine learning-based optimization using Reinforcement Learning and Neural Networks",
+      "description": "The system must support machine learning-based optimization using Reinforcement Learning and Neural Networks",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-x",
+      "title": "The system must support hybrid optimization approaches combining multiple techniques",
+      "description": "The system must support hybrid optimization approaches combining multiple techniques",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-y",
+      "title": "The system must enforce hard constraints for vehicle capacity, time windows, and driver qualifications",
+      "description": "The system must enforce hard constraints for vehicle capacity, time windows, and driver qualifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-z",
+      "title": "The system must consider soft constraints for preferences, cost objectives, and service quality",
+      "description": "The system must consider soft constraints for preferences, cost objectives, and service quality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-27",
+      "title": "The system must handle dynamic constraints from traffic conditions, weather, and emergencies",
+      "description": "The system must handle dynamic constraints from traffic conditions, weather, and emergencies",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-28",
+      "title": "The system must enforce regulatory constraints for driving hours and rest periods",
+      "description": "The system must enforce regulatory constraints for driving hours and rest periods",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-29",
+      "title": "The system must enforce business-specific planning rules",
+      "description": "The system must enforce business-specific planning rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-30",
+      "title": "The system must support parallel processing for distributed computation of large optimization problems",
+      "description": "The system must support parallel processing for distributed computation of large optimization problems",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-31",
+      "title": "The system must support incremental optimization for stepwise improvement of existing plans",
+      "description": "The system must support incremental optimization for stepwise improvement of existing plans",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-32",
+      "title": "The system must implement approximation algorithms for fast approximate solutions",
+      "description": "The system must implement approximation algorithms for fast approximate solutions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-33",
+      "title": "The system must implement caching strategies for reuse of calculated subproblems",
+      "description": "The system must implement caching strategies for reuse of calculated subproblems",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-34",
+      "title": "The system must implement load balancing for distribution of computational load",
+      "description": "The system must implement load balancing for distribution of computational load",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-35",
+      "title": "The dispatcher dashboard must display an overview of all planned tours",
+      "description": "The dispatcher dashboard must display an overview of all planned tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-36",
+      "title": "The dispatcher dashboard must visualize optimization results",
+      "description": "The dispatcher dashboard must visualize optimization results",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-37",
+      "title": "The dispatcher dashboard must provide an interface for manual planning adjustments",
+      "description": "The dispatcher dashboard must provide an interface for manual planning adjustments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-38",
+      "title": "The dispatcher dashboard must support what-if analysis for scenario simulation",
+      "description": "The dispatcher dashboard must support what-if analysis for scenario simulation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-39",
+      "title": "The dispatcher dashboard must display performance metrics and quality indicators",
+      "description": "The dispatcher dashboard must display performance metrics and quality indicators",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-40",
+      "title": "The system must provide drag-and-drop functionality for intuitive reordering of stops",
+      "description": "The system must provide drag-and-drop functionality for intuitive reordering of stops",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-41",
+      "title": "The system must provide map visualization for geographic representation of tours",
+      "description": "The system must provide map visualization for geographic representation of tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-42",
+      "title": "The system must provide timeline view for temporal representation of tour execution",
+      "description": "The system must provide timeline view for temporal representation of tour execution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-43",
+      "title": "The system must provide visual resource allocation interface",
+      "description": "The system must provide visual resource allocation interface",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-44",
+      "title": "The system must display planning constraints visually",
+      "description": "The system must display planning constraints visually",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-45",
+      "title": "The system must provide AI-based planning recommendations through a recommendation engine",
+      "description": "The system must provide AI-based planning recommendations through a recommendation engine",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-46",
+      "title": "The system must provide impact analysis for planning changes",
+      "description": "The system must provide impact analysis for planning changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-47",
+      "title": "The system must provide multiple optimization alternatives as decision support",
+      "description": "The system must provide multiple optimization alternatives as decision support",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-48",
+      "title": "The system must provide risk assessment for planning decisions",
+      "description": "The system must provide risk assessment for planning decisions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-49",
+      "title": "The system must provide cost-benefit analysis for planning decisions",
+      "description": "The system must provide cost-benefit analysis for planning decisions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-50",
+      "title": "The system must implement a multi-level approval process for planning changes",
+      "description": "The system must implement a multi-level approval process for planning changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-51",
+      "title": "The system must track all planning changes for audit purposes",
+      "description": "The system must track all planning changes for audit purposes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-52",
+      "title": "The system must implement role-based approval hierarchy",
+      "description": "The system must implement role-based approval hierarchy",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-53",
+      "title": "The system must maintain complete audit trail documentation of all decisions",
+      "description": "The system must maintain complete audit trail documentation of all decisions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-54",
+      "title": "The system must provide rollback capability for planning changes",
+      "description": "The system must provide rollback capability for planning changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-55",
+      "title": "The system must measure route efficiency as ratio of planned to optimal route",
+      "description": "The system must measure route efficiency as ratio of planned to optimal route",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-56",
+      "title": "The system must measure vehicle capacity utilization",
+      "description": "The system must measure vehicle capacity utilization",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-57",
+      "title": "The system must measure time window compliance",
+      "description": "The system must measure time window compliance",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-58",
+      "title": "The system must measure cost optimization achieved through planning",
+      "description": "The system must measure cost optimization achieved through planning",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-59",
+      "title": "The system must measure service level achievement against quality goals",
+      "description": "The system must measure service level achievement against quality goals",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-60",
+      "title": "The system must measure planning time for tour planning and optimization",
+      "description": "The system must measure planning time for tour planning and optimization",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-61",
+      "title": "The system must measure replanning frequency",
+      "description": "The system must measure replanning frequency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-62",
+      "title": "The system must measure resource utilization of drivers and vehicles",
+      "description": "The system must measure resource utilization of drivers and vehicles",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-63",
+      "title": "The system must measure customer satisfaction with planning quality",
+      "description": "The system must measure customer satisfaction with planning quality",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-64",
+      "title": "The system must measure dispatcher productivity in manual planning work",
+      "description": "The system must measure dispatcher productivity in manual planning work",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-65",
+      "title": "The system must measure optimization algorithm speed",
+      "description": "The system must measure optimization algorithm speed",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-66",
+      "title": "The system must measure API response times for disposition APIs",
+      "description": "The system must measure API response times for disposition APIs",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-67",
+      "title": "The system must measure memory usage during large optimization problems",
+      "description": "The system must measure memory usage during large optimization problems",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-68",
+      "title": "The system must measure scalability metrics as problem size increases",
+      "description": "The system must measure scalability metrics as problem size increases",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-69",
+      "title": "The system must measure error rates in optimization and planning",
+      "description": "The system must measure error rates in optimization and planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-70",
+      "title": "The system must measure cost savings achieved through improved planning",
+      "description": "The system must measure cost savings achieved through improved planning",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-002-71",
+      "title": "The system must measure delivery performance metrics",
+      "description": "The system must measure delivery performance metrics",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003",
+      "title": "The system must measure route efficiency as the ratio of planned to optimal route distance",
+      "description": "The system must measure route efficiency as the ratio of planned to optimal route distance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-a",
+      "title": "The system must track vehicle capacity utilization metrics",
+      "description": "The system must track vehicle capacity utilization metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-b",
+      "title": "The system must monitor time window compliance for deliveries",
+      "description": "The system must monitor time window compliance for deliveries",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-c",
+      "title": "The system must track cost optimization metrics from route planning",
+      "description": "The system must track cost optimization metrics from route planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-d",
+      "title": "The system must measure service level achievement against quality goals",
+      "description": "The system must measure service level achievement against quality goals",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-e",
+      "title": "The system must measure planning time for route planning and optimization",
+      "description": "The system must measure planning time for route planning and optimization",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-f",
+      "title": "The system must track the frequency of planning changes and replanning events",
+      "description": "The system must track the frequency of planning changes and replanning events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-g",
+      "title": "The system must measure resource utilization of drivers and vehicles",
+      "description": "The system must measure resource utilization of drivers and vehicles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-h",
+      "title": "The system must track customer satisfaction with planning quality",
+      "description": "The system must track customer satisfaction with planning quality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-i",
+      "title": "The system must measure dispatcher productivity for manual planning work",
+      "description": "The system must measure dispatcher productivity for manual planning work",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-j",
+      "title": "The system must measure optimization algorithm execution speed",
+      "description": "The system must measure optimization algorithm execution speed",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-k",
+      "title": "The system must monitor API response times for disposition operations",
+      "description": "The system must monitor API response times for disposition operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-l",
+      "title": "The system must track memory usage during large optimization problems",
+      "description": "The system must track memory usage during large optimization problems",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-m",
+      "title": "The system must measure scalability metrics as problem size increases",
+      "description": "The system must measure scalability metrics as problem size increases",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-n",
+      "title": "The system must track error rates in optimization and planning operations",
+      "description": "The system must track error rates in optimization and planning operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-o",
+      "title": "The system must measure cost savings achieved through improved planning",
+      "description": "The system must measure cost savings achieved through improved planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-p",
+      "title": "The system must track delivery performance improvements",
+      "description": "The system must track delivery performance improvements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-q",
+      "title": "The system must measure customer retention resulting from improved service",
+      "description": "The system must measure customer retention resulting from improved service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-r",
+      "title": "The system must measure overall operational efficiency of transport operations",
+      "description": "The system must measure overall operational efficiency of transport operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-s",
+      "title": "The system must track return on investment of the optimization solution",
+      "description": "The system must track return on investment of the optimization solution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-t",
+      "title": "The system must include unit tests for optimization algorithms",
+      "description": "The system must include unit tests for optimization algorithms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-u",
+      "title": "The system must include tests validating constraint handling",
+      "description": "The system must include tests validating constraint handling",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-v",
+      "title": "The system must include performance tests for large optimization problems",
+      "description": "The system must include performance tests for large optimization problems",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-w",
+      "title": "The system must include edge case and special situation tests",
+      "description": "The system must include edge case and special situation tests",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-x",
+      "title": "The system must include mock tests for simulated external services",
+      "description": "The system must include mock tests for simulated external services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-y",
+      "title": "The system must include integration tests for service-to-service communication",
+      "description": "The system must include integration tests for service-to-service communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-z",
+      "title": "The system must include validation tests for all REST API endpoints",
+      "description": "The system must include validation tests for all REST API endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-27",
+      "title": "The system must include tests for data persistence operations",
+      "description": "The system must include tests for data persistence operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-28",
+      "title": "The system must include tests for external API integrations",
+      "description": "The system must include tests for external API integrations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-29",
+      "title": "The system must include end-to-end tests for n8n workflow operations",
+      "description": "The system must include end-to-end tests for n8n workflow operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-30",
+      "title": "The system must include load tests with high numbers of concurrent requests",
+      "description": "The system must include load tests with high numbers of concurrent requests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-31",
+      "title": "The system must include stress tests for system overload conditions",
+      "description": "The system must include stress tests for system overload conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-32",
+      "title": "The system must include scalability tests",
+      "description": "The system must include scalability tests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-33",
+      "title": "The system must include optimization algorithm performance benchmarks",
+      "description": "The system must include optimization algorithm performance benchmarks",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-34",
+      "title": "The system must include memory profiling analysis",
+      "description": "The system must include memory profiling analysis",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-35",
+      "title": "The system must include user acceptance testing with real dispatchers",
+      "description": "The system must include user acceptance testing with real dispatchers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-36",
+      "title": "The system must include usability testing for user-friendliness evaluation",
+      "description": "The system must include usability testing for user-friendliness evaluation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-37",
+      "title": "The system must include scenario testing with real planning scenarios",
+      "description": "The system must include scenario testing with real planning scenarios",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-38",
+      "title": "The system must validate training effectiveness through testing",
+      "description": "The system must validate training effectiveness through testing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-39",
+      "title": "The system must integrate user feedback into development",
+      "description": "The system must integrate user feedback into development",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-40",
+      "title": "The system should integrate with Prometheus and Grafana for monitoring",
+      "description": "The system should integrate with Prometheus and Grafana for monitoring",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-41",
+      "title": "The system should implement machine learning for predictive analytics",
+      "description": "The system should implement machine learning for predictive analytics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-42",
+      "title": "The system should provide automated alerting when performance degrades",
+      "description": "The system should provide automated alerting when performance degrades",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-43",
+      "title": "The system should include an automated test suite using pytest",
+      "description": "The system should include an automated test suite using pytest",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-44",
+      "title": "The system should include performance regression tests",
+      "description": "The system should include performance regression tests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-45",
+      "title": "The system should include chaos engineering for resilience testing",
+      "description": "The system should include chaos engineering for resilience testing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    },
+    {
+      "requirement_id": "REQ-daa1b1-003-46",
+      "title": "A mobile app for dispatchers should be developed",
+      "description": "A mobile app for dispatchers should be developed",
+      "type": "functional",
+      "priority": "should",
+      "source": "Disposition.md"
+    }
+  ]
+}

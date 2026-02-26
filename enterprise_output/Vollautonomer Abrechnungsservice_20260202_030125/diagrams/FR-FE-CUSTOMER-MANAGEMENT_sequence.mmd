@@ -1,0 +1,59 @@
+sequenceDiagram
+    participant User
+    participant FE as Frontend (Customer Management)
+    participant API as Customer Service API
+    participant DB as Customer Database
+    participant Dup as Duplicate Detection
+    participant Rel as Relationship Management
+    participant ImpExp as Bulk Import/Export
+
+    User->>FE: Open Customer Management
+    activate FE
+    FE->>API: Request customer list
+    activate API
+    API->>DB: Query customers
+    activate DB
+    DB-->>API: Customer data
+    deactivate DB
+    API-->>FE: Customer list
+    deactivate API
+    FE-->>User: Display customers
+    deactivate FE
+
+    User->>FE: Create/Update customer
+    activate FE
+    FE->>API: Submit customer data
+    activate API
+    API->>Dup: Check duplicates
+    activate Dup
+    Dup-->>API: Duplicate status
+    deactivate Dup
+    API->>Rel: Manage relationships
+    activate Rel
+    Rel-->>API: Relationship status
+    deactivate Rel
+    API->>DB: Save customer data
+    activate DB
+    DB-->>API: Save confirmation
+    deactivate DB
+    API-->>FE: Success response
+    deactivate API
+    FE-->>User: Show confirmation
+    deactivate FE
+
+    User->>FE: Bulk import/export
+    activate FE
+    FE->>ImpExp: Start import/export job
+    activate ImpExp
+    ImpExp->>API: Validate and process records
+    activate API
+    API->>DB: Read/Write batch
+    activate DB
+    DB-->>API: Batch result
+    deactivate DB
+    API-->>ImpExp: Processing result
+    deactivate API
+    ImpExp-->>FE: Job status/report
+    deactivate ImpExp
+    FE-->>User: Show result
+    deactivate FE

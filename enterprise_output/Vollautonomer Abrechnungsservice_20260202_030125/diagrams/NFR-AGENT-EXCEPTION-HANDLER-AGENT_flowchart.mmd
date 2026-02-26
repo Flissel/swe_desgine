@@ -1,0 +1,16 @@
+flowchart TD
+    Start([Start]) --> A[Exception/Anomaly Detected]
+    A --> B[Collect Context & Logs]
+    B --> C[Analyze Exception (ErrorAnalyzer)]
+    C --> D{Known Issue?}
+    D -- Yes --> E[Recommend Solution (SolutionRecommender)]
+    E --> F{Solution Applicable?}
+    F -- Yes --> G[Apply Solution]
+    G --> H{Resolved?}
+    H -- Yes --> I[Document & Learn (LearningSystem)]
+    I --> End([End])
+    H -- No --> J[Escalate to Human/Next Tier]
+    J --> I
+    F -- No --> J
+    D -- No --> K[Generate Hypothesis & Suggestions]
+    K --> J

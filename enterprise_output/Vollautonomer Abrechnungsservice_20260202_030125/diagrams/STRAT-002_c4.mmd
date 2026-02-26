@@ -1,0 +1,21 @@
+C4Context
+    title Regulatorische Compliance für autonome Systeme - Kontext
+    Person(complianceOfficer, "Compliance Officer", "Überwacht die Einhaltung regulatorischer Vorgaben")
+    Person(auditor, "Externer Auditor", "Prüft Nachweise und Berichte zur Compliance")
+    Person(aiOwner, "AI-System Owner", "Verantwortlich für Betrieb und Governance des AI-Systems")
+
+    System(complianceSystem, "Regulatory Compliance Automation System", "Automatische Einhaltung von Finanzvorschriften (DSGVO, FATCA, Steuergesetze) in AI-Systemen")
+
+    System_Ext(gdprApi, "DSGVO-Register/API", "Stellt Datenschutzrichtlinien und Anforderungen bereit")
+    System_Ext(fatcaApi, "FATCA API", "Liefert FATCA-Regeln und Reporting-Vorgaben")
+    System_Ext(taxAuthorityApi, "Steuerbehörden API", "Stellt Steuergesetze und Meldepflichten bereit")
+    System_Ext(auditRepo, "Audit-Repository", "Speichert Compliance-Nachweise und Berichte")
+
+    Rel(complianceOfficer, complianceSystem, "Konfiguriert Compliance-Regeln und überwacht")
+    Rel(auditor, complianceSystem, "Fordert Berichte an")
+    Rel(aiOwner, complianceSystem, "Integriert und betreibt")
+
+    Rel(complianceSystem, gdprApi, "Validiert gegen")
+    Rel(complianceSystem, fatcaApi, "Validiert gegen")
+    Rel(complianceSystem, taxAuthorityApi, "Validiert gegen")
+    Rel(complianceSystem, auditRepo, "Speichert Berichte in")

@@ -1,0 +1,17 @@
+flowchart TD
+    Start([Start]) --> Monitor[Überwache System & Eingaben]
+    Monitor --> Detect{Ausnahme erkannt?}
+    Detect -- Nein --> Continue[Normaler Betrieb]
+    Continue --> Monitor
+    Detect -- Ja --> Capture[Erfasse Kontext & Logs]
+    Capture --> Classify[LLM klassifiziert Ausnahme]
+    Classify --> Route{Spezialisierter Agent verfügbar?}
+    Route -- Ja --> AgentFix[Agent behebt Ausnahme]
+    Route -- Nein --> LLMFix[LLM versucht Behebung]
+    AgentFix --> Validate{Behebung erfolgreich?}
+    LLMFix --> Validate
+    Validate -- Ja --> Recover[Systemzustand wiederherstellen]
+    Recover --> Notify[Status protokollieren & melden]
+    Notify --> End([End])
+    Validate -- Nein --> Escalate[Eskalation an Mensch/On-Call]
+    Escalate --> End([End])

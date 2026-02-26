@@ -1,0 +1,13 @@
+flowchart TD
+    Start([Start]) --> ReceiveTask[Abrechnungsaufgabe empfangen]
+    ReceiveTask --> Validate[Aufgabe validieren]
+    Validate --> TypeDecision{Aufgabentyp bestimmen?}
+    TypeDecision -->|Standard| ComplexityDecision{Komplexität bestimmen?}
+    TypeDecision -->|Spezial| ComplexityDecision
+    ComplexityDecision -->|Niedrig| RouteBasic[Routing an Basis-Agent]
+    ComplexityDecision -->|Mittel| RouteIntermediate[Routing an Fortgeschrittenen-Agent]
+    ComplexityDecision -->|Hoch| RouteExpert[Routing an Experten-Agent]
+    RouteBasic --> Notify[Agent benachrichtigen]
+    RouteIntermediate --> Notify
+    RouteExpert --> Notify
+    Notify --> End([End])

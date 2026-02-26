@@ -1,0 +1,20 @@
+flowchart TD
+    Start([Start]) --> Init[Frontend lädt API-Endpoint-Komponente]
+    Init --> Config[Konfiguration der Endpoints laden]
+    Config --> DecideConfig{Konfiguration gültig?}
+    DecideConfig -- Nein --> ErrorConfig[Fehler anzeigen]
+    ErrorConfig --> End([End])
+    DecideConfig -- Ja --> RenderList[Endpoint-Liste rendern]
+    RenderList --> UserAction[Benutzeraktion: Endpoint auswählen]
+    UserAction --> DecideAuth{Authentifizierung erforderlich?}
+    DecideAuth -- Ja --> Auth[Authentifizieren]
+    Auth --> DecideAuthOK{Auth erfolgreich?}
+    DecideAuthOK -- Nein --> AuthError[Auth-Fehler anzeigen]
+    AuthError --> End([End])
+    DecideAuthOK -- Ja --> SendRequest[API-Anfrage senden]
+    DecideAuth -- Nein --> SendRequest[API-Anfrage senden]
+    SendRequest --> DecideResponse{Antwort erfolgreich?}
+    DecideResponse -- Ja --> ShowData[Antwortdaten anzeigen]
+    DecideResponse -- Nein --> ShowError[API-Fehler anzeigen]
+    ShowData --> End([End])
+    ShowError --> End([End])

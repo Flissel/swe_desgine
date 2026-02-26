@@ -1,0 +1,1705 @@
+openapi: 3.0.3
+info:
+  title: Vollautonomer Abrechnungsservice API
+  version: 1.0.0
+  description: 'API specification generated from requirements.
+
+
+    Generated: 2026-02-02T03:08:39.424263'
+servers:
+- url: https://api.example.com
+  description: Production server
+paths:
+  /api/v1/pods/{podId}/invoices:
+    post:
+      summary: Generate invoice after POD validation
+      description: Creates an invoice automatically based on a validated Proof of
+        Delivery (POD).
+      operationId: generateInvoiceFromPod
+      tags:
+      - Invoices
+      - PODs
+      parameters:
+      - name: podId
+        in: path
+        required: true
+        description: Validated POD ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateInvoiceRequest'
+      responses:
+        '201':
+          description: Invoice Created
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: POD Not Found
+        '409':
+          description: Invoice Already Exists
+        '500':
+          description: Internal Server Error
+  /api/v1/invoices/{invoiceId}:
+    get:
+      summary: Get invoice by ID
+      description: Retrieves details of a generated invoice.
+      operationId: getInvoiceById
+      tags:
+      - Invoices
+      parameters:
+      - name: invoiceId
+        in: path
+        required: true
+        description: Invoice ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Invoice Not Found
+        '500':
+          description: Internal Server Error
+  /api/v1/bank-accounts:
+    post:
+      summary: Create bank account
+      description: Securely create a new bank account with end-to-end encryption and
+        tokenization; performs IBAN format validation, BIC existence check, and duplicate
+        prevention.
+      operationId: createBankAccount
+      tags:
+      - BankAccounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBankAccountRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request - Validation failed
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict - Duplicate account
+        '422':
+          description: Unprocessable Entity - IBAN/BIC validation failed
+    get:
+      summary: List bank accounts
+      description: Retrieve a paginated list of bank accounts.
+      operationId: listBankAccounts
+      tags:
+      - BankAccounts
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number (default 1)
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page (default 20)
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountListResponse'
+        '401':
+          description: Unauthorized
+  /api/v1/bank-accounts/{bankAccountId}:
+    get:
+      summary: Get bank account
+      description: Retrieve details of a specific bank account.
+      operationId: getBankAccount
+      tags:
+      - BankAccounts
+      parameters:
+      - name: bankAccountId
+        in: path
+        required: true
+        description: Bank account ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+    put:
+      summary: Update bank account
+      description: Update an existing bank account with validation checks; requires
+        end-to-end encryption and tokenization.
+      operationId: updateBankAccount
+      tags:
+      - BankAccounts
+      parameters:
+      - name: bankAccountId
+        in: path
+        required: true
+        description: Bank account ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBankAccountRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountResponse'
+        '400':
+          description: Bad Request - Validation failed
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict - Duplicate account
+        '422':
+          description: Unprocessable Entity - IBAN/BIC validation failed
+    delete:
+      summary: Delete bank account
+      description: Delete a bank account.
+      operationId: deleteBankAccount
+      tags:
+      - BankAccounts
+      parameters:
+      - name: bankAccountId
+        in: path
+        required: true
+        description: Bank account ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+  /api/v1/companies:
+    get:
+      summary: List companies
+      description: Retrieve a paginated list of companies to support multi-entity
+        configuration.
+      operationId: listCompanies
+      tags:
+      - Companies
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number for pagination
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+    post:
+      summary: Create company
+      description: Create a company with core settings and billing configuration.
+      operationId: createCompany
+      tags:
+      - Companies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+  /api/v1/companies/{companyId}:
+    get:
+      summary: Get company settings
+      description: Retrieve company settings including billing configuration.
+      operationId: getCompany
+      tags:
+      - Companies
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        description: Company ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+    put:
+      summary: Update company settings
+      description: Update company settings including tax and billing fields.
+      operationId: updateCompany
+      tags:
+      - Companies
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        description: Company ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+  /api/v1/companies/{companyId}/tax-validations:
+    post:
+      summary: Validate tax identifiers
+      description: Trigger automated validation for tax ID and VAT number.
+      operationId: validateCompanyTax
+      tags:
+      - TaxValidation
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        description: Company ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxValidationRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxValidationResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '422':
+          description: Unprocessable Entity
+  /api/v1/customers:
+    post:
+      summary: Create customer
+      description: Create a new customer record for automated billing.
+      operationId: createCustomer
+      tags:
+      - Customers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict
+        '422':
+          description: Unprocessable Entity
+    get:
+      summary: List customers
+      description: Retrieve a paginated list of customers with optional search and
+        filtering.
+      operationId: listCustomers
+      tags:
+      - Customers
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      - name: search
+        in: query
+        required: false
+        description: Search by customer name or tax ID
+        schema:
+          type: string
+      - name: sort
+        in: query
+        required: false
+        description: Sort fields, e.g. customer_name,-created_at
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /api/v1/customers/{id}:
+    get:
+      summary: Get customer
+      description: Retrieve a single customer by ID.
+      operationId: getCustomer
+      tags:
+      - Customers
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Customer ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+    put:
+      summary: Update customer
+      description: Update all fields of a customer record.
+      operationId: updateCustomer
+      tags:
+      - Customers
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Customer ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict
+        '422':
+          description: Unprocessable Entity
+    delete:
+      summary: Delete customer
+      description: Delete a customer record.
+      operationId: deleteCustomer
+      tags:
+      - Customers
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Customer ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict
+  /api/v1/customers/bulk-import:
+    post:
+      summary: Bulk import customers
+      description: Import multiple customer records in a single request.
+      operationId: bulkImportCustomers
+      tags:
+      - Customers
+      - Bulk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkImportCustomersRequest'
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict
+        '422':
+          description: Unprocessable Entity
+  /api/v1/customers/bulk-export:
+    get:
+      summary: Bulk export customers
+      description: Export customer records, optionally filtered and paginated.
+      operationId: bulkExportCustomers
+      tags:
+      - Customers
+      - Bulk
+      parameters:
+      - name: format
+        in: query
+        required: false
+        description: Export format, e.g. csv or json
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: Page number
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      - name: search
+        in: query
+        required: false
+        description: Search by customer name or tax ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkExportCustomersResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /api/v1/customers/duplicates:
+    post:
+      summary: Detect duplicate customers
+      description: Detect potential duplicate customers based on matching rules.
+      operationId: detectCustomerDuplicates
+      tags:
+      - Customers
+      - DataQuality
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectDuplicatesRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectDuplicatesResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+  /api/v1/users/{userId}/profile-settings:
+    get:
+      summary: Get user profile settings
+      description: Retrieves UI personalization, permissions, and security settings
+        for a user.
+      operationId: getUserProfileSettings
+      tags:
+      - UserProfileSettings
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileSettingsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    put:
+      summary: Update user profile settings
+      description: Updates UI personalization, permissions, and security settings
+        for a user. Enforces role-based access control and writes to audit trail.
+      operationId: updateUserProfileSettings
+      tags:
+      - UserProfileSettings
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileSettingsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileSettingsResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/users/{userId}/audit-trail:
+    get:
+      summary: List user audit trail
+      description: Returns audit trail entries related to user profile settings changes
+        with pagination.
+      operationId: listUserAuditTrail
+      tags:
+      - AuditTrail
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: Page number
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditTrailListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/users/{userId}/sessions:
+    get:
+      summary: List active user sessions
+      description: Returns active sessions for a user to support session management.
+      operationId: listUserSessions
+      tags:
+      - SessionManagement
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: Page number
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/users/{userId}/sessions/{sessionId}:
+    delete:
+      summary: Terminate a user session
+      description: Revokes a specific session for a user.
+      operationId: terminateUserSession
+      tags:
+      - SessionManagement
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+      - name: sessionId
+        in: path
+        required: true
+        description: Session ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/endpoints:
+    get:
+      summary: List API endpoints
+      description: Retrieve a paginated list of available API endpoints for frontend
+        discovery.
+      operationId: listEndpoints
+      tags:
+      - Endpoints
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number (1-based)
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      - name: search
+        in: query
+        required: false
+        description: Search term to filter endpoints by path or summary
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EndpointListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /api/v1/endpoints/{id}:
+    get:
+      summary: Get API endpoint details
+      description: Retrieve detailed metadata for a specific API endpoint.
+      operationId: getEndpoint
+      tags:
+      - Endpoints
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Endpoint ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EndpointResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /api/v1/frontend-components:
+    get:
+      summary: List frontend components
+      description: Retrieve a paginated list of frontend components.
+      operationId: listFrontendComponents
+      tags:
+      - FrontendComponents
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number (starting from 1)
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        required: false
+        description: Number of items per page
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrontendComponentListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+    post:
+      summary: Create a frontend component
+      description: Create a new frontend component.
+      operationId: createFrontendComponent
+      tags:
+      - FrontendComponents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFrontendComponentRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '409':
+          description: Conflict
+  /api/v1/frontend-components/{id}:
+    get:
+      summary: Get a frontend component
+      description: Retrieve a frontend component by ID.
+      operationId: getFrontendComponent
+      tags:
+      - FrontendComponents
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Component ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrontendComponentResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+    put:
+      summary: Update a frontend component
+      description: Update an existing frontend component by ID.
+      operationId: updateFrontendComponent
+      tags:
+      - FrontendComponents
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Component ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFrontendComponentRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FrontendComponentResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete a frontend component
+      description: Delete a frontend component by ID.
+      operationId: deleteFrontendComponent
+      tags:
+      - FrontendComponents
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Component ID
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+components:
+  schemas:
+    GenerateInvoiceRequest:
+      type: object
+      properties:
+        validationTimestamp:
+          type: string
+          description: ISO 8601 timestamp of POD validation
+        currency:
+          type: string
+          description: Invoice currency code
+      required:
+      - validationTimestamp
+    InvoiceResponse:
+      type: object
+      properties:
+        invoiceId:
+          type: string
+          description: Invoice ID
+        podId:
+          type: string
+          description: Associated POD ID
+        status:
+          type: string
+          description: Invoice status
+        createdAt:
+          type: string
+          description: Invoice creation timestamp
+    CreateBankAccountRequest:
+      type: object
+      properties:
+        bankName:
+          type: string
+          description: Name of the bank
+        accountHolder:
+          type: string
+          description: Name of the account holder
+        iban:
+          type: string
+          description: International Bank Account Number
+        bic:
+          type: string
+          description: Bank Identifier Code
+        accountType:
+          type: string
+          description: Type of account (e.g., checking, savings)
+        currency:
+          type: string
+          description: Account currency (ISO 4217)
+      required:
+      - bankName
+      - accountHolder
+      - iban
+      - bic
+      - accountType
+      - currency
+    BankAccountResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Bank account ID
+        bankName:
+          type: string
+          description: Name of the bank
+        accountHolder:
+          type: string
+          description: Name of the account holder
+        ibanMasked:
+          type: string
+          description: Masked IBAN
+        bic:
+          type: string
+          description: Bank Identifier Code
+        accountType:
+          type: string
+          description: Type of account
+        currency:
+          type: string
+          description: Account currency (ISO 4217)
+        updatedAt:
+          type: string
+          description: Update timestamp
+    BankAccountListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of bank accounts
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Bank account ID
+              bankName:
+                type: string
+                description: Name of the bank
+              accountHolder:
+                type: string
+                description: Name of the account holder
+              ibanMasked:
+                type: string
+                description: Masked IBAN
+              bic:
+                type: string
+                description: Bank Identifier Code
+              accountType:
+                type: string
+                description: Type of account
+              currency:
+                type: string
+                description: Account currency (ISO 4217)
+        page:
+          type: integer
+          description: Current page
+        pageSize:
+          type: integer
+          description: Page size
+        totalItems:
+          type: integer
+          description: Total number of items
+        totalPages:
+          type: integer
+          description: Total number of pages
+    UpdateBankAccountRequest:
+      type: object
+      properties:
+        bankName:
+          type: string
+          description: Name of the bank
+        accountHolder:
+          type: string
+          description: Name of the account holder
+        iban:
+          type: string
+          description: International Bank Account Number
+        bic:
+          type: string
+          description: Bank Identifier Code
+        accountType:
+          type: string
+          description: Type of account (e.g., checking, savings)
+        currency:
+          type: string
+          description: Account currency (ISO 4217)
+      required:
+      - bankName
+      - accountHolder
+      - iban
+      - bic
+      - accountType
+      - currency
+    CompanyListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of companies
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Company ID
+              companyName:
+                type: string
+                description: Company name
+        page:
+          type: integer
+          description: Current page
+        pageSize:
+          type: integer
+          description: Page size
+        totalItems:
+          type: integer
+          description: Total number of companies
+    CreateCompanyRequest:
+      type: object
+      properties:
+        companyName:
+          type: string
+          description: Company name
+        taxId:
+          type: string
+          description: Tax ID
+        vatNumber:
+          type: string
+          description: VAT number
+        address:
+          type: object
+          description: International address format
+          properties:
+            line1:
+              type: string
+              description: Address line 1
+            line2:
+              type: string
+              description: Address line 2
+            city:
+              type: string
+              description: City
+            region:
+              type: string
+              description: State/Province/Region
+            postalCode:
+              type: string
+              description: Postal/ZIP code
+            countryCode:
+              type: string
+              description: ISO 3166-1 alpha-2 country code
+        contactDetails:
+          type: object
+          description: Company contact details
+          properties:
+            email:
+              type: string
+              description: Contact email
+            phone:
+              type: string
+              description: Contact phone
+        defaultPaymentTerms:
+          type: string
+          description: Default payment terms (e.g., NET_30)
+      required:
+      - companyName
+      - address
+      - contactDetails
+      - defaultPaymentTerms
+    CompanyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Company ID
+        companyName:
+          type: string
+          description: Company name
+        taxId:
+          type: string
+          description: Tax ID
+        vatNumber:
+          type: string
+          description: VAT number
+        address:
+          type: object
+          description: International address format
+        contactDetails:
+          type: object
+          description: Company contact details
+        defaultPaymentTerms:
+          type: string
+          description: Default payment terms
+    UpdateCompanyRequest:
+      type: object
+      properties:
+        companyName:
+          type: string
+          description: Company name
+        taxId:
+          type: string
+          description: Tax ID
+        vatNumber:
+          type: string
+          description: VAT number
+        address:
+          type: object
+          description: International address format
+          properties:
+            line1:
+              type: string
+              description: Address line 1
+            line2:
+              type: string
+              description: Address line 2
+            city:
+              type: string
+              description: City
+            region:
+              type: string
+              description: State/Province/Region
+            postalCode:
+              type: string
+              description: Postal/ZIP code
+            countryCode:
+              type: string
+              description: ISO 3166-1 alpha-2 country code
+        contactDetails:
+          type: object
+          description: Company contact details
+          properties:
+            email:
+              type: string
+              description: Contact email
+            phone:
+              type: string
+              description: Contact phone
+        defaultPaymentTerms:
+          type: string
+          description: Default payment terms (e.g., NET_30)
+      required:
+      - companyName
+      - address
+      - contactDetails
+      - defaultPaymentTerms
+    TaxValidationRequest:
+      type: object
+      properties:
+        taxId:
+          type: string
+          description: Tax ID to validate
+        vatNumber:
+          type: string
+          description: VAT number to validate
+        countryCode:
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+      required:
+      - countryCode
+    TaxValidationResponse:
+      type: object
+      properties:
+        taxIdValid:
+          type: boolean
+          description: Tax ID validation result
+        vatNumberValid:
+          type: boolean
+          description: VAT number validation result
+        validationProvider:
+          type: string
+          description: Validation provider name
+        validatedAt:
+          type: string
+          description: ISO timestamp of validation
+    CreateCustomerRequest:
+      type: object
+      properties:
+        customer_name:
+          type: string
+          description: Customer name
+        billing_address:
+          type: string
+          description: Billing address
+        shipping_address:
+          type: string
+          description: Shipping address
+        tax_id:
+          type: string
+          description: Tax identification number
+        payment_terms:
+          type: string
+          description: Payment terms
+        credit_limit:
+          type: number
+          description: Credit limit
+        preferred_payment_method:
+          type: string
+          description: Preferred payment method
+      required:
+      - customer_name
+      - billing_address
+      - tax_id
+    CustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Customer ID
+        customer_name:
+          type: string
+          description: Customer name
+        billing_address:
+          type: string
+          description: Billing address
+        shipping_address:
+          type: string
+          description: Shipping address
+        tax_id:
+          type: string
+          description: Tax identification number
+        payment_terms:
+          type: string
+          description: Payment terms
+        credit_limit:
+          type: number
+          description: Credit limit
+        preferred_payment_method:
+          type: string
+          description: Preferred payment method
+    CustomerListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of customers
+        page:
+          type: integer
+          description: Current page number
+        pageSize:
+          type: integer
+          description: Items per page
+        total:
+          type: integer
+          description: Total number of customers
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        customer_name:
+          type: string
+          description: Customer name
+        billing_address:
+          type: string
+          description: Billing address
+        shipping_address:
+          type: string
+          description: Shipping address
+        tax_id:
+          type: string
+          description: Tax identification number
+        payment_terms:
+          type: string
+          description: Payment terms
+        credit_limit:
+          type: number
+          description: Credit limit
+        preferred_payment_method:
+          type: string
+          description: Preferred payment method
+      required:
+      - customer_name
+      - billing_address
+      - tax_id
+    BulkImportCustomersRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of customer records
+        mode:
+          type: string
+          description: 'Import mode: create or upsert'
+      required:
+      - items
+    BulkImportCustomersResponse:
+      type: object
+      properties:
+        created:
+          type: integer
+          description: Number of created records
+        updated:
+          type: integer
+          description: Number of updated records
+        errors:
+          type: array
+          description: Array of import errors
+    BulkExportCustomersResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Exported customer records
+        page:
+          type: integer
+          description: Current page number
+        pageSize:
+          type: integer
+          description: Items per page
+        total:
+          type: integer
+          description: Total number of customers
+    DetectDuplicatesRequest:
+      type: object
+      properties:
+        match_fields:
+          type: array
+          description: Fields to match for duplicates
+        threshold:
+          type: number
+          description: Similarity threshold
+    DetectDuplicatesResponse:
+      type: object
+      properties:
+        pairs:
+          type: array
+          description: Array of duplicate candidate pairs
+    UserProfileSettingsResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: User ID
+        userRole:
+          type: string
+          description: Assigned user role
+        notificationPreferences:
+          type: object
+          description: Notification preferences
+        dashboardCustomization:
+          type: object
+          description: Dashboard customization settings
+        languageSettings:
+          type: object
+          description: Language and locale settings
+        securitySettings:
+          type: object
+          description: Security settings including MFA and password policy
+    UpdateUserProfileSettingsRequest:
+      type: object
+      properties:
+        userRole:
+          type: string
+          description: Assigned user role
+        notificationPreferences:
+          type: object
+          description: Notification preferences
+        dashboardCustomization:
+          type: object
+          description: Dashboard customization settings
+        languageSettings:
+          type: object
+          description: Language and locale settings
+        securitySettings:
+          type: object
+          description: Security settings including MFA and password policy
+    AuditTrailListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Audit trail entries
+          items:
+            type: object
+            description: Audit trail entry
+        page:
+          type: integer
+          description: Current page
+        pageSize:
+          type: integer
+          description: Items per page
+        totalItems:
+          type: integer
+          description: Total number of items
+    SessionListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Active sessions
+          items:
+            type: object
+            description: Session entry
+        page:
+          type: integer
+          description: Current page
+        pageSize:
+          type: integer
+          description: Items per page
+        totalItems:
+          type: integer
+          description: Total number of items
+    EndpointListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of API endpoints
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Endpoint ID
+              path:
+                type: string
+                description: Endpoint path
+              method:
+                type: string
+                description: HTTP method
+              summary:
+                type: string
+                description: Short description
+              tags:
+                type: array
+                description: Endpoint tags
+                items:
+                  type: string
+        page:
+          type: integer
+          description: Current page number
+        pageSize:
+          type: integer
+          description: Items per page
+        totalItems:
+          type: integer
+          description: Total number of endpoints
+        totalPages:
+          type: integer
+          description: Total pages
+    EndpointResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Endpoint ID
+        path:
+          type: string
+          description: Endpoint path
+        method:
+          type: string
+          description: HTTP method
+        summary:
+          type: string
+          description: Short description
+        description:
+          type: string
+          description: Detailed description
+        parameters:
+          type: array
+          description: Endpoint parameters
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Parameter name
+              location:
+                type: string
+                description: Parameter location
+              type:
+                type: string
+                description: Parameter type
+              required:
+                type: boolean
+                description: Whether the parameter is required
+              description:
+                type: string
+                description: Parameter description
+    FrontendComponentListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of frontend components
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Component ID
+              name:
+                type: string
+                description: Component name
+              type:
+                type: string
+                description: Component type
+              description:
+                type: string
+                description: Component description
+        page:
+          type: integer
+          description: Current page
+        pageSize:
+          type: integer
+          description: Items per page
+        totalItems:
+          type: integer
+          description: Total number of items
+        totalPages:
+          type: integer
+          description: Total number of pages
+    CreateFrontendComponentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Component name
+        type:
+          type: string
+          description: Component type
+        description:
+          type: string
+          description: Component description
+        config:
+          type: object
+          description: Component configuration
+      required:
+      - name
+      - type
+    FrontendComponentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Component ID
+        name:
+          type: string
+          description: Component name
+        type:
+          type: string
+          description: Component type
+        description:
+          type: string
+          description: Component description
+        config:
+          type: object
+          description: Component configuration
+    UpdateFrontendComponentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Component name
+        type:
+          type: string
+          description: Component type
+        description:
+          type: string
+          description: Component description
+        config:
+          type: object
+          description: Component configuration
+      required:
+      - name
+      - type
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+- bearerAuth: []

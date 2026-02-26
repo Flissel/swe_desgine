@@ -1,0 +1,31 @@
+{
+  "links": [
+    {
+      "id": "a51735fc8d9044fe814f2657b1d5eb48",
+      "source_id": "PERSONA-001",
+      "target_id": "FLOW-001",
+      "link_type": "dependency",
+      "reasoning": "Die automatische Rechnungsstellung hängt direkt von der Validierung der Daten ab, was Laura Becker ermöglicht, die Rechnung sofort zu erstellen.",
+      "confidence": 0.9,
+      "created_at": "2026-02-03T15:25:34.268212"
+    },
+    {
+      "id": "12b2ed12a4ff4ce2a7ce9ff26b93559d",
+      "source_id": "PERSONA-001",
+      "target_id": "IA-009",
+      "link_type": "related",
+      "reasoning": "Die automatische Fakturierung ist thematisch eng mit der Beschreibung von Laura Becker verbunden, da sie sich mit der sofortigen Erstellung von Rechnungen befasst.",
+      "confidence": 0.8,
+      "created_at": "2026-02-03T15:25:44.289823"
+    },
+    {
+      "id": "884ba4cbd57e4323a352937cce39f483",
+      "source_id": "FLOW-001",
+      "target_id": "IA-011",
+      "link_type": "related",
+      "reasoning": "Der Node 'Rechnungserstellung (Agenten)' ist relevant, da er sich mit dem Prozess der Rechnungserstellung durch Agenten beschäftigt, was in Zusammenhang mit der automatischen Rechnungsstellung steht.",
+      "confidence": 0.6,
+      "created_at": "2026-02-03T15:41:38.496027"
+    }
+  ]
+}

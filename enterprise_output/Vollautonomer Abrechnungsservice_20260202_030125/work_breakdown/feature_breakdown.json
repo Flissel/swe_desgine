@@ -1,0 +1,167 @@
+{
+  "breakdown_type": "feature",
+  "features": {
+    "FEAT-001": {
+      "feature_id": "FEAT-001",
+      "feature_name": "Core Features",
+      "description": "Feature encompassing: REQ-001, AUTO-001, AUTO-002, AUTO-003, STRAT-001, STRAT-002, STRAT-003, STRAT-004, STRAT-008, STRAT-010, REQ-016, REQ-017, FR-FE-FRONTEND-COMPONENTS, NFR-AGENT-RECHNUNGSERSTELLUNG-AGENT, NFR-AGENT-MAHNAGENT, NFR-AGENT-EXCEPTION-HANDLER-AGENT",
+      "requirements": [
+        "REQ-001",
+        "AUTO-001",
+        "AUTO-002",
+        "AUTO-003",
+        "STRAT-001",
+        "STRAT-002",
+        "STRAT-003",
+        "STRAT-004",
+        "STRAT-008",
+        "STRAT-010",
+        "REQ-016",
+        "REQ-017",
+        "FR-FE-FRONTEND-COMPONENTS",
+        "NFR-AGENT-RECHNUNGSERSTELLUNG-AGENT",
+        "NFR-AGENT-MAHNAGENT",
+        "NFR-AGENT-EXCEPTION-HANDLER-AGENT"
+      ],
+      "priority": "must",
+      "estimated_complexity": "high",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    },
+    "FEAT-002": {
+      "feature_id": "FEAT-002",
+      "feature_name": "Reporting",
+      "description": "Feature encompassing: AUTO-004",
+      "requirements": [
+        "AUTO-004"
+      ],
+      "priority": "should",
+      "estimated_complexity": "low",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    },
+    "FEAT-003": {
+      "feature_id": "FEAT-003",
+      "feature_name": "Security",
+      "description": "Feature encompassing: STRAT-005",
+      "requirements": [
+        "STRAT-005"
+      ],
+      "priority": "should",
+      "estimated_complexity": "low",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    },
+    "FEAT-004": {
+      "feature_id": "FEAT-004",
+      "feature_name": "User Management",
+      "description": "Feature encompassing: STRAT-006, FR-FE-BANK-ACCOUNT-SETUP, FR-FE-COMPANY-SETTINGS, FR-FE-USER-PROFILE-SETTINGS, NFR-AGENT-ZAHLUNGSRECONCILIATION-AGENT",
+      "requirements": [
+        "STRAT-006",
+        "FR-FE-BANK-ACCOUNT-SETUP",
+        "FR-FE-COMPANY-SETTINGS",
+        "FR-FE-USER-PROFILE-SETTINGS",
+        "NFR-AGENT-ZAHLUNGSRECONCILIATION-AGENT"
+      ],
+      "priority": "must",
+      "estimated_complexity": "medium",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    },
+    "FEAT-005": {
+      "feature_id": "FEAT-005",
+      "feature_name": "Data Management",
+      "description": "Feature encompassing: STRAT-007, REQ-018, FR-FE-CUSTOMER-MANAGEMENT, FR-FE-DATABASE-DESIGN, NFR-AGENT-STEUERBERECHNUNGS-AGENT",
+      "requirements": [
+        "STRAT-007",
+        "REQ-018",
+        "FR-FE-CUSTOMER-MANAGEMENT",
+        "FR-FE-DATABASE-DESIGN",
+        "NFR-AGENT-STEUERBERECHNUNGS-AGENT"
+      ],
+      "priority": "must",
+      "estimated_complexity": "medium",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    },
+    "FEAT-006": {
+      "feature_id": "FEAT-006",
+      "feature_name": "Performance",
+      "description": "Feature encompassing: STRAT-009",
+      "requirements": [
+        "STRAT-009"
+      ],
+      "priority": "should",
+      "estimated_complexity": "low",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    },
+    "FEAT-007": {
+      "feature_id": "FEAT-007",
+      "feature_name": "Integration",
+      "description": "Feature encompassing: FR-FE-API-ENDPOINTS",
+      "requirements": [
+        "FR-FE-API-ENDPOINTS"
+      ],
+      "priority": "must",
+      "estimated_complexity": "low",
+      "dependencies": [],
+      "acceptance_criteria": [],
+      "mermaid_diagrams": {},
+      "notes": ""
+    }
+  },
+  "requirement_mapping": {
+    "REQ-001": "FEAT-001",
+    "AUTO-001": "FEAT-001",
+    "AUTO-002": "FEAT-001",
+    "AUTO-003": "FEAT-001",
+    "STRAT-001": "FEAT-001",
+    "STRAT-002": "FEAT-001",
+    "STRAT-003": "FEAT-001",
+    "STRAT-004": "FEAT-001",
+    "STRAT-008": "FEAT-001",
+    "STRAT-010": "FEAT-001",
+    "REQ-016": "FEAT-001",
+    "REQ-017": "FEAT-001",
+    "FR-FE-FRONTEND-COMPONENTS": "FEAT-001",
+    "NFR-AGENT-RECHNUNGSERSTELLUNG-AGENT": "FEAT-001",
+    "NFR-AGENT-MAHNAGENT": "FEAT-001",
+    "NFR-AGENT-EXCEPTION-HANDLER-AGENT": "FEAT-001",
+    "AUTO-004": "FEAT-002",
+    "STRAT-005": "FEAT-003",
+    "STRAT-006": "FEAT-004",
+    "FR-FE-BANK-ACCOUNT-SETUP": "FEAT-004",
+    "FR-FE-COMPANY-SETTINGS": "FEAT-004",
+    "FR-FE-USER-PROFILE-SETTINGS": "FEAT-004",
+    "NFR-AGENT-ZAHLUNGSRECONCILIATION-AGENT": "FEAT-004",
+    "STRAT-007": "FEAT-005",
+    "REQ-018": "FEAT-005",
+    "FR-FE-CUSTOMER-MANAGEMENT": "FEAT-005",
+    "FR-FE-DATABASE-DESIGN": "FEAT-005",
+    "NFR-AGENT-STEUERBERECHNUNGS-AGENT": "FEAT-005",
+    "STRAT-009": "FEAT-006",
+    "FR-FE-API-ENDPOINTS": "FEAT-007"
+  },
+  "dependency_order": [
+    "FEAT-001",
+    "FEAT-002",
+    "FEAT-003",
+    "FEAT-004",
+    "FEAT-005",
+    "FEAT-006",
+    "FEAT-007"
+  ]
+}

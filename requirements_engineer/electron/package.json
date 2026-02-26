@@ -1,0 +1,49 @@
+{
+  "name": "re-system-dashboard",
+  "version": "1.0.0",
+  "description": "Requirements Engineering System Dashboard - Electron App",
+  "main": "main.js",
+  "scripts": {
+    "start": "node launch.js",
+    "dev": "node launch.js --dev",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "requirements-engineering",
+    "dashboard",
+    "electron",
+    "mermaid",
+    "visualization"
+  ],
+  "author": "Sakana AI",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.sakana.re-dashboard",
+    "productName": "RE System Dashboard",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "embed.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

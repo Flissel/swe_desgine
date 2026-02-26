@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant User
+    participant SteuerberechnungsAgent as Steuerberechnungs-Agent
+    participant TaxRateFinder
+    participant VATCalculator
+    participant DATEVExporter
+
+    User->>SteuerberechnungsAgent: Steuerberechnung anfordern (Buchungsdaten)
+    activate SteuerberechnungsAgent
+    SteuerberechnungsAgent->>TaxRateFinder: Steuersatz ermitteln (Steuerkennzeichnung)
+    activate TaxRateFinder
+    TaxRateFinder-->>SteuerberechnungsAgent: Steuersatzdaten
+    deactivate TaxRateFinder
+    SteuerberechnungsAgent->>VATCalculator: MwSt./Reverse Charge berechnen
+    activate VATCalculator
+    VATCalculator-->>SteuerberechnungsAgent: Steuerergebnis
+    deactivate VATCalculator
+    SteuerberechnungsAgent->>SteuerberechnungsAgent: Buchungsvorschlag erstellen
+    SteuerberechnungsAgent->>DATEVExporter: DATEV-Export vorbereiten
+    activate DATEVExporter
+    DATEVExporter-->>SteuerberechnungsAgent: DATEV-Exportdaten
+    deactivate DATEVExporter
+    SteuerberechnungsAgent-->>User: Ergebnis liefern (Steuern, Buchungsvorschlag, Export)
+    deactivate SteuerberechnungsAgent

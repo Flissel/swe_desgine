@@ -1,0 +1,45 @@
+classDiagram
+    class ImportService {
+        +String sourceType
+        +importData(filePath: String) : ImportResult
+        +selectImporter(sourceType: String) : DataImporter
+
+    class DataImporter {
+        <<interface>>
+        +importFile(filePath: String) : ImportResult
+        +parseRow(row: String) : Customer
+
+    class CsvImporter {
+        +String delimiter
+        +importFile(filePath: String) : ImportResult
+        +parseRow(row: String) : Customer
+
+    class ExcelImporter {
+        +String sheetName
+        +importFile(filePath: String) : ImportResult
+        +parseRow(row: String) : Customer
+
+    class Customer {
+        +String customerId
+        +String name
+        +String email
+        +String phone
+
+    class ImportResult {
+        +int totalRows
+        +int सफलRows
+        +int failedRows
+
+    class FileValidator {
+        +validateFile(filePath: String) : bool
+
+    class RowParser {
+        +mapToCustomer(fields: String) : Customer
+
+    ImportService --> DataImporter : uses
+    DataImporter <|-- CsvImporter
+    DataImporter <|-- ExcelImporter
+    ImportService --> FileValidator : validates
+    DataImporter --> RowParser : uses
+    DataImporter --> ImportResult : creates
+    RowParser --> Customer : creates

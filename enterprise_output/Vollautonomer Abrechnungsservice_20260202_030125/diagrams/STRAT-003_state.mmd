@@ -1,0 +1,20 @@
+stateDiagram-v2
+    [*] --> Init
+    Init --> Operational : boot_ok
+    Init --> Failure : boot_fail
+
+    Operational --> Sense : event_received
+    Sense --> Decide : data_ready
+    Decide --> Act : decision_made
+    Act --> Learn : action_complete
+    Learn --> Operational : model_updated
+
+    Operational --> Degraded : latency_spike
+    Degraded --> Failover : threshold_breached
+    Failover --> Recovery : replica_promoted
+    Recovery --> Operational : health_restored
+
+    Operational --> Failure : critical_fault
+    Degraded --> Failure : fault_escalation
+    Failure --> Shutdown : abort
+    Shutdown --> [*]

@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant User as Nutzer
+    participant POD as POD-Validierungsservice
+    participant Billing as Fakturierungssystem
+    participant Invoice as Rechnungsservice
+    participant ERP as Buchhaltungssystem
+
+    User->>POD: Liefernachweis einreichen
+    activate POD
+    POD->>POD: POD validieren
+    POD-->>Billing: POD validiert (Event)
+    deactivate POD
+
+    activate Billing
+    Billing->>Invoice: Rechnung automatisch erstellen
+    activate Invoice
+    Invoice->>Invoice: Rechnung generieren
+    Invoice-->>Billing: Rechnung erstellt
+    deactivate Invoice
+
+    Billing->>ERP: Rechnung buchen
+    ERP-->>Billing: Buchung bestätigt
+    deactivate Billing

@@ -1,0 +1,51 @@
+classDiagram
+    class ApiEndpointsComponent {
+        +endpoints: List~EndpointConfig~
+        +registerEndpoint(config: EndpointConfig)
+        +getEndpoint(name: String): EndpointConfig
+
+    class ApiClient {
+        +baseUrl: String
+        +send(request: ApiRequest): ApiResponse
+
+    class EndpointConfig {
+        +name: String
+        +path: String
+        +method: HttpMethod
+        +requiresAuth: Boolean
+
+    class RequestBuilder {
+        +buildRequest(config: EndpointConfig, payload: Object): ApiRequest
+
+    class ResponseHandler {
+        +handleResponse(response: ApiResponse): Object
+
+    class ApiRequest {
+        +url: String
+        +method: HttpMethod
+        +headers: Map~String,String~
+        +body: Object
+
+    class ApiResponse {
+        +statusCode: int
+        +headers: Map~String,String~
+        +body: Object
+
+    class HttpMethod {
+        <<enumeration>>
+        GET
+        POST
+        PUT
+        DELETE
+        PATCH
+
+    ApiEndpointsComponent "1" o-- "many" EndpointConfig
+    ApiEndpointsComponent --> ApiClient
+    ApiEndpointsComponent --> RequestBuilder
+    ApiEndpointsComponent --> ResponseHandler
+    RequestBuilder --> ApiRequest
+    ApiClient --> ApiRequest
+    ApiClient --> ApiResponse
+    ResponseHandler --> ApiResponse
+    EndpointConfig --> HttpMethod
+    ApiRequest --> HttpMethod

@@ -1,0 +1,13 @@
+C4Context
+    title Agenten-basierte Rechnungsgenerierung - System Context
+    Person(customer, "Kunde", "Empfängt Rechnungen")
+    Person(billing_clerk, "Buchhaltung", "Überwacht Abrechnungsergebnisse")
+    System(main_system, "Agenten-basierte Rechnungsgenerierung", "Erstellt automatisch Rechnungen durch spezialisierte AI-Agenten")
+    System_Ext(erp, "ERP-System", "Stammdaten und Auftragsdaten")
+    System_Ext(payment, "Zahlungsanbieter API", "Zahlungsstatus und Transaktionen")
+    System_Ext(tax, "Steuer-API", "Steuersätze und Validierung")
+    Rel(customer, main_system, "Erhält Rechnungen von")
+    Rel(billing_clerk, main_system, "Überwacht und prüft")
+    Rel(main_system, erp, "Bezieht Auftrags- und Kundendaten")
+    Rel(main_system, payment, "Synchronisiert Zahlungsstatus")
+    Rel(main_system, tax, "Validiert Steuern und Sätze")

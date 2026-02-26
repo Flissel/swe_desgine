@@ -1,0 +1,18 @@
+C4Context
+    title System Architecture - Vollautonomer Abrechnungsservice
+
+    Person(user, "User", "End user of the system")
+
+    System_Boundary(system, "Vollautonomer Abrechnungsservice") {
+        Container(frontend, "Frontend", "React", "User Interface")
+        Container(backend, "Backend API", "FastAPI", "REST API")
+        ContainerDb(db, "Database", "PostgreSQL", "Primary data store")
+        ContainerDb(cache, "Cache", "Redis", "Caching layer")
+        Container(mq, "Message Queue", "Kafka", "Async messaging")
+    }
+
+    Rel(user, frontend, "Uses", "HTTPS")
+    Rel(frontend, backend, "API calls", "HTTPS")
+    Rel(backend, db, "Reads/Writes", "SQL/NoSQL")
+    Rel(backend, cache, "Caches", "TCP")
+    Rel(backend, mq, "Publishes/Subscribes", "AMQP/Kafka")

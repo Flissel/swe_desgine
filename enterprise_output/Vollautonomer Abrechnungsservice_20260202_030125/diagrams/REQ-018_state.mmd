@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> SelectFile : startImport
+    SelectFile --> ValidateFormat : fileChosen
+    ValidateFormat --> ParseCSV : formatCSV
+    ValidateFormat --> ParseExcel : formatExcel
+    ParseCSV --> Importing : parseSuccess
+    ParseExcel --> Importing : parseSuccess
+    ValidateFormat --> Failure : unsupportedFormat
+    ParseCSV --> Failure : parseError
+    ParseExcel --> Failure : parseError
+    Importing --> Success : importSuccess
+    Importing --> Failure : importError
+    Success --> [*]
+    Failure --> [*]

@@ -1,0 +1,416 @@
+{
+  "project_name": "Vollautonomer Abrechnungsservice",
+  "design_tokens": {
+    "colors": {
+      "primary": "#2F5AA6",
+      "primary-dark": "#23457F",
+      "primary-light": "#5F82C5",
+      "secondary": "#8A94A6",
+      "background": "#F5F7FA",
+      "surface": "#FFFFFF",
+      "text-primary": "#1F2A37",
+      "text-secondary": "#4B5563",
+      "error": "#D14343",
+      "warning": "#F2A900",
+      "success": "#2E8B57",
+      "info": "#2B7CD3"
+    },
+    "typography": {
+      "font-family": {
+        "base": "Inter, Arial, sans-serif",
+        "mono": "Roboto Mono, monospace"
+      },
+      "h1": {
+        "size": "2.5rem",
+        "weight": "700",
+        "line-height": "1.2"
+      },
+      "h2": {
+        "size": "2rem",
+        "weight": "600",
+        "line-height": "1.25"
+      },
+      "h3": {
+        "size": "1.5rem",
+        "weight": "600",
+        "line-height": "1.3"
+      },
+      "h4": {
+        "size": "1.25rem",
+        "weight": "600",
+        "line-height": "1.4"
+      },
+      "body": {
+        "size": "1rem",
+        "weight": "400",
+        "line-height": "1.5"
+      },
+      "body-small": {
+        "size": "0.875rem",
+        "weight": "400",
+        "line-height": "1.5"
+      },
+      "caption": {
+        "size": "0.75rem",
+        "weight": "400",
+        "line-height": "1.4"
+      }
+    },
+    "spacing": {
+      "xs": "0.25rem",
+      "sm": "0.5rem",
+      "md": "1rem",
+      "lg": "1.5rem",
+      "xl": "2rem",
+      "2xl": "3rem",
+      "3xl": "4rem"
+    },
+    "breakpoints": {
+      "mobile": 320,
+      "mobile-lg": 480,
+      "tablet": 768,
+      "desktop": 1024,
+      "desktop-lg": 1280,
+      "desktop-xl": 1536
+    },
+    "shadows": {
+      "sm": "0 1px 2px rgba(0, 0, 0, 0.05)",
+      "md": "0 4px 6px rgba(0, 0, 0, 0.1)",
+      "lg": "0 10px 15px rgba(0, 0, 0, 0.1)",
+      "xl": "0 20px 25px rgba(0, 0, 0, 0.15)"
+    },
+    "border_radius": {
+      "none": "0",
+      "sm": "0.125rem",
+      "md": "0.375rem",
+      "lg": "0.5rem",
+      "xl": "0.75rem",
+      "full": "9999px"
+    }
+  },
+  "components": [
+    {
+      "id": "COMP-001",
+      "name": "Button",
+      "component_type": "button",
+      "description": "Primary action button component",
+      "variants": [
+        "primary",
+        "secondary",
+        "outline",
+        "ghost",
+        "danger"
+      ],
+      "props": {
+        "size": "sm | md | lg",
+        "disabled": "boolean",
+        "loading": "boolean",
+        "icon": "ReactNode (optional)",
+        "onClick": "() => void"
+      },
+      "states": [
+        "default",
+        "hover",
+        "active",
+        "focus",
+        "disabled",
+        "loading"
+      ],
+      "accessibility": {
+        "role": "button",
+        "aria-label": "Required for icon-only buttons",
+        "aria-disabled": "When disabled"
+      },
+      "example_usage": "<Button variant='primary' size='md'>Save</Button>"
+    },
+    {
+      "id": "COMP-002",
+      "name": "InputField",
+      "component_type": "input",
+      "description": "Text input with label, hint and validation",
+      "variants": [
+        "default",
+        "filled",
+        "outline"
+      ],
+      "props": {
+        "label": "string",
+        "placeholder": "string",
+        "value": "string",
+        "onChange": "(value: string) => void",
+        "type": "text | email | number | password",
+        "required": "boolean",
+        "error": "string (optional)",
+        "helperText": "string (optional)",
+        "icon": "ReactNode (optional)"
+      },
+      "states": [
+        "default",
+        "focus",
+        "error",
+        "disabled"
+      ],
+      "accessibility": {
+        "role": "textbox",
+        "aria-label": "Input label",
+        "aria-invalid": "When error"
+      },
+      "example_usage": "<InputField label='IBAN' placeholder='DE..' required />"
+    },
+    {
+      "id": "COMP-003",
+      "name": "Select",
+      "component_type": "select",
+      "description": "Dropdown select for single or multi selection",
+      "variants": [
+        "default",
+        "searchable",
+        "multi"
+      ],
+      "props": {
+        "label": "string",
+        "options": "Array<{label: string, value: string}>",
+        "value": "string | string[]",
+        "onChange": "(value: string | string[]) => void",
+        "placeholder": "string",
+        "disabled": "boolean",
+        "error": "string (optional)"
+      },
+      "states": [
+        "default",
+        "focus",
+        "open",
+        "error",
+        "disabled"
+      ],
+      "accessibility": {
+        "role": "combobox",
+        "aria-expanded": "When open",
+        "aria-label": "Select label"
+      },
+      "example_usage": "<Select label='Currency' options={opts} />"
+    },
+    {
+      "id": "COMP-004",
+      "name": "DataTable",
+      "component_type": "table",
+      "description": "Sortable, filterable data table",
+      "variants": [
+        "default",
+        "compact",
+        "striped"
+      ],
+      "props": {
+        "columns": "Column[]",
+        "data": "T[]",
+        "sortable": "boolean",
+        "filterable": "boolean",
+        "pagination": "boolean",
+        "rowActions": "ReactNode (optional)"
+      },
+      "states": [
+        "loading",
+        "empty",
+        "error"
+      ],
+      "accessibility": {
+        "role": "table",
+        "aria-label": "Table description required"
+      },
+      "example_usage": "<DataTable columns={cols} data={rows} sortable />"
+    },
+    {
+      "id": "COMP-005",
+      "name": "StatusBadge",
+      "component_type": "badge",
+      "description": "Status indicator for workflows, invoices and exceptions",
+      "variants": [
+        "success",
+        "warning",
+        "error",
+        "info",
+        "neutral"
+      ],
+      "props": {
+        "label": "string",
+        "variant": "success | warning | error | info | neutral",
+        "icon": "ReactNode (optional)"
+      },
+      "states": [
+        "default"
+      ],
+      "accessibility": {
+        "role": "status",
+        "aria-label": "Status description"
+      },
+      "example_usage": "<StatusBadge variant='success' label='Validated' />"
+    },
+    {
+      "id": "COMP-006",
+      "name": "KpiCard",
+      "component_type": "card",
+      "description": "Card for KPI metrics on monitoring dashboard",
+      "variants": [
+        "default",
+        "accent",
+        "outline"
+      ],
+      "props": {
+        "title": "string",
+        "value": "string | number",
+        "delta": "string (optional)",
+        "trend": "up | down | flat (optional)",
+        "icon": "ReactNode (optional)"
+      },
+      "states": [
+        "default",
+        "loading"
+      ],
+      "accessibility": {
+        "role": "region",
+        "aria-label": "KPI card"
+      },
+      "example_usage": "<KpiCard title='Invoices' value='1,240' delta='+6%' trend='up' />"
+    },
+    {
+      "id": "COMP-007",
+      "name": "ChartCard",
+      "component_type": "chart",
+      "description": "Chart container for performance and monitoring visuals",
+      "variants": [
+        "line",
+        "bar",
+        "area"
+      ],
+      "props": {
+        "title": "string",
+        "data": "ChartData",
+        "variant": "line | bar | area",
+        "legend": "boolean",
+        "height": "number"
+      },
+      "states": [
+        "loading",
+        "empty",
+        "error"
+      ],
+      "accessibility": {
+        "role": "img",
+        "aria-label": "Chart description"
+      },
+      "example_usage": "<ChartCard title='Workflow Latency' variant='line' data={data} />"
+    },
+    {
+      "id": "COMP-008",
+      "name": "ModalDialog",
+      "component_type": "modal",
+      "description": "Modal for confirmations and exception handling actions",
+      "variants": [
+        "default",
+        "danger",
+        "info"
+      ],
+      "props": {
+        "title": "string",
+        "open": "boolean",
+        "onClose": "() => void",
+        "footer": "ReactNode (optional)",
+        "size": "sm | md | lg"
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "accessibility": {
+        "role": "dialog",
+        "aria-modal": "true",
+        "aria-labelledby": "Modal title id"
+      },
+      "example_usage": "<ModalDialog title='Resolve Exception' open onClose={...} />"
+    },
+    {
+      "id": "COMP-009",
+      "name": "Tabs",
+      "component_type": "navigation",
+      "description": "Tabbed navigation for settings and monitoring sections",
+      "variants": [
+        "default",
+        "pill",
+        "underline"
+      ],
+      "props": {
+        "tabs": "Array<{label: string, value: string, icon?: ReactNode}>",
+        "value": "string",
+        "onChange": "(value: string) => void"
+      },
+      "states": [
+        "default",
+        "active",
+        "disabled"
+      ],
+      "accessibility": {
+        "role": "tablist",
+        "aria-label": "Tabs label"
+      },
+      "example_usage": "<Tabs tabs={tabs} value='company' onChange={setTab} />"
+    },
+    {
+      "id": "COMP-010",
+      "name": "Stepper",
+      "component_type": "progress",
+      "description": "Multi-step progress indicator for onboarding flows (bank account, company settings)",
+      "variants": [
+        "default",
+        "compact"
+      ],
+      "props": {
+        "steps": "Array<{label: string}>",
+        "currentStep": "number",
+        "completed": "number[] (optional)"
+      },
+      "states": [
+        "default",
+        "completed"
+      ],
+      "accessibility": {
+        "role": "progressbar",
+        "aria-valuenow": "currentStep",
+        "aria-valuemax": "steps.length"
+      },
+      "example_usage": "<Stepper steps={steps} currentStep={2} />"
+    },
+    {
+      "id": "COMP-011",
+      "name": "FileUpload",
+      "component_type": "upload",
+      "description": "Upload area for bulk customer import and document attachments",
+      "variants": [
+        "dropzone",
+        "button"
+      ],
+      "props": {
+        "accept": "string",
+        "multiple": "boolean",
+        "onUpload": "(files: File[]) => void",
+        "maxSizeMb": "number",
+        "helperText": "string (optional)"
+      },
+      "states": [
+        "idle",
+        "dragging",
+        "uploading",
+        "error",
+        "success"
+      ],
+      "accessibility": {
+        "role": "button",
+        "aria-label": "File upload"
+      },
+      "example_usage": "<FileUpload accept='.csv' multiple onUpload={handleUpload} />"
+    }
+  ],
+  "screens": [],
+  "responsive_strategy": "mobile-first",
+  "theme_support": true,
+  "dark_mode": true
+}

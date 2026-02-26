@@ -1,0 +1,1571 @@
+{
+  "Name": "transport-tracking-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Transport_Tracking.md",
+    "requirement_count": 191,
+    "categories": {
+      "functional": 179,
+      "security": 3,
+      "performance": 9
+    },
+    "priorities": {
+      "should": 191
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-ccb83b-000",
+      "title": "The system must provide continuous GPS position transmission from vehicles for real-time tracking",
+      "description": "The system must provide continuous GPS position transmission from vehicles for real-time tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-a",
+      "title": "The system must monitor planned versus actual routes during transport",
+      "description": "The system must monitor planned versus actual routes during transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-b",
+      "title": "The system must send automatic notifications when vehicles enter or exit geofenced areas",
+      "description": "The system must send automatic notifications when vehicles enter or exit geofenced areas",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-c",
+      "title": "The system must calculate dynamic estimated arrival times during transport",
+      "description": "The system must calculate dynamic estimated arrival times during transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-d",
+      "title": "The system must provide real-time updates to customers and dispatchers",
+      "description": "The system must provide real-time updates to customers and dispatchers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-e",
+      "title": "The system must track complete transport lifecycle from start to completion",
+      "description": "The system must track complete transport lifecycle from start to completion",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-f",
+      "title": "The system must automatically capture important transport milestones",
+      "description": "The system must automatically capture important transport milestones",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-g",
+      "title": "The system must detect and manage transport deviations and exceptions",
+      "description": "The system must detect and manage transport deviations and exceptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-h",
+      "title": "The system must manage transport delays with notifications",
+      "description": "The system must manage transport delays with notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-i",
+      "title": "The system must track multi-stop tours with multiple delivery points",
+      "description": "The system must track multi-stop tours with multiple delivery points",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-j",
+      "title": "The system must capture digital signatures for proof of delivery",
+      "description": "The system must capture digital signatures for proof of delivery",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-k",
+      "title": "The system must document deliveries with photographic evidence",
+      "description": "The system must document deliveries with photographic evidence",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-l",
+      "title": "The system must document damage reports with photographs",
+      "description": "The system must document damage reports with photographs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-m",
+      "title": "The system must record precise timestamps for all delivery events",
+      "description": "The system must record precise timestamps for all delivery events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-n",
+      "title": "The system must manage all proof of delivery documents",
+      "description": "The system must manage all proof of delivery documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-o",
+      "title": "The system must provide complete transport CRUD operations",
+      "description": "The system must provide complete transport CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-p",
+      "title": "The system must validate status updates before processing",
+      "description": "The system must validate status updates before processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-q",
+      "title": "The system must support route planning and adjustment",
+      "description": "The system must support route planning and adjustment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-r",
+      "title": "The system must provide live data queries for tracking",
+      "description": "The system must provide live data queries for tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-s",
+      "title": "The system must process GPS position updates",
+      "description": "The system must process GPS position updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-t",
+      "title": "The system must track and analyze routes",
+      "description": "The system must track and analyze routes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-u",
+      "title": "The system must manage geofence configuration and monitoring",
+      "description": "The system must manage geofence configuration and monitoring",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-v",
+      "title": "The system must log all tracking events",
+      "description": "The system must log all tracking events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-w",
+      "title": "The system must create proof of delivery records",
+      "description": "The system must create proof of delivery records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-x",
+      "title": "The system must support document upload for photos and files",
+      "description": "The system must support document upload for photos and files",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-y",
+      "title": "The system must capture electronic signatures",
+      "description": "The system must capture electronic signatures",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-z",
+      "title": "The system must validate and release proof of delivery records",
+      "description": "The system must validate and release proof of delivery records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-27",
+      "title": "The system must calculate transport performance metrics",
+      "description": "The system must calculate transport performance metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-28",
+      "title": "The system must provide route analysis and optimization",
+      "description": "The system must provide route analysis and optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-29",
+      "title": "The system must generate delay analysis reports",
+      "description": "The system must generate delay analysis reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-30",
+      "title": "The system must generate customer-specific reports",
+      "description": "The system must generate customer-specific reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-31",
+      "title": "The system must store transport identification including transport ID and order reference",
+      "description": "The system must store transport identification including transport ID and order reference",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-32",
+      "title": "The system must store vehicle and driver assignments for each transport",
+      "description": "The system must store vehicle and driver assignments for each transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-33",
+      "title": "The system must store start and destination addresses for each transport",
+      "description": "The system must store start and destination addresses for each transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-34",
+      "title": "The system must store planned routes and intermediate stops",
+      "description": "The system must store planned routes and intermediate stops",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-35",
+      "title": "The system must store planned and actual start and arrival times",
+      "description": "The system must store planned and actual start and arrival times",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-36",
+      "title": "The system must track current transport status and milestones",
+      "description": "The system must track current transport status and milestones",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-37",
+      "title": "The system must maintain event history for each transport",
+      "description": "The system must maintain event history for each transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-38",
+      "title": "The system must record distance traveled for each transport",
+      "description": "The system must record distance traveled for each transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-39",
+      "title": "The system must record driving time for each transport",
+      "description": "The system must record driving time for each transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-40",
+      "title": "The system must record fuel consumption for each transport",
+      "description": "The system must record fuel consumption for each transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-41",
+      "title": "The system must store event metadata including timestamp, event type, and data source",
+      "description": "The system must store event metadata including timestamp, event type, and data source",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-42",
+      "title": "The system must store GPS coordinates and address information for tracking events",
+      "description": "The system must store GPS coordinates and address information for tracking events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-43",
+      "title": "The system must store vehicle status and telemetry data in tracking events",
+      "description": "The system must store vehicle status and telemetry data in tracking events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-44",
+      "title": "The system must store driver ID and activity status in tracking events",
+      "description": "The system must store driver ID and activity status in tracking events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-45",
+      "title": "The system must store environmental data including weather and traffic conditions",
+      "description": "The system must store environmental data including weather and traffic conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-46",
+      "title": "The system must store delivery time and recipient information in POD records",
+      "description": "The system must store delivery time and recipient information in POD records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-47",
+      "title": "The system must store delivery address in POD records",
+      "description": "The system must store delivery address in POD records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-48",
+      "title": "The system must store photos, signatures, and damage reports in POD documentation",
+      "description": "The system must store photos, signatures, and damage reports in POD documentation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-49",
+      "title": "The system must store POD validation status and approval information",
+      "description": "The system must store POD validation status and approval information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-50",
+      "title": "The system must store POD quality assessment information",
+      "description": "The system must store POD quality assessment information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-51",
+      "title": "The system must store POD creation time and modifier information",
+      "description": "The system must store POD creation time and modifier information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-52",
+      "title": "The system must maintain POD change history",
+      "description": "The system must maintain POD change history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-53",
+      "title": "The system must store external references and system integrations in POD records",
+      "description": "The system must store external references and system integrations in POD records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-54",
+      "title": "The system must support transport status transitions through Created, Assigned, Started, In Transit, At Pickup, Loaded, At Delivery, Delivered, and Completed states",
+      "description": "The system must support transport status transitions through Created, Assigned, Started, In Transit, At Pickup, Loaded, At Delivery, Delivered, and Completed states",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-55",
+      "title": "The system must define geographic zones and boundaries for geofences",
+      "description": "The system must define geographic zones and boundaries for geofences",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-56",
+      "title": "The system must trigger entry and exit events for geofences",
+      "description": "The system must trigger entry and exit events for geofences",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-57",
+      "title": "The system must support notification rules for geofence events",
+      "description": "The system must support notification rules for geofence events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-58",
+      "title": "The system should integrate WebSocket for live updates",
+      "description": "The system should integrate WebSocket for live updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-59",
+      "title": "The system should support real-time event streaming",
+      "description": "The system should support real-time event streaming",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-60",
+      "title": "The system should integrate OCR for document recognition",
+      "description": "The system should integrate OCR for document recognition",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-61",
+      "title": "The system should provide ML-based predictive analytics",
+      "description": "The system should provide ML-based predictive analytics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-62",
+      "title": "The system should integrate advanced telematics data",
+      "description": "The system should integrate advanced telematics data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-63",
+      "title": "The system should integrate IoT sensor data",
+      "description": "The system should integrate IoT sensor data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-64",
+      "title": "The system should implement blockchain-based immutability for POD records",
+      "description": "The system should implement blockchain-based immutability for POD records",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-65",
+      "title": "The system should support extended status transition rules",
+      "description": "The system should support extended status transition rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-66",
+      "title": "The system must be implemented as a standalone FastAPI service",
+      "description": "The system must be implemented as a standalone FastAPI service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-000-67",
+      "title": "The system must integrate with n8n for real-time tracking and event processing",
+      "description": "The system must integrate with n8n for real-time tracking and event processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001",
+      "title": "The system must capture and store delivery information including delivery time, recipient, and delivery address",
+      "description": "The system must capture and store delivery information including delivery time, recipient, and delivery address",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-a",
+      "title": "The system must store documentation including photos, signatures, and damage reports",
+      "description": "The system must store documentation including photos, signatures, and damage reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-b",
+      "title": "The system must track validation status including check status, approval, and quality assessment",
+      "description": "The system must track validation status including check status, approval, and quality assessment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-c",
+      "title": "The system must maintain metadata including creation time, editor information, and change history",
+      "description": "The system must maintain metadata including creation time, editor information, and change history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-d",
+      "title": "The system must store integration data including external references and system links",
+      "description": "The system must store integration data including external references and system links",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-e",
+      "title": "The system must support transport status lifecycle transitions from Created through Completed",
+      "description": "The system must support transport status lifecycle transitions from Created through Completed",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-f",
+      "title": "The system must define geographic zones and boundaries for geofence configuration",
+      "description": "The system must define geographic zones and boundaries for geofence configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-g",
+      "title": "The system must trigger events for geofence entry and exit with associated actions",
+      "description": "The system must trigger events for geofence entry and exit with associated actions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-h",
+      "title": "The system must support notification rules and recipient configuration for geofence events",
+      "description": "The system must support notification rules and recipient configuration for geofence events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-i",
+      "title": "The system must support time-based geofence activation constraints",
+      "description": "The system must support time-based geofence activation constraints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-j",
+      "title": "The system must integrate geofence configuration with other services",
+      "description": "The system must integrate geofence configuration with other services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-k",
+      "title": "The FastAPI service must process tracking data in real-time",
+      "description": "The FastAPI service must process tracking data in real-time",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-l",
+      "title": "The system must implement event-driven architecture for tracking operations",
+      "description": "The system must implement event-driven architecture for tracking operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-m",
+      "title": "The system must implement microservice pattern with loosely coupled services",
+      "description": "The system must implement microservice pattern with loosely coupled services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-n",
+      "title": "The system must support horizontal scalability of the tracking architecture",
+      "description": "The system must support horizontal scalability of the tracking architecture",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-o",
+      "title": "The system must provide a central tracking engine for tracking logic and processing",
+      "description": "The system must provide a central tracking engine for tracking logic and processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-p",
+      "title": "The system must process and forward events through event processing service",
+      "description": "The system must process and forward events through event processing service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-q",
+      "title": "The system must manage and validate proof of delivery documents",
+      "description": "The system must manage and validate proof of delivery documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-r",
+      "title": "The system must provide analytics engine for data analysis and reporting",
+      "description": "The system must provide analytics engine for data analysis and reporting",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-s",
+      "title": "The system must process raw GPS data from tracking devices",
+      "description": "The system must process raw GPS data from tracking devices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-t",
+      "title": "The system must calculate and optimize routes",
+      "description": "The system must calculate and optimize routes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-u",
+      "title": "The system must monitor and manage geofence operations",
+      "description": "The system must monitor and manage geofence operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-v",
+      "title": "The system must provide alert and notification capabilities",
+      "description": "The system must provide alert and notification capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-w",
+      "title": "The n8n workflow must continuously ingest GPS data",
+      "description": "The n8n workflow must continuously ingest GPS data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-x",
+      "title": "The n8n workflow must validate GPS data for plausibility and cleanliness",
+      "description": "The n8n workflow must validate GPS data for plausibility and cleanliness",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-y",
+      "title": "The n8n workflow must calculate and interpolate positions from GPS data",
+      "description": "The n8n workflow must calculate and interpolate positions from GPS data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-z",
+      "title": "The n8n workflow must automatically generate events from GPS data",
+      "description": "The n8n workflow must automatically generate events from GPS data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-27",
+      "title": "The n8n workflow must continuously monitor defined geofence zones",
+      "description": "The n8n workflow must continuously monitor defined geofence zones",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-28",
+      "title": "The n8n workflow must detect geofence entry and exit events",
+      "description": "The n8n workflow must detect geofence entry and exit events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-29",
+      "title": "The n8n workflow must automatically dispatch notifications for geofence events",
+      "description": "The n8n workflow must automatically dispatch notifications for geofence events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-30",
+      "title": "The n8n workflow must trigger defined actions for geofence events",
+      "description": "The n8n workflow must trigger defined actions for geofence events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-31",
+      "title": "The n8n workflow must integrate current traffic data for ETA calculation",
+      "description": "The n8n workflow must integrate current traffic data for ETA calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-32",
+      "title": "The n8n workflow must analyze remaining route for ETA calculation",
+      "description": "The n8n workflow must analyze remaining route for ETA calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-33",
+      "title": "The n8n workflow must predict potential delivery delays",
+      "description": "The n8n workflow must predict potential delivery delays",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-34",
+      "title": "The n8n workflow must automatically notify customers of ETA updates",
+      "description": "The n8n workflow must automatically notify customers of ETA updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-35",
+      "title": "The n8n workflow must capture POD documents",
+      "description": "The n8n workflow must capture POD documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-36",
+      "title": "The n8n workflow must validate quality of POD documents",
+      "description": "The n8n workflow must validate quality of POD documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-37",
+      "title": "The n8n workflow must automatically extract data from POD documents",
+      "description": "The n8n workflow must automatically extract data from POD documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-38",
+      "title": "The n8n workflow must synchronize POD data with other systems",
+      "description": "The n8n workflow must synchronize POD data with other systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-39",
+      "title": "The system must accept GPS data from GPS devices and mobile applications",
+      "description": "The system must accept GPS data from GPS devices and mobile applications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-40",
+      "title": "The system must process real-time position data and update dashboard",
+      "description": "The system must process real-time position data and update dashboard",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-41",
+      "title": "The system must store tracking events in Supabase database",
+      "description": "The system must store tracking events in Supabase database",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-42",
+      "title": "The system must display live map on loveable.dev frontend",
+      "description": "The system must display live map on loveable.dev frontend",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-43",
+      "title": "The system must process geofence events through n8n workflow",
+      "description": "The system must process geofence events through n8n workflow",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-44",
+      "title": "The system must send multi-channel notifications for events",
+      "description": "The system must send multi-channel notifications for events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-45",
+      "title": "The system must capture POD documents and store in Supabase Storage",
+      "description": "The system must capture POD documents and store in Supabase Storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-46",
+      "title": "The system must process POD documents through n8n OCR workflow",
+      "description": "The system must process POD documents through n8n OCR workflow",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-47",
+      "title": "The system must validate extracted POD data",
+      "description": "The system must validate extracted POD data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-48",
+      "title": "The system must calculate ETA using traffic data from external APIs",
+      "description": "The system must calculate ETA using traffic data from external APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-49",
+      "title": "The system must optimize routes using ETA calculation",
+      "description": "The system must optimize routes using ETA calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-50",
+      "title": "The system must integrate with Order Management Service for transport orders and routing information",
+      "description": "The system must integrate with Order Management Service for transport orders and routing information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-51",
+      "title": "The system must integrate with Disposition Service for tour planning and vehicle assignments",
+      "description": "The system must integrate with Disposition Service for tour planning and vehicle assignments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-52",
+      "title": "The system must integrate with Vehicle Telematics for GPS data and vehicle status",
+      "description": "The system must integrate with Vehicle Telematics for GPS data and vehicle status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-53",
+      "title": "The system must integrate with Mobile Apps for driver POD and status updates",
+      "description": "The system must integrate with Mobile Apps for driver POD and status updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-54",
+      "title": "The system must provide live tracking to Customer Portal",
+      "description": "The system must provide live tracking to Customer Portal",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-55",
+      "title": "The system must provide transport data to Billing Service",
+      "description": "The system must provide transport data to Billing Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-56",
+      "title": "The system must provide performance data to Analytics Service",
+      "description": "The system must provide performance data to Analytics Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-57",
+      "title": "The system must integrate with external APIs for traffic, weather, and map services",
+      "description": "The system must integrate with external APIs for traffic, weather, and map services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-58",
+      "title": "The system must process GPS data from integrated vehicle telematics systems",
+      "description": "The system must process GPS data from integrated vehicle telematics systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-59",
+      "title": "The system must process position data from smartphone-based mobile applications",
+      "description": "The system must process position data from smartphone-based mobile applications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-60",
+      "title": "The system must process data from on-board diagnostics devices",
+      "description": "The system must process data from on-board diagnostics devices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-61",
+      "title": "The system must process data from IoT sensors",
+      "description": "The system must process data from IoT sensors",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-62",
+      "title": "The system must process incoming data in real-time",
+      "description": "The system must process incoming data in real-time",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-63",
+      "title": "The system must fuse data from multiple sources",
+      "description": "The system must fuse data from multiple sources",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-64",
+      "title": "The system must filter GPS noise and errors from position data",
+      "description": "The system must filter GPS noise and errors from position data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-001-65",
+      "title": "The system must calculate intermediate positions through interpolation",
+      "description": "The system must calculate intermediate positions through interpolation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002",
+      "title": "The system must process GPS data and vehicle status in real-time from integrated GPS systems",
+      "description": "The system must process GPS data and vehicle status in real-time from integrated GPS systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-a",
+      "title": "The system must capture position data from mobile apps using smartphone-based location services",
+      "description": "The system must capture position data from mobile apps using smartphone-based location services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-b",
+      "title": "The system must collect data from OBD (On-Board-Diagnostics) devices",
+      "description": "The system must collect data from OBD (On-Board-Diagnostics) devices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-c",
+      "title": "The system must integrate data from IoT sensors as additional data sources",
+      "description": "The system must integrate data from IoT sensors as additional data sources",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-d",
+      "title": "The system must perform real-time processing of incoming telemetry data",
+      "description": "The system must perform real-time processing of incoming telemetry data",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-e",
+      "title": "The system must fuse data from multiple sources to create a unified position view",
+      "description": "The system must fuse data from multiple sources to create a unified position view",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-f",
+      "title": "The system must filter GPS noise and errors from position data",
+      "description": "The system must filter GPS noise and errors from position data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-g",
+      "title": "The system must calculate intermediate positions between GPS data points",
+      "description": "The system must calculate intermediate positions between GPS data points",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-h",
+      "title": "The system must calculate distances using routing APIs",
+      "description": "The system must calculate distances using routing APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-i",
+      "title": "The system must integrate current traffic conditions into ETA calculations",
+      "description": "The system must integrate current traffic conditions into ETA calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-j",
+      "title": "The system must use historical travel time data in ETA calculations",
+      "description": "The system must use historical travel time data in ETA calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-k",
+      "title": "The system must consider individual driver behavior patterns in ETA calculations",
+      "description": "The system must consider individual driver behavior patterns in ETA calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-l",
+      "title": "The system must continuously recalculate ETAs as new data becomes available",
+      "description": "The system must continuously recalculate ETAs as new data becomes available",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-m",
+      "title": "The system must send notifications to customers when ETA deviations exceed defined thresholds",
+      "description": "The system must send notifications to customers when ETA deviations exceed defined thresholds",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-n",
+      "title": "The system must automatically communicate ETA updates to customers",
+      "description": "The system must automatically communicate ETA updates to customers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-o",
+      "title": "The system must send internal alerts when deliveries are delayed",
+      "description": "The system must send internal alerts when deliveries are delayed",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-p",
+      "title": "The system must capture digital signatures as proof of delivery",
+      "description": "The system must capture digital signatures as proof of delivery",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-q",
+      "title": "The system must capture photos as proof of delivery documentation",
+      "description": "The system must capture photos as proof of delivery documentation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-r",
+      "title": "The system must scan barcodes to automatically identify packages and shipments",
+      "description": "The system must scan barcodes to automatically identify packages and shipments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-s",
+      "title": "The system must capture voice notes for additional delivery information",
+      "description": "The system must capture voice notes for additional delivery information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-t",
+      "title": "The system must validate that all required POD data fields are complete",
+      "description": "The system must validate that all required POD data fields are complete",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-u",
+      "title": "The system must assess the quality of photos and signatures in POD records",
+      "description": "The system must assess the quality of photos and signatures in POD records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-v",
+      "title": "The system must verify that POD data is consistent with order data",
+      "description": "The system must verify that POD data is consistent with order data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-w",
+      "title": "The system must detect potential fraud or manipulation in POD records",
+      "description": "The system must detect potential fraud or manipulation in POD records",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-x",
+      "title": "The system must track on-time delivery rate as a key performance indicator",
+      "description": "The system must track on-time delivery rate as a key performance indicator",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-y",
+      "title": "The system must monitor route efficiency and deviations",
+      "description": "The system must monitor route efficiency and deviations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-z",
+      "title": "The system must track fuel consumption per transport",
+      "description": "The system must track fuel consumption per transport",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-27",
+      "title": "The system must measure driver performance metrics",
+      "description": "The system must measure driver performance metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-28",
+      "title": "The system must measure customer satisfaction based on tracking experience",
+      "description": "The system must measure customer satisfaction based on tracking experience",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-29",
+      "title": "The system must send delay alerts when deliveries are running late",
+      "description": "The system must send delay alerts when deliveries are running late",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-30",
+      "title": "The system must alert when vehicles deviate from planned routes",
+      "description": "The system must alert when vehicles deviate from planned routes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-31",
+      "title": "The system must detect and alert on geofence violations",
+      "description": "The system must detect and alert on geofence violations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-32",
+      "title": "The system must alert on vehicle issues and breakdowns",
+      "description": "The system must alert on vehicle issues and breakdowns",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-33",
+      "title": "The system must generate security-related alerts for suspicious events",
+      "description": "The system must generate security-related alerts for suspicious events",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-34",
+      "title": "The system must provide real-time updates on a live dashboard",
+      "description": "The system must provide real-time updates on a live dashboard",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-35",
+      "title": "The system must send email notifications for alerts and updates",
+      "description": "The system must send email notifications for alerts and updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-36",
+      "title": "The system must send SMS alerts for critical events",
+      "description": "The system must send SMS alerts for critical events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-37",
+      "title": "The system must send push notifications to mobile apps",
+      "description": "The system must send push notifications to mobile apps",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-38",
+      "title": "The system must support webhook integration for API-based notifications",
+      "description": "The system must support webhook integration for API-based notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-39",
+      "title": "The system must include unit tests for GPS data processing",
+      "description": "The system must include unit tests for GPS data processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-40",
+      "title": "The system must include unit tests for ETA calculation logic",
+      "description": "The system must include unit tests for ETA calculation logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-41",
+      "title": "The system must include unit tests for geofence functionality",
+      "description": "The system must include unit tests for geofence functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-42",
+      "title": "The system must include unit tests for POD validation rules",
+      "description": "The system must include unit tests for POD validation rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-43",
+      "title": "The system must include integration tests for all API endpoints",
+      "description": "The system must include integration tests for all API endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-44",
+      "title": "The system must include integration tests for external API integrations",
+      "description": "The system must include integration tests for external API integrations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-45",
+      "title": "The system must include integration tests for real-time processing",
+      "description": "The system must include integration tests for real-time processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-46",
+      "title": "The system must include integration tests for event workflows",
+      "description": "The system must include integration tests for event workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-47",
+      "title": "The system must perform performance tests with high-frequency GPS data",
+      "description": "The system must perform performance tests with high-frequency GPS data",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-48",
+      "title": "The system must perform performance tests with concurrent tracking of multiple shipments",
+      "description": "The system must perform performance tests with concurrent tracking of multiple shipments",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-49",
+      "title": "The system must perform performance tests for real-time updates",
+      "description": "The system must perform performance tests for real-time updates",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-50",
+      "title": "The system must perform performance tests for database load",
+      "description": "The system must perform performance tests for database load",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-51",
+      "title": "The system should provide live tracking for customers",
+      "description": "The system should provide live tracking for customers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-52",
+      "title": "The system should provide transport data to the billing service",
+      "description": "The system should provide transport data to the billing service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-53",
+      "title": "The system should provide performance data to the analytics service for reporting",
+      "description": "The system should provide performance data to the analytics service for reporting",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-54",
+      "title": "The system should integrate with external APIs for traffic data",
+      "description": "The system should integrate with external APIs for traffic data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-55",
+      "title": "The system should integrate with external APIs for weather data",
+      "description": "The system should integrate with external APIs for weather data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    },
+    {
+      "requirement_id": "REQ-ccb83b-002-56",
+      "title": "The system should integrate with external APIs for map services",
+      "description": "The system should integrate with external APIs for map services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Transport_Tracking.md"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> Initiated
+    Initiated --> AutonomyMeasurement : define_autonomy_metrics
+    AutonomyMeasurement --> AIPerformanceIndicators : collect_ai_performance_data
+    AIPerformanceIndicators --> BusinessImpactMetrics : assess_business_impact
+    BusinessImpactMetrics --> ConsolidatedMetrics : consolidate_results
+    ConsolidatedMetrics --> Reported : publish_metrics
+    Reported --> [*]
+
+    AutonomyMeasurement --> Initiated : revise_autonomy_scope
+    AIPerformanceIndicators --> AutonomyMeasurement : refine_autonomy_thresholds
+    BusinessImpactMetrics --> AIPerformanceIndicators : adjust_ai_indicators
+    ConsolidatedMetrics --> BusinessImpactMetrics : validate_business_impact
+    Reported --> ConsolidatedMetrics : request_update

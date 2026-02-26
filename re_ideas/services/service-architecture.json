@@ -1,0 +1,995 @@
+{
+  "Name": "service-architecture",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "SERVICE_ARCHITECTURE.md",
+    "requirement_count": 119,
+    "categories": {
+      "functional": 101,
+      "security": 17,
+      "performance": 1
+    },
+    "priorities": {
+      "should": 119
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-c4100f-000",
+      "title": "The system must use FastAPI as a central adapter between frontend and n8n workflows",
+      "description": "The system must use FastAPI as a central adapter between frontend and n8n workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-a",
+      "title": "The system must orchestrate complex business logic through n8n or code via FastAPI",
+      "description": "The system must orchestrate complex business logic through n8n or code via FastAPI",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-b",
+      "title": "The system must provide structured APIs to the frontend from FastAPI",
+      "description": "The system must provide structured APIs to the frontend from FastAPI",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-c",
+      "title": "The system must implement the Adapter Pattern with FastAPI as a mediation layer between frontend and n8n",
+      "description": "The system must implement the Adapter Pattern with FastAPI as a mediation layer between frontend and n8n",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-d",
+      "title": "The system must separate business logic between FastAPI for Python-based logic and n8n for external API integration",
+      "description": "The system must separate business logic between FastAPI for Python-based logic and n8n for external API integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-e",
+      "title": "The system must provide direct database access to Supabase via loveable.dev for simple CRUD operations",
+      "description": "The system must provide direct database access to Supabase via loveable.dev for simple CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-f",
+      "title": "The system must implement FastAPI as a unified entry point for the frontend",
+      "description": "The system must implement FastAPI as a unified entry point for the frontend",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-g",
+      "title": "The system must maintain clear separation of concerns between presentation, business logic, and external integration",
+      "description": "The system must maintain clear separation of concerns between presentation, business logic, and external integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-h",
+      "title": "The Business Partner Service must manage customer and supplier master data",
+      "description": "The Business Partner Service must manage customer and supplier master data",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-i",
+      "title": "The Business Partner Service must manage and validate addresses",
+      "description": "The Business Partner Service must manage and validate addresses",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-j",
+      "title": "The Business Partner Service must manage documents such as contracts and certificates",
+      "description": "The Business Partner Service must manage documents such as contracts and certificates",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-k",
+      "title": "The Business Partner Service must provide REST API endpoints for frontend communication",
+      "description": "The Business Partner Service must provide REST API endpoints for frontend communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-l",
+      "title": "The Business Partner Service must orchestrate n8n workflows for complex operations",
+      "description": "The Business Partner Service must orchestrate n8n workflows for complex operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-m",
+      "title": "The Business Partner Service must use loveable.dev client for direct database access",
+      "description": "The Business Partner Service must use loveable.dev client for direct database access",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-n",
+      "title": "The Business Partner Service must authenticate users via loveable.dev Auth",
+      "description": "The Business Partner Service must authenticate users via loveable.dev Auth",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-o",
+      "title": "The Order Management Service must capture orders from multiple channels including web, email, CSV, and API",
+      "description": "The Order Management Service must capture orders from multiple channels including web, email, CSV, and API",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-p",
+      "title": "The Order Management Service must manage order status",
+      "description": "The Order Management Service must manage order status",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-q",
+      "title": "The Order Management Service must perform price calculation and quotation creation",
+      "description": "The Order Management Service must perform price calculation and quotation creation",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-r",
+      "title": "The Order Management Service must validate and process orders",
+      "description": "The Order Management Service must validate and process orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-s",
+      "title": "The Order Management Service must provide /api/orders endpoints for CRUD operations",
+      "description": "The Order Management Service must provide /api/orders endpoints for CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-t",
+      "title": "The Order Management Service must implement price calculation and validation logic directly in FastAPI",
+      "description": "The Order Management Service must implement price calculation and validation logic directly in FastAPI",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-u",
+      "title": "The Order Management Service must use n8n workflows for email import, CSV processing, and external API integration",
+      "description": "The Order Management Service must use n8n workflows for email import, CSV processing, and external API integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-v",
+      "title": "The Order Management Service must provide realtime updates via loveable.dev subscriptions",
+      "description": "The Order Management Service must provide realtime updates via loveable.dev subscriptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-w",
+      "title": "The Order Management Service must integrate webhooks for external order sources",
+      "description": "The Order Management Service must integrate webhooks for external order sources",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-x",
+      "title": "The Disposition Service must plan and optimize tours",
+      "description": "The Disposition Service must plan and optimize tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-y",
+      "title": "The Disposition Service must assign vehicles and drivers",
+      "description": "The Disposition Service must assign vehicles and drivers",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-z",
+      "title": "The Disposition Service must perform capacity planning",
+      "description": "The Disposition Service must perform capacity planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-27",
+      "title": "The Disposition Service must optimize routes",
+      "description": "The Disposition Service must optimize routes",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-28",
+      "title": "The Disposition Service must provide /api/tours endpoints for tour management",
+      "description": "The Disposition Service must provide /api/tours endpoints for tour management",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-29",
+      "title": "The Disposition Service must implement route optimization algorithms directly in FastAPI",
+      "description": "The Disposition Service must implement route optimization algorithms directly in FastAPI",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-30",
+      "title": "The Disposition Service must use n8n workflows for external GPS services and notifications",
+      "description": "The Disposition Service must use n8n workflows for external GPS services and notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-31",
+      "title": "The Disposition Service must provide realtime updates via loveable.dev for tour changes",
+      "description": "The Disposition Service must provide realtime updates via loveable.dev for tour changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-32",
+      "title": "The Transport & Tracking Service must track shipments and provide GPS tracking",
+      "description": "The Transport & Tracking Service must track shipments and provide GPS tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-33",
+      "title": "The Transport & Tracking Service must manage Proof of Delivery (POD)",
+      "description": "The Transport & Tracking Service must manage Proof of Delivery (POD)",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-34",
+      "title": "The Transport & Tracking Service must calculate and update ETA",
+      "description": "The Transport & Tracking Service must calculate and update ETA",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-35",
+      "title": "The Transport & Tracking Service must implement geofencing and notifications",
+      "description": "The Transport & Tracking Service must implement geofencing and notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-36",
+      "title": "The Transport & Tracking Service must provide /api/tracking endpoints for shipment tracking",
+      "description": "The Transport & Tracking Service must provide /api/tracking endpoints for shipment tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-37",
+      "title": "The Transport & Tracking Service must use n8n workflows for GPS integration and notifications",
+      "description": "The Transport & Tracking Service must use n8n workflows for GPS integration and notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-38",
+      "title": "The Transport & Tracking Service must support file upload via loveable.dev storage for POD documents",
+      "description": "The Transport & Tracking Service must support file upload via loveable.dev storage for POD documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-39",
+      "title": "The Transport & Tracking Service must provide realtime tracking via loveable.dev WebSocket connections",
+      "description": "The Transport & Tracking Service must provide realtime tracking via loveable.dev WebSocket connections",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-40",
+      "title": "The Billing & Invoicing Service must create and manage invoices",
+      "description": "The Billing & Invoicing Service must create and manage invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-41",
+      "title": "The Billing & Invoicing Service must generate PDF invoices",
+      "description": "The Billing & Invoicing Service must generate PDF invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-42",
+      "title": "The Billing & Invoicing Service must export data in DATEV format for accounting",
+      "description": "The Billing & Invoicing Service must export data in DATEV format for accounting",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-43",
+      "title": "The Billing & Invoicing Service must track payments",
+      "description": "The Billing & Invoicing Service must track payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-44",
+      "title": "The Billing & Invoicing Service must provide /api/invoices endpoints for invoice management",
+      "description": "The Billing & Invoicing Service must provide /api/invoices endpoints for invoice management",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-45",
+      "title": "The Billing & Invoicing Service must use n8n workflows for PDF generation and DATEV export",
+      "description": "The Billing & Invoicing Service must use n8n workflows for PDF generation and DATEV export",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-46",
+      "title": "The Billing & Invoicing Service must integrate payment processing via external APIs",
+      "description": "The Billing & Invoicing Service must integrate payment processing via external APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-47",
+      "title": "The Billing & Invoicing Service must automate invoice distribution",
+      "description": "The Billing & Invoicing Service must automate invoice distribution",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-48",
+      "title": "The User Management Service must authenticate and authorize users",
+      "description": "The User Management Service must authenticate and authorize users",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-49",
+      "title": "The User Management Service must manage roles and permissions",
+      "description": "The User Management Service must manage roles and permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-50",
+      "title": "The User Management Service must manage multi-tenant environments",
+      "description": "The User Management Service must manage multi-tenant environments",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-51",
+      "title": "The User Management Service must manage user sessions",
+      "description": "The User Management Service must manage user sessions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-52",
+      "title": "The User Management Service must provide /api/auth endpoints for user authentication",
+      "description": "The User Management Service must provide /api/auth endpoints for user authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-53",
+      "title": "The User Management Service must integrate loveable.dev Auth",
+      "description": "The User Management Service must integrate loveable.dev Auth",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-54",
+      "title": "The User Management Service must manage JWT tokens via loveable.dev",
+      "description": "The User Management Service must manage JWT tokens via loveable.dev",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-000-55",
+      "title": "The User Management Service must implement role-based API access control",
+      "description": "The User Management Service must implement role-based API access control",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001",
+      "title": "The Billing & Invoicing Service must create and manage invoices",
+      "description": "The Billing & Invoicing Service must create and manage invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-a",
+      "title": "The Billing & Invoicing Service must generate PDF documents",
+      "description": "The Billing & Invoicing Service must generate PDF documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-b",
+      "title": "The Billing & Invoicing Service must export data to DATEV format for accounting",
+      "description": "The Billing & Invoicing Service must export data to DATEV format for accounting",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-c",
+      "title": "The Billing & Invoicing Service must track payment status",
+      "description": "The Billing & Invoicing Service must track payment status",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-d",
+      "title": "The Billing & Invoicing Service must provide /api/invoices endpoints for invoice management",
+      "description": "The Billing & Invoicing Service must provide /api/invoices endpoints for invoice management",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-e",
+      "title": "The Billing & Invoicing Service must execute n8n workflows for PDF generation and DATEV export",
+      "description": "The Billing & Invoicing Service must execute n8n workflows for PDF generation and DATEV export",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-f",
+      "title": "The Billing & Invoicing Service must integrate payment processing through external APIs",
+      "description": "The Billing & Invoicing Service must integrate payment processing through external APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-g",
+      "title": "The Billing & Invoicing Service must automatically send invoices",
+      "description": "The Billing & Invoicing Service must automatically send invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-h",
+      "title": "The User Management Service must authenticate users",
+      "description": "The User Management Service must authenticate users",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-i",
+      "title": "The User Management Service must authorize users based on roles and permissions",
+      "description": "The User Management Service must authorize users based on roles and permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-j",
+      "title": "The User Management Service must manage user roles",
+      "description": "The User Management Service must manage user roles",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-k",
+      "title": "The User Management Service must manage user permissions",
+      "description": "The User Management Service must manage user permissions",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-l",
+      "title": "The User Management Service must support multi-tenant management",
+      "description": "The User Management Service must support multi-tenant management",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-m",
+      "title": "The User Management Service must manage user sessions",
+      "description": "The User Management Service must manage user sessions",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-n",
+      "title": "The User Management Service must provide /api/auth endpoints for user authentication",
+      "description": "The User Management Service must provide /api/auth endpoints for user authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-o",
+      "title": "The User Management Service must integrate with loveable.dev authentication",
+      "description": "The User Management Service must integrate with loveable.dev authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-p",
+      "title": "The User Management Service must manage JWT tokens through loveable.dev",
+      "description": "The User Management Service must manage JWT tokens through loveable.dev",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-q",
+      "title": "The User Management Service must enforce role-based API access control",
+      "description": "The User Management Service must enforce role-based API access control",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-r",
+      "title": "The system must provide REST API endpoints for all frontend operations",
+      "description": "The system must provide REST API endpoints for all frontend operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-s",
+      "title": "The system must support WebSocket connections for real-time tracking and notification updates",
+      "description": "The system must support WebSocket connections for real-time tracking and notification updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-t",
+      "title": "The system must use JWT token-based authentication",
+      "description": "The system must use JWT token-based authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-u",
+      "title": "The system must support file uploads using Multipart-Form-Data for document uploads",
+      "description": "The system must support file uploads using Multipart-Form-Data for document uploads",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-v",
+      "title": "The FastAPI service must trigger n8n workflows via HTTP webhooks",
+      "description": "The FastAPI service must trigger n8n workflows via HTTP webhooks",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-w",
+      "title": "The FastAPI service must integrate with n8n API through direct REST API calls",
+      "description": "The FastAPI service must integrate with n8n API through direct REST API calls",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-x",
+      "title": "The FastAPI service must support asynchronous processing for complex operations",
+      "description": "The FastAPI service must support asynchronous processing for complex operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-y",
+      "title": "The FastAPI service must poll workflow status from n8n",
+      "description": "The FastAPI service must poll workflow status from n8n",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-z",
+      "title": "The FastAPI service must access Supabase database directly using Supabase Client for CRUD operations",
+      "description": "The FastAPI service must access Supabase database directly using Supabase Client for CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-27",
+      "title": "The system must support real-time subscriptions through Supabase Realtime for event-based updates",
+      "description": "The system must support real-time subscriptions through Supabase Realtime for event-based updates",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-28",
+      "title": "The system must manage documents and images through Supabase Storage",
+      "description": "The system must manage documents and images through Supabase Storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-29",
+      "title": "The system must authenticate users through Supabase Auth",
+      "description": "The system must authenticate users through Supabase Auth",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-001-30",
+      "title": "The system must enforce Row Level Security policies for multi-tenant data separation",
+      "description": "The system must enforce Row Level Security policies for multi-tenant data separation",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002",
+      "title": "The system must provide API endpoints for database access through Business Partner, Order Management, Disposition, Transport Tracking, and Billing APIs",
+      "description": "The system must provide API endpoints for database access through Business Partner, Order Management, Disposition, Transport Tracking, and Billing APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-a",
+      "title": "The system must provide API authentication through a dedicated authentication API",
+      "description": "The system must provide API authentication through a dedicated authentication API",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-b",
+      "title": "The system must enable direct storage access through Business Partner, Transport Tracking, and Billing APIs",
+      "description": "The system must enable direct storage access through Business Partner, Transport Tracking, and Billing APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-c",
+      "title": "The system must support real-time data synchronization between frontend UIs and Supabase Realtime service",
+      "description": "The system must support real-time data synchronization between frontend UIs and Supabase Realtime service",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-d",
+      "title": "The system must integrate n8n workflow engine with external systems including Spedion, DATEV, Email, GPS, Maps, Banking, and OCR services",
+      "description": "The system must integrate n8n workflow engine with external systems including Spedion, DATEV, Email, GPS, Maps, Banking, and OCR services",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-e",
+      "title": "The system must enable n8n workflow engine to write updates directly to the database",
+      "description": "The system must enable n8n workflow engine to write updates directly to the database",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-f",
+      "title": "The system must enable Supabase Realtime to synchronize database changes",
+      "description": "The system must enable Supabase Realtime to synchronize database changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-g",
+      "title": "The system must deploy frontend containers for Business Partner, Order Management, Disposition, Transport Tracking, Billing, and User Management UIs",
+      "description": "The system must deploy frontend containers for Business Partner, Order Management, Disposition, Transport Tracking, Billing, and User Management UIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-h",
+      "title": "The system must deploy API containers for Business Partner, Order Management, Disposition, Transport Tracking, Billing, and User Management services",
+      "description": "The system must deploy API containers for Business Partner, Order Management, Disposition, Transport Tracking, Billing, and User Management services",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-i",
+      "title": "The system must deploy n8n workflow engine container",
+      "description": "The system must deploy n8n workflow engine container",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-j",
+      "title": "The system must deploy Nginx reverse proxy and Redis cache containers",
+      "description": "The system must deploy Nginx reverse proxy and Redis cache containers",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-k",
+      "title": "The system must use Supabase Cloud as external SaaS provider for database and authentication services",
+      "description": "The system must use Supabase Cloud as external SaaS provider for database and authentication services",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-l",
+      "title": "The system must implement API-First Design using OpenAPI specification for all endpoints",
+      "description": "The system must implement API-First Design using OpenAPI specification for all endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-m",
+      "title": "The system must use n8n for workflow orchestration of external APIs and workflows",
+      "description": "The system must use n8n for workflow orchestration of external APIs and workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-n",
+      "title": "The system must use Supabase Client for database access with Row-Level Security policies",
+      "description": "The system must use Supabase Client for database access with Row-Level Security policies",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-o",
+      "title": "The system must implement Unit and Integration Tests for all API endpoints",
+      "description": "The system must implement Unit and Integration Tests for all API endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-p",
+      "title": "The system must provide automatic API documentation using FastAPI",
+      "description": "The system must provide automatic API documentation using FastAPI",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-q",
+      "title": "The system must use Nginx as reverse proxy for HTTPS and SSL termination",
+      "description": "The system must use Nginx as reverse proxy for HTTPS and SSL termination",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-r",
+      "title": "The system must route frontend requests through Nginx to appropriate frontend containers based on feature paths",
+      "description": "The system must route frontend requests through Nginx to appropriate frontend containers based on feature paths",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-s",
+      "title": "The system must route API requests through Nginx to appropriate FastAPI containers based on API paths",
+      "description": "The system must route API requests through Nginx to appropriate FastAPI containers based on API paths",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-t",
+      "title": "The system must support WebSocket upgrade for tracking container through Nginx",
+      "description": "The system must support WebSocket upgrade for tracking container through Nginx",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-u",
+      "title": "The frontend must subscribe to Supabase authentication status and realtime channels",
+      "description": "The frontend must subscribe to Supabase authentication status and realtime channels",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-v",
+      "title": "The frontend must communicate with Edge Functions via WebSocket",
+      "description": "The frontend must communicate with Edge Functions via WebSocket",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-w",
+      "title": "The FastAPI backend must invoke n8n workflows through webhooks, events, and triggers",
+      "description": "The FastAPI backend must invoke n8n workflows through webhooks, events, and triggers",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-x",
+      "title": "The n8n workflow engine must return responses to FastAPI backend",
+      "description": "The n8n workflow engine must return responses to FastAPI backend",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-y",
+      "title": "The FastAPI backend must perform CRUD operations on the database",
+      "description": "The FastAPI backend must perform CRUD operations on the database",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-z",
+      "title": "The FastAPI backend must retrieve files from Supabase Storage",
+      "description": "The FastAPI backend must retrieve files from Supabase Storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-27",
+      "title": "The n8n workflow engine must communicate with Spedion API",
+      "description": "The n8n workflow engine must communicate with Spedion API",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-28",
+      "title": "The n8n workflow engine must communicate with DATEV export service",
+      "description": "The n8n workflow engine must communicate with DATEV export service",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-29",
+      "title": "The n8n workflow engine must communicate with Email and SMS gateway",
+      "description": "The n8n workflow engine must communicate with Email and SMS gateway",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-30",
+      "title": "The n8n workflow engine must communicate with OCR service",
+      "description": "The n8n workflow engine must communicate with OCR service",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    },
+    {
+      "requirement_id": "REQ-c4100f-002-31",
+      "title": "The n8n workflow engine must write results to the database",
+      "description": "The n8n workflow engine must write results to the database",
+      "type": "functional",
+      "priority": "should",
+      "source": "SERVICE_ARCHITECTURE.md"
+    }
+  ]
+}

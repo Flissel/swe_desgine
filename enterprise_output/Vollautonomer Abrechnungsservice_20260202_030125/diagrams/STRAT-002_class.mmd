@@ -1,0 +1,52 @@
+classDiagram
+    class AIComplianceSystem {
+        +systemId
+        +status
+        +evaluateCompliance(request)
+        +generateReport(result)
+
+    class Regulation {
+        +regulationId
+        +name
+        +jurisdiction
+        +validate(data)
+
+    class DataPolicy {
+        +policyId
+        +retentionPeriod
+        +applyTo(data)
+
+    class ComplianceEngine {
+        +engineVersion
+        +executeChecks(input)
+        +logOutcome(outcome)
+
+    class AuditLog {
+        +logId
+        +timestamp
+        +record(event)
+
+    class RiskAssessment {
+        +riskScore
+        +assess(data)
+        +mitigate(issue)
+
+    class ConsentManager {
+        +consentId
+        +verifyConsent(subject)
+        +revokeConsent(subject)
+
+    class TaxComplianceModule {
+        +moduleId
+        +calculateTax(data)
+        +validateFATCA(report)
+
+    AIComplianceSystem --> ComplianceEngine
+    AIComplianceSystem --> AuditLog
+    AIComplianceSystem --> ConsentManager
+    AIComplianceSystem --> TaxComplianceModule
+    ComplianceEngine --> Regulation
+    ComplianceEngine --> DataPolicy
+    ComplianceEngine --> RiskAssessment
+    AuditLog --> Regulation
+    RiskAssessment --> Regulation

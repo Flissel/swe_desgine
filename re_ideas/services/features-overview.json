@@ -1,0 +1,618 @@
+{
+  "Name": "features-overview",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "FEATURES.md",
+    "requirement_count": 72,
+    "categories": {
+      "functional": 65,
+      "security": 7
+    },
+    "priorities": {
+      "should": 72
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-f4faaf-000",
+      "title": "The system must manage complete master data for all business partners including name, address, contact information, and tax information",
+      "description": "The system must manage complete master data for all business partners including name, address, contact information, and tax information",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-a",
+      "title": "The system must categorize business partners into types: Customer, Supplier, Subcontractor, and Freight Forwarder",
+      "description": "The system must categorize business partners into types: Customer, Supplier, Subcontractor, and Freight Forwarder",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-b",
+      "title": "The system must support upload and management of business partner documents including contracts and certificates",
+      "description": "The system must support upload and management of business partner documents including contracts and certificates",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-c",
+      "title": "The system must automatically log all interactions with business partners",
+      "description": "The system must automatically log all interactions with business partners",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-d",
+      "title": "The system must provide a rating system for quality assessment and performance tracking of business partners",
+      "description": "The system must provide a rating system for quality assessment and performance tracking of business partners",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-e",
+      "title": "The system must support multi-channel order capture through Web Interface, Email, CSV/FTP, and API",
+      "description": "The system must support multi-channel order capture through Web Interface, Email, CSV/FTP, and API",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-f",
+      "title": "The system must capture and store order data including pickup/delivery addresses, dates, goods types, and weights",
+      "description": "The system must capture and store order data including pickup/delivery addresses, dates, goods types, and weights",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-g",
+      "title": "The system must automatically calculate prices based on order parameters",
+      "description": "The system must automatically calculate prices based on order parameters",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-h",
+      "title": "The system must provide complete order status tracking and monitoring",
+      "description": "The system must provide complete order status tracking and monitoring",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-i",
+      "title": "The system must manage order-related documents including CMR, delivery notes, and invoices",
+      "description": "The system must manage order-related documents including CMR, delivery notes, and invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-j",
+      "title": "The system must validate all orders against business rules before processing",
+      "description": "The system must validate all orders against business rules before processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-k",
+      "title": "The system must validate customer addresses during order processing",
+      "description": "The system must validate customer addresses during order processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-l",
+      "title": "The system must perform customer lookup during order processing",
+      "description": "The system must perform customer lookup during order processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-m",
+      "title": "The system must support both automatic and manual tour planning and optimization",
+      "description": "The system must support both automatic and manual tour planning and optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-n",
+      "title": "The system must assign vehicles to tours based on capacity and availability",
+      "description": "The system must assign vehicles to tours based on capacity and availability",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-o",
+      "title": "The system must assign drivers to tours based on qualifications and labor law compliance",
+      "description": "The system must assign drivers to tours based on qualifications and labor law compliance",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-p",
+      "title": "The system must calculate GPS-based routes for tour optimization",
+      "description": "The system must calculate GPS-based routes for tour optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-q",
+      "title": "The system must consider pickup and delivery time windows during tour planning",
+      "description": "The system must consider pickup and delivery time windows during tour planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-r",
+      "title": "The system must provide a drag and drop interface for manual tour planning",
+      "description": "The system must provide a drag and drop interface for manual tour planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-s",
+      "title": "The system must validate tour creation before confirmation",
+      "description": "The system must validate tour creation before confirmation",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-t",
+      "title": "The system must notify drivers of assigned tours",
+      "description": "The system must notify drivers of assigned tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-u",
+      "title": "The system must provide real-time GPS tracking of transports via Spedion API",
+      "description": "The system must provide real-time GPS tracking of transports via Spedion API",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-v",
+      "title": "The system must send automatic notifications when transport status changes",
+      "description": "The system must send automatic notifications when transport status changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-w",
+      "title": "The system must calculate dynamic estimated time of arrival for transports",
+      "description": "The system must calculate dynamic estimated time of arrival for transports",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-000-x",
+      "title": "The system must manage proof of delivery documentation",
+      "description": "The system must manage proof of delivery documentation",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001",
+      "title": "The system must support manual tour planning through a drag and drop interface",
+      "description": "The system must support manual tour planning through a drag and drop interface",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-a",
+      "title": "The system must support automatic tour planning through route optimization",
+      "description": "The system must support automatic tour planning through route optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-b",
+      "title": "The system must create and validate tours",
+      "description": "The system must create and validate tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-c",
+      "title": "The system must assign drivers to tours based on availability",
+      "description": "The system must assign drivers to tours based on availability",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-d",
+      "title": "The system must assign vehicles to tours based on capacity",
+      "description": "The system must assign vehicles to tours based on capacity",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-e",
+      "title": "The system must apply route constraints during automatic route optimization",
+      "description": "The system must apply route constraints during automatic route optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-f",
+      "title": "The system must confirm tours after assignment",
+      "description": "The system must confirm tours after assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-g",
+      "title": "The system must notify drivers of tour assignments",
+      "description": "The system must notify drivers of tour assignments",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-h",
+      "title": "The mobile app must update in real-time when tour assignments are confirmed",
+      "description": "The mobile app must update in real-time when tour assignments are confirmed",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-i",
+      "title": "The system must provide real-time GPS tracking of transports",
+      "description": "The system must provide real-time GPS tracking of transports",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-j",
+      "title": "The system must send automatic notifications when transport status changes",
+      "description": "The system must send automatic notifications when transport status changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-k",
+      "title": "The system must calculate dynamic estimated arrival times",
+      "description": "The system must calculate dynamic estimated arrival times",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-l",
+      "title": "The system must manage proof of delivery with photo and signature capture",
+      "description": "The system must manage proof of delivery with photo and signature capture",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-m",
+      "title": "The system must provide a customer portal for self-service transport tracking",
+      "description": "The system must provide a customer portal for self-service transport tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-n",
+      "title": "The system must process GPS data from Spedion in real-time",
+      "description": "The system must process GPS data from Spedion in real-time",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-o",
+      "title": "The system must validate driver status updates before storing them",
+      "description": "The system must validate driver status updates before storing them",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-p",
+      "title": "The system must validate proof of delivery photos and signatures",
+      "description": "The system must validate proof of delivery photos and signatures",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-q",
+      "title": "The system must store proof of delivery documents in cloud storage",
+      "description": "The system must store proof of delivery documents in cloud storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-r",
+      "title": "The system must send customer notifications via SMS, Email, or WhatsApp",
+      "description": "The system must send customer notifications via SMS, Email, or WhatsApp",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-s",
+      "title": "The system must provide an internal tracking dashboard for staff",
+      "description": "The system must provide an internal tracking dashboard for staff",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-t",
+      "title": "The system must implement geofencing to automatically update transport status",
+      "description": "The system must implement geofencing to automatically update transport status",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-u",
+      "title": "The system must automatically generate invoices when orders are completed",
+      "description": "The system must automatically generate invoices when orders are completed",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-v",
+      "title": "The system must calculate prices and validate them before invoice creation",
+      "description": "The system must calculate prices and validate them before invoice creation",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-w",
+      "title": "The system must generate invoices as PDF documents",
+      "description": "The system must generate invoices as PDF documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-x",
+      "title": "The system must deliver invoices via email",
+      "description": "The system must deliver invoices via email",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-y",
+      "title": "The system must support flexible pricing models and discount systems",
+      "description": "The system must support flexible pricing models and discount systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-z",
+      "title": "The system must export invoices to DATEV format for accounting",
+      "description": "The system must export invoices to DATEV format for accounting",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-27",
+      "title": "The system must generate XML files for DATEV export",
+      "description": "The system must generate XML files for DATEV export",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-28",
+      "title": "The system must upload DATEV exports via FTP",
+      "description": "The system must upload DATEV exports via FTP",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-29",
+      "title": "The system must provide an invoice dashboard for viewing and managing invoices",
+      "description": "The system must provide an invoice dashboard for viewing and managing invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-30",
+      "title": "The system must track payment status and apply business rules",
+      "description": "The system must track payment status and apply business rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-31",
+      "title": "The system must execute automatic dunning processes for overdue invoices",
+      "description": "The system must execute automatic dunning processes for overdue invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-32",
+      "title": "The system must update invoice status when payment is received",
+      "description": "The system must update invoice status when payment is received",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-33",
+      "title": "The system must provide revenue and profit analysis reporting",
+      "description": "The system must provide revenue and profit analysis reporting",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-34",
+      "title": "The system must provide an analytics dashboard for business reporting",
+      "description": "The system must provide an analytics dashboard for business reporting",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-35",
+      "title": "The system must support multi-tenant architecture with complete tenant separation",
+      "description": "The system must support multi-tenant architecture with complete tenant separation",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-36",
+      "title": "The system must implement a flexible role-based access control system",
+      "description": "The system must implement a flexible role-based access control system",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-37",
+      "title": "The system must support Single Sign-On integration",
+      "description": "The system must support Single Sign-On integration",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-38",
+      "title": "The system must maintain a complete audit trail of all user activities",
+      "description": "The system must maintain a complete audit trail of all user activities",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-39",
+      "title": "The system must support API keys for programmatic access",
+      "description": "The system must support API keys for programmatic access",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-40",
+      "title": "The system must verify user email addresses during registration",
+      "description": "The system must verify user email addresses during registration",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-41",
+      "title": "The system must create user profiles after email verification",
+      "description": "The system must create user profiles after email verification",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-42",
+      "title": "The system must validate JWT tokens during login",
+      "description": "The system must validate JWT tokens during login",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-43",
+      "title": "The system must enforce Row-Level Security policies for data access",
+      "description": "The system must enforce Row-Level Security policies for data access",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-44",
+      "title": "The system must update user permissions in real-time",
+      "description": "The system must update user permissions in real-time",
+      "type": "functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-45",
+      "title": "The system must validate API keys for security",
+      "description": "The system must validate API keys for security",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    },
+    {
+      "requirement_id": "REQ-f4faaf-001-46",
+      "title": "The system must implement rate limiting for API access",
+      "description": "The system must implement rate limiting for API access",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "FEATURES.md"
+    }
+  ]
+}

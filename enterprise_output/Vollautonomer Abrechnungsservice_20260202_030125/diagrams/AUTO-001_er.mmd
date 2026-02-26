@@ -1,0 +1,59 @@
+erDiagram
+    AGENT ||--o{ AGENT_TASK : performs
+    AGENT_TASK ||--|| INVOICE : generates
+    CUSTOMER ||--o{ INVOICE : receives
+    INVOICE ||--o{ INVOICE_LINE : contains
+    SERVICE ||--o{ INVOICE_LINE : billed_for
+    GENERATION_JOB ||--o{ AGENT_TASK : orchestrates
+
+    AGENT {
+        string agent_id PK
+        string name
+        string specialization
+        string status
+
+    AGENT_TASK {
+        string task_id PK
+        string agent_id FK
+        string job_id FK
+        string invoice_id FK
+        string status
+        datetime started_at
+        datetime completed_at
+
+    GENERATION_JOB {
+        string job_id PK
+        datetime scheduled_at
+        datetime executed_at
+        string status
+
+    CUSTOMER {
+        string customer_id PK
+        string name
+        string billing_address
+        string tax_id
+        string email
+
+    INVOICE {
+        string invoice_id PK
+        string customer_id FK
+        date issue_date
+        date due_date
+        string status
+        decimal total_amount
+        string currency
+
+    INVOICE_LINE {
+        string line_id PK
+        string invoice_id FK
+        string service_id FK
+        string description
+        int quantity
+        decimal unit_price
+        decimal line_total
+
+    SERVICE {
+        string service_id PK
+        string name
+        string description
+        decimal default_price

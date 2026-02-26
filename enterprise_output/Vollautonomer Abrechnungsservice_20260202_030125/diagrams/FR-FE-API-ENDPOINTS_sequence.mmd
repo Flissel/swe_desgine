@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant User
+    participant Frontend as Frontend UI
+    participant ApiEndpoints as Frontend API Endpoints
+    participant Backend as Backend API
+    participant Auth as Auth Service
+
+    User->>Frontend: Open feature requiring data
+    activate Frontend
+    Frontend->>ApiEndpoints: requestResource(params)
+    activate ApiEndpoints
+    ApiEndpoints->>Auth: validateSession(token)
+    activate Auth
+    Auth-->>ApiEndpoints: sessionValid
+    deactivate Auth
+    ApiEndpoints->>Backend: GET /resource?params
+    activate Backend
+    Backend-->>ApiEndpoints: 200 OK (data)
+    deactivate Backend
+    ApiEndpoints-->>Frontend: return data
+    deactivate ApiEndpoints
+    Frontend-->>User: Render data
+    deactivate Frontend

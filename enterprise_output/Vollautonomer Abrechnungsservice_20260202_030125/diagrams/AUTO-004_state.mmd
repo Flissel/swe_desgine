@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Loading : openDashboard
+    Loading --> Displaying : dataLoaded
+    Loading --> Error : loadFailed
+    Displaying --> ViewingWorkflows : selectWorkflows
+    Displaying --> ViewingKPIs : selectKPIs
+    Displaying --> ViewingAgents : selectAgents
+    ViewingWorkflows --> Displaying : back
+    ViewingKPIs --> Displaying : back
+    ViewingAgents --> Displaying : back
+    Displaying --> Managing : openManagement
+    Managing --> Displaying : closeManagement
+    Error --> Loading : retry
+    Error --> [*] : closeDashboard
+    Displaying --> [*] : closeDashboard

@@ -1,0 +1,62 @@
+/* ============================================
+   RE System - CSS Variables & Theme
+   ============================================ */
+
+:root {
+    /* Colors - Modern Dark Theme */
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a1f26;
+    --bg-tertiary: #242b33;
+    --bg-hover: #2d353f;
+    --bg-active: #3a4350;
+
+    --text-primary: #e7e9ea;
+    --text-secondary: #8b98a5;
+    --text-muted: #536471;
+
+    --accent-blue: #1d9bf0;
+    --accent-green: #00ba7c;
+    --accent-yellow: #ffd400;
+    --accent-red: #f4212e;
+    --accent-purple: #7856ff;
+    --accent-orange: #ff7a00;
+
+    --border-color: #2f3336;
+    --border-light: #3d4349;
+
+    /* Node Colors */
+    --node-requirement: #1e3a5f;
+    --node-user-story: #1e4d3a;
+    --node-epic: #4a1e5f;
+    --node-diagram: #3a3a1e;
+    --node-test: #5f1e1e;
+    --node-api: #1e3a4d;
+
+    /* Node Colors for 4 New Generators */
+    --node-tech-stack: #164e63;
+    --node-persona: #7c2d12;
+    --node-user-flow: #701a4e;
+    --node-component: #365314;
+    --node-screen: #3b0764;
+    --node-task: #78350f;
+
+    /* Priority Colors */
+    --priority-must: #f4212e;
+    --priority-should: #ffd400;
+    --priority-could: #00ba7c;
+    --priority-wont: #536471;
+
+    /* Spacing */
+    --header-height: 56px;
+    --sidebar-width: 280px;
+    --log-height: 180px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}

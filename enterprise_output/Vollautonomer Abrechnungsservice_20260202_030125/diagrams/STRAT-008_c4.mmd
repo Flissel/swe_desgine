@@ -1,0 +1,11 @@
+C4Context
+    title Innovationsökosystem - System Context
+    Person(industry_reps, "Branchenvertreter", "Stakeholder aus der Branche")
+    Person(partner_mgr, "Partnerschaftsmanager", "Betreut Technologiepartner")
+    System(innovation_hub, "Innovationsökosystem", "Etabliert Branchenstandards und Partnerschaften")
+    System_Ext(tech_providers, "Technologieanbieter (50+)", "Externe Anbieter von Technologien und APIs")
+    System_Ext(standards_bodies, "Standardisierungsorganisationen", "Externe Gremien für Branchenstandards")
+    Rel(industry_reps, innovation_hub, "Koordiniert Standards")
+    Rel(partner_mgr, innovation_hub, "Verwaltet Partnerschaften")
+    Rel(innovation_hub, tech_providers, "Integriert Technologien und APIs")
+    Rel(innovation_hub, standards_bodies, "Stimmt Standards ab")

@@ -1,0 +1,186 @@
+/**
+ * Main Stylesheet
+ *
+ * Tailwind CSS base + custom theme variables
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables (Dark Theme) */
+:root {
+  /* Background colors */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+
+  /* Text colors */
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --text-tertiary: #6e7681;
+
+  /* Border colors */
+  --border-color: #30363d;
+  --border-hover: #484f58;
+
+  /* Accent colors */
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-red: #f85149;
+  --accent-yellow: #d29922;
+  --accent-purple: #a371f7;
+  --accent-orange: #db6d28;
+}
+
+/* Base styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .bg-bg-primary { background-color: var(--bg-primary); }
+  .bg-bg-secondary { background-color: var(--bg-secondary); }
+  .bg-bg-tertiary { background-color: var(--bg-tertiary); }
+
+  .text-text-primary { color: var(--text-primary); }
+  .text-text-secondary { color: var(--text-secondary); }
+  .text-text-tertiary { color: var(--text-tertiary); }
+
+  .border-border-color { border-color: var(--border-color); }
+  .border-border-hover { border-color: var(--border-hover); }
+
+  .text-accent-blue { color: var(--accent-blue); }
+  .text-accent-green { color: var(--accent-green); }
+  .text-accent-red { color: var(--accent-red); }
+  .text-accent-yellow { color: var(--accent-yellow); }
+  .text-accent-purple { color: var(--accent-purple); }
+
+  .bg-accent-blue { background-color: var(--accent-blue); }
+  .bg-accent-green { background-color: var(--accent-green); }
+  .bg-accent-red { background-color: var(--accent-red); }
+
+  .ring-accent-blue { --tw-ring-color: var(--accent-blue); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Mermaid diagram overrides */
+.mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-container .node rect,
+.mermaid-container .node circle,
+.mermaid-container .node ellipse,
+.mermaid-container .node polygon,
+.mermaid-container .node path {
+  stroke-width: 2px;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Pulse animation for loading states */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Selection highlight */
+::selection {
+  background: var(--accent-blue);
+  color: white;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+/* Button hover effects */
+button {
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Node card transitions */
+.node-card {
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.node-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Sidebar item hover */
+.sidebar-item {
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-item:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Diagram error state */
+.diagram-error {
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--accent-red);
+}
+
+/* Diagram loading state */
+.diagram-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  color: var(--text-secondary);
+}

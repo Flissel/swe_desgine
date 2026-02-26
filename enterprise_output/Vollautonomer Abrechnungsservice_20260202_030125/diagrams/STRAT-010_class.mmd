@@ -1,0 +1,55 @@
+classDiagram
+    class QuantumReadinessStrategy {
+        +strategyId
+        +version
+        +defineRoadmap(scope)
+
+    class QuantumArchitecture {
+        +architectureId
+        +targetPlatforms
+        +designBlueprint(requirements)
+
+    class QuantumApplication {
+        +appId
+        +useCase
+        +optimizeForQuantum(platform)
+
+    class RiskMitigationPlan {
+        +planId
+        +riskLevel
+        +assessRisk(region)
+
+    class GeopoliticalRiskAssessment {
+        +assessmentId
+        +region
+        +evaluateExposure(asset)
+
+    class ComplianceFramework {
+        +frameworkId
+        +regulations
+        +validateCompliance(system)
+
+    class ScalabilityPlan {
+        +planId
+        +capacityTarget
+        +scaleSystem(load)
+
+    class SecurityProtocol {
+        +protocolId
+        +encryptionScheme
+        +applyProtection(component)
+
+    class IntegrationLayer {
+        +layerId
+        +interfaceType
+        +integrateSystem(component)
+
+    QuantumReadinessStrategy --> QuantumArchitecture : defines
+    QuantumArchitecture --> QuantumApplication : supports
+    QuantumReadinessStrategy --> RiskMitigationPlan : includes
+    RiskMitigationPlan --> GeopoliticalRiskAssessment : uses
+    QuantumReadinessStrategy --> ScalabilityPlan : guides
+    QuantumArchitecture --> SecurityProtocol : enforces
+    QuantumArchitecture --> IntegrationLayer : requires
+    ComplianceFramework --> SecurityProtocol : governs
+    ComplianceFramework --> QuantumArchitecture : constrains

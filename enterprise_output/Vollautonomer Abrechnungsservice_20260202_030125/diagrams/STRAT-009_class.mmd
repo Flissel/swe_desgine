@@ -1,0 +1,62 @@
+classDiagram
+    class PerformanceMetric {
+        +id: String
+        +name: String
+        +description: String
+        +calculate(data: DataSource): Number
+        +evaluate(threshold: Threshold): String
+
+    class AutonomyGradeMetric {
+        +autonomyLevel: Number
+        +context: String
+        +calculateAutonomy(data: DataSource): Number
+        +mapToGrade(score: Number): String
+
+    class AIPerformanceIndicator {
+        +modelName: String
+        +accuracy: Number
+        +latencyMs: Number
+        +computeScore(data: DataSource): Number
+        +isWithinSLA(latency: Number): Boolean
+
+    class BusinessImpactMetric {
+        +impactArea: String
+        +roi: Number
+        +costSavings: Number
+        +computeImpact(data: DataSource): Number
+        +compareBaseline(baseline: Number): Number
+
+    class DataSource {
+        +sourceName: String
+        +dataType: String
+        +refreshInterval: String
+        +fetch(criteria: String): Object
+        +validate(payload: Object): Boolean
+
+    class MetricCalculator {
+        +version: String
+        +calculateMetric(metric: PerformanceMetric, data: DataSource): Number
+        +aggregate(metrics: PerformanceMetric[]): Number
+
+    class Threshold {
+        +min: Number
+        +max: Number
+        +severity: String
+        +check(value: Number): Boolean
+
+    class Report {
+        +reportId: String
+        +title: String
+        +generatedAt: String
+        +generate(metrics: PerformanceMetric[]): String
+        +export(format: String): String
+
+    PerformanceMetric <|-- AutonomyGradeMetric
+    PerformanceMetric <|-- AIPerformanceIndicator
+    PerformanceMetric <|-- BusinessImpactMetric
+
+    PerformanceMetric --> Threshold : evaluatedBy
+    MetricCalculator --> PerformanceMetric : computes
+    MetricCalculator --> DataSource : uses
+    Report --> PerformanceMetric : summarizes
+    PerformanceMetric --> DataSource : dependsOn

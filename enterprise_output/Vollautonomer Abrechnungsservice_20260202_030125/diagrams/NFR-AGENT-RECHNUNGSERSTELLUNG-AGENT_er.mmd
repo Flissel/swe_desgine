@@ -1,0 +1,75 @@
+erDiagram
+    AGENT ||--o{ CAPABILITY : has
+    AGENT ||--o{ TOOL : uses
+    AGENT ||--o{ INVOICE : creates
+    CUSTOMER ||--o{ INVOICE : billed_to
+    INVOICE ||--o{ INVOICE_ITEM : includes
+    INVOICE ||--o{ TAX_CALCULATION : has
+    INVOICE ||--o{ VALIDATION : validated_by
+    INVOICE ||--o{ EMAIL_DISPATCH : sent_via
+    TOOL ||--o{ EMAIL_DISPATCH : delivers
+    TOOL ||--o{ TAX_CALCULATION : computes
+    TOOL ||--o{ INVOICE : generates
+
+    AGENT {
+        string agent_id PK
+        string name
+        string description
+
+    CAPABILITY {
+        string capability_id PK
+        string agent_id FK
+        string name
+        string description
+
+    TOOL {
+        string tool_id PK
+        string agent_id FK
+        string name
+        string type
+
+    CUSTOMER {
+        string customer_id PK
+        string name
+        string email
+        string address
+
+    INVOICE {
+        string invoice_id PK
+        string agent_id FK
+        string customer_id FK
+        string template_name
+        date issue_date
+        date due_date
+        decimal total_amount
+        string status
+
+    INVOICE_ITEM {
+        string item_id PK
+        string invoice_id FK
+        string description
+        int quantity
+        decimal unit_price
+        decimal line_total
+
+    TAX_CALCULATION {
+        string tax_id PK
+        string invoice_id FK
+        string tool_id FK
+        decimal tax_rate
+        decimal tax_amount
+
+    VALIDATION {
+        string validation_id PK
+        string invoice_id FK
+        string status
+        string message
+        datetime validated_at
+
+    EMAIL_DISPATCH {
+        string email_id PK
+        string invoice_id FK
+        string tool_id FK
+        string recipient
+        datetime sent_at
+        string status

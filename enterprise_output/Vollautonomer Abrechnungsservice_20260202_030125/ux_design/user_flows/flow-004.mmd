@@ -1,0 +1,27 @@
+flowchart TD
+    Start([Start: Company Settings konfigurieren])
+    S1[User oeffnet das Hauptmenue und waehlt 'Company Settings']
+    Start --> S1
+    E1[/Seite laedt nicht aufgrund fehlender Berechtigung/]
+    S1 -.-> E1
+    S2{User waehlt aktive Entity aus dem Entity-Switcher}
+    S1 --> S2
+    E2[/Entity-Liste nicht verfuegbar (Serverfehler)/]
+    S2 -.-> E2
+    S3[User aktualisiert Felder: company_name, tax_id, vat_number, address, contact_details, default_payment_terms]
+    S2 --> S3
+    S4{User klickt 'Speichern'}
+    S3 --> S4
+    E4[/Speichern-Button deaktiviert bei fehlenden Pflichtfeldern/]
+    S4 -.-> E4
+    S5{System prueft tax_id und vat_number via automatischer Steuer-Validierung}
+    S4 --> S5
+    E5[/Ungueltige tax_id oder vat_number/]
+    S5 -.-> E5
+    S6[System speichert die Einstellungen der aktiven Entity]
+    S5 --> S6
+    E6[/Serverfehler beim Speichern/]
+    S6 -.-> E6
+    S7[User wechselt zu einer anderen Entity und prueft deren Daten]
+    S6 --> S7
+    S7 --> End([End])

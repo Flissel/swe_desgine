@@ -1,0 +1,20 @@
+flowchart TD
+    Start([Start]) --> Load[Load Company Settings UI]
+    Load --> SelectEntity{Multi-Entity Support?}
+    SelectEntity -->|Yes| ChooseEntity[Select Entity]
+    SelectEntity -->|No| UseDefault[Use Default Entity]
+    ChooseEntity --> EnterFields[Enter Company Fields]
+    UseDefault --> EnterFields[Enter Company Fields]
+    EnterFields --> ValidateAddr{International Address Format?}
+    ValidateAddr -->|Yes| IntlFormat[Apply Intl Address Format]
+    ValidateAddr -->|No| LocalFormat[Apply Local Address Format]
+    IntlFormat --> TaxCheck{Automated Tax Validation?}
+    LocalFormat --> TaxCheck{Automated Tax Validation?}
+    TaxCheck -->|Yes| ValidateTax[Validate Tax ID / VAT]
+    TaxCheck -->|No| SkipTax[Skip Tax Validation]
+    ValidateTax --> ValidationOK{Validation Successful?}
+    SkipTax --> Save[Save Settings]
+    ValidationOK -->|Yes| Save[Save Settings]
+    ValidationOK -->|No| FixErrors[Show Errors & Fix]
+    FixErrors --> EnterFields
+    Save --> End([End])

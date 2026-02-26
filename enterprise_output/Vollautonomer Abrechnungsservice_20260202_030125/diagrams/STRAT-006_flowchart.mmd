@@ -1,0 +1,15 @@
+flowchart TD
+    Start([Start]) --> Assess[Ist-Kultur und Entscheidungsprozesse analysieren]
+    Assess --> Vision[AI-First Vision und Ziele definieren]
+    Vision --> Roles[Rollenprofile und Verantwortlichkeiten für AI festlegen]
+    Roles --> Training[Change- & Qualifizierungsprogramm planen]
+    Training --> Governance[Governance und Richtlinien für AI-Entscheidungen etablieren]
+    Governance --> Pilot[AI-gestützte Entscheidungsprozesse pilotieren]
+    Pilot --> Decision1{Akzeptanz und Wirkung ausreichend?}
+    Decision1 -->|Nein| Improve[Feedback sammeln und Maßnahmen anpassen]
+    Improve --> Training
+    Decision1 -->|Ja| Rollout[Organisationsweiter Rollout]
+    Rollout --> Monitor[Monitoring & kontinuierliche Verbesserung]
+    Monitor --> Decision2{AI-First Kultur verankert?}
+    Decision2 -->|Nein| Improve
+    Decision2 -->|Ja| End([End])

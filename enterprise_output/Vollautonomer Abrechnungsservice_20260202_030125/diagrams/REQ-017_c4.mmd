@@ -1,0 +1,7 @@
+C4Context
+    title System Context
+    Person(user, "User", "Aktualisiert Unternehmenseinstellungen")
+    System(system, "Hauptsystem", "Verwaltet Unternehmenseinstellungen")
+    System_Ext(extApi, "Externe API", "Liefert Unternehmensdaten")
+    Rel(user, system, "Verwendet")
+    Rel(system, extApi, "Ruft Daten ab")

@@ -1,0 +1,15 @@
+flowchart TD
+    Start([Start]) --> DefinePolicy[AI-Governance- und Ethik-Rahmen definieren]
+    DefinePolicy --> CollectData[Entscheidungsdaten und Modelle erfassen]
+    CollectData --> AssessTransparency[Transparenz und Nachvollziehbarkeit prüfen]
+    AssessTransparency --> BiasCheck{Bias-Detection durchführen?}
+    BiasCheck -->|Ja| DetectBias[Bias identifizieren und messen]
+    BiasCheck -->|Nein| EthicsReview[Ethik-Review durchführen]
+    DetectBias --> MitigateBias[Bias mitigieren und Modell anpassen]
+    MitigateBias --> EthicsReview[Ethik-Review durchführen]
+    EthicsReview --> ComplianceCheck{Rahmenbedingungen erfüllt?}
+    ComplianceCheck -->|Nein| Remediate[Anpassungen an Modell/Prozess]
+    Remediate --> AssessTransparency
+    ComplianceCheck -->|Ja| Approve[Freigabe und Dokumentation]
+    Approve --> Monitor[Kontinuierliches Monitoring und Reporting]
+    Monitor --> End([End])

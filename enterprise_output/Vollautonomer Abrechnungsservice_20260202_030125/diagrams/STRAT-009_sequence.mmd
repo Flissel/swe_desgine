@@ -1,0 +1,48 @@
+sequenceDiagram
+    participant Analyst as Analyst
+    participant MetricsSvc as Metrics Service
+    participant AISystem as AI System
+    participant AutonomyEval as Autonomy Evaluator
+    participant PerfIndicators as AI Performance Indicators
+    participant BusinessSys as Business Systems
+    participant ImpactCalc as Business Impact Calculator
+    participant DataWH as Data Warehouse
+    participant Dashboard as Metrics Dashboard
+
+    Analyst->>MetricsSvc: Request performance metrics beyond KPIs
+    activate MetricsSvc
+
+    MetricsSvc->>AISystem: Fetch AI operational logs
+    activate AISystem
+    AISystem-->>MetricsSvc: Logs, decisions, confidence scores
+    deactivate AISystem
+
+    MetricsSvc->>AutonomyEval: Compute autonomy-grade metrics
+    activate AutonomyEval
+    AutonomyEval-->>MetricsSvc: Autonomy level score
+    deactivate AutonomyEval
+
+    MetricsSvc->>PerfIndicators: Compute AI performance indicators
+    activate PerfIndicators
+    PerfIndicators-->>MetricsSvc: Accuracy, latency, drift, reliability
+    deactivate PerfIndicators
+
+    MetricsSvc->>BusinessSys: Fetch business outcome data
+    activate BusinessSys
+    BusinessSys-->>MetricsSvc: Revenue, cost, churn, satisfaction
+    deactivate BusinessSys
+
+    MetricsSvc->>ImpactCalc: Calculate business impact metrics
+    activate ImpactCalc
+    ImpactCalc-->>MetricsSvc: ROI, uplift, risk mitigation
+    deactivate ImpactCalc
+
+    MetricsSvc->>DataWH: Store aggregated metrics
+    activate DataWH
+    DataWH-->>MetricsSvc: Storage confirmation
+    deactivate DataWH
+
+    MetricsSvc-->>Dashboard: Publish metrics for visualization
+    deactivate MetricsSvc
+
+    Dashboard-->>Analyst: Display autonomy, AI performance, business impact

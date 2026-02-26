@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant User
+    participant Mahnagent
+    participant DunningLevelCalculator
+    participant DunningLetterGenerator
+    participant CostCalculator
+    participant VersandSystem
+    participant InkassoSystem
+
+    User->>Mahnagent: Starte Mahnprozess für überfällige Rechnung
+    activate Mahnagent
+    Mahnagent->>DunningLevelCalculator: Bestimme Mahnstufe(Rechnung)
+    activate DunningLevelCalculator
+    DunningLevelCalculator-->>Mahnagent: Mahnstufe
+    deactivate DunningLevelCalculator
+
+    Mahnagent->>CostCalculator: Berechne Mahnkosten(Mahnstufe, Rechnung)
+    activate CostCalculator
+    CostCalculator-->>Mahnagent: Mahnkosten
+    deactivate CostCalculator
+
+    Mahnagent->>DunningLetterGenerator: Erstelle Mahnschreiben(Rechnung, Mahnstufe, Mahnkosten)
+    activate DunningLetterGenerator
+    DunningLetterGenerator-->>Mahnagent: Mahnschreiben
+    deactivate DunningLetterGenerator
+
+    Mahnagent->>VersandSystem: Versende Mahnschreiben
+    activate VersandSystem
+    VersandSystem-->>Mahnagent: Versandbestätigung
+    deactivate VersandSystem
+
+    alt Inkassovorbereitung erforderlich
+        Mahnagent->>InkassoSystem: Übergabe zur Inkassovorbereitung
+        activate InkassoSystem
+        InkassoSystem-->>Mahnagent: Bestätigung
+        deactivate InkassoSystem
+    end
+
+    Mahnagent-->>User: Mahnprozess abgeschlossen
+    deactivate Mahnagent

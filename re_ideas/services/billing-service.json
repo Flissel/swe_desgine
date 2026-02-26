@@ -1,0 +1,1330 @@
+{
+  "Name": "billing-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Abrechnung.md",
+    "requirement_count": 161,
+    "categories": {
+      "functional": 156,
+      "performance": 5
+    },
+    "priorities": {
+      "should": 161
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-6db097-000",
+      "title": "The system must automatically generate invoices after POD validation",
+      "description": "The system must automatically generate invoices after POD validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-a",
+      "title": "The system must support flexible billing models including outgoing invoices and incoming credit notes",
+      "description": "The system must support flexible billing models including outgoing invoices and incoming credit notes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-b",
+      "title": "The system must support customizable invoice layouts and formats per customer",
+      "description": "The system must support customizable invoice layouts and formats per customer",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-c",
+      "title": "The system must automatically capture and include waiting times and loading/unloading services in invoices",
+      "description": "The system must automatically capture and include waiting times and loading/unloading services in invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-d",
+      "title": "The system must integrate toll costs into billing calculations",
+      "description": "The system must integrate toll costs into billing calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-e",
+      "title": "The system must automatically export billing data in DATEV-compliant format",
+      "description": "The system must automatically export billing data in DATEV-compliant format",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-f",
+      "title": "The system must generate booking proposals for accounting software",
+      "description": "The system must generate booking proposals for accounting software",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-g",
+      "title": "The system must automatically calculate VAT and apply reverse charge procedures",
+      "description": "The system must automatically calculate VAT and apply reverse charge procedures",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-h",
+      "title": "The system must support flexible assignment of transactions to accounting chart of accounts",
+      "description": "The system must support flexible assignment of transactions to accounting chart of accounts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-i",
+      "title": "The system must support monthly and quarterly period closing",
+      "description": "The system must support monthly and quarterly period closing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-j",
+      "title": "The system must monitor and track open invoices",
+      "description": "The system must monitor and track open invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-k",
+      "title": "The system must automate dunning processes for payment collection",
+      "description": "The system must automate dunning processes for payment collection",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-l",
+      "title": "The system must automatically allocate incoming payments to corresponding invoices",
+      "description": "The system must automatically allocate incoming payments to corresponding invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-m",
+      "title": "The system must calculate and manage early payment discounts",
+      "description": "The system must calculate and manage early payment discounts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-n",
+      "title": "The system must integrate with factoring service providers",
+      "description": "The system must integrate with factoring service providers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-o",
+      "title": "The system must provide complete invoice CRUD operations",
+      "description": "The system must provide complete invoice CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-p",
+      "title": "The system must provide invoice template management functionality",
+      "description": "The system must provide invoice template management functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-q",
+      "title": "The system must track and display invoice status throughout the billing lifecycle",
+      "description": "The system must track and display invoice status throughout the billing lifecycle",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-r",
+      "title": "The system must provide payment tracking and allocation functionality",
+      "description": "The system must provide payment tracking and allocation functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-s",
+      "title": "The system must provide dunning process management endpoints",
+      "description": "The system must provide dunning process management endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-t",
+      "title": "The system must provide discount calculation and management functionality",
+      "description": "The system must provide discount calculation and management functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-u",
+      "title": "The system must provide factoring process support endpoints",
+      "description": "The system must provide factoring process support endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-v",
+      "title": "The system must generate financial reports and analysis",
+      "description": "The system must generate financial reports and analysis",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-w",
+      "title": "The system must provide revenue analytics and forecasting capabilities",
+      "description": "The system must provide revenue analytics and forecasting capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-x",
+      "title": "The system must provide customer profitability analysis",
+      "description": "The system must provide customer profitability analysis",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-y",
+      "title": "The system must provide cost analysis and optimization reporting",
+      "description": "The system must provide cost analysis and optimization reporting",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-z",
+      "title": "The invoice entity must store invoice number, order reference, and customer assignment",
+      "description": "The invoice entity must store invoice number, order reference, and customer assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-27",
+      "title": "The invoice entity must store net amount, taxes, total amount, and currency",
+      "description": "The invoice entity must store net amount, taxes, total amount, and currency",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-28",
+      "title": "The invoice entity must store invoice date, due date, and payment terms",
+      "description": "The invoice entity must store invoice date, due date, and payment terms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-29",
+      "title": "The invoice entity must store line items with quantities, prices, and tax rates",
+      "description": "The invoice entity must store line items with quantities, prices, and tax rates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-30",
+      "title": "The invoice entity must store invoice status, payment status, and dunning status",
+      "description": "The invoice entity must store invoice status, payment status, and dunning status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-31",
+      "title": "The payment structure must store payment amount, date, and method",
+      "description": "The payment structure must store payment amount, date, and method",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-32",
+      "title": "The payment structure must store bank details and reference numbers",
+      "description": "The payment structure must store bank details and reference numbers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-33",
+      "title": "The payment structure must store allocation data for invoices and partial payments",
+      "description": "The payment structure must store allocation data for invoices and partial payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-34",
+      "title": "The payment structure must store processing status and validation information",
+      "description": "The payment structure must store processing status and validation information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-35",
+      "title": "The payment structure must store reconciliation information",
+      "description": "The payment structure must store reconciliation information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-36",
+      "title": "The DATEV export structure must store export metadata including date, period, and booking circle",
+      "description": "The DATEV export structure must store export metadata including date, period, and booking circle",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-37",
+      "title": "The DATEV export structure must store booking entries with accounts and amounts",
+      "description": "The DATEV export structure must store booking entries with accounts and amounts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-38",
+      "title": "The DATEV export structure must store tax keys, tax amounts, and VAT IDs",
+      "description": "The DATEV export structure must store tax keys, tax amounts, and VAT IDs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-39",
+      "title": "The DATEV export structure must store document numbers and external references",
+      "description": "The DATEV export structure must store document numbers and external references",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-40",
+      "title": "The DATEV export structure must store validation data including checksums and consistency checks",
+      "description": "The DATEV export structure must store validation data including checksums and consistency checks",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-41",
+      "title": "The billing configuration must store customer-specific billing rules",
+      "description": "The billing configuration must store customer-specific billing rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-42",
+      "title": "The billing configuration must store rate and price tables",
+      "description": "The billing configuration must store rate and price tables",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-43",
+      "title": "The billing configuration must store tax configuration and rates",
+      "description": "The billing configuration must store tax configuration and rates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-44",
+      "title": "The billing configuration must store invoice templates and layouts",
+      "description": "The billing configuration must store invoice templates and layouts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-45",
+      "title": "The billing configuration must store automation rules for billing processes",
+      "description": "The billing configuration must store automation rules for billing processes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-46",
+      "title": "The dunning process structure must store dunning levels and escalation information",
+      "description": "The dunning process structure must store dunning levels and escalation information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-47",
+      "title": "The dunning process structure must store dunning letters and communication history",
+      "description": "The dunning process structure must store dunning letters and communication history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-48",
+      "title": "The dunning process structure must store dunning fees and calculations",
+      "description": "The dunning process structure must store dunning fees and calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-49",
+      "title": "The Abrechnung Service must be implemented as a standalone FastAPI service",
+      "description": "The Abrechnung Service must be implemented as a standalone FastAPI service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-000-50",
+      "title": "The Abrechnung Service must integrate with n8n for billing workflows",
+      "description": "The Abrechnung Service must integrate with n8n for billing workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001",
+      "title": "The system must process invoice records with payment status and validation information",
+      "description": "The system must process invoice records with payment status and validation information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-a",
+      "title": "The system must maintain reconciliation information for invoices and partial payments",
+      "description": "The system must maintain reconciliation information for invoices and partial payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-b",
+      "title": "The system must export DATEV metadata including export date, period, and booking circle",
+      "description": "The system must export DATEV metadata including export date, period, and booking circle",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-c",
+      "title": "The system must generate DATEV booking entries with accounts and amounts",
+      "description": "The system must generate DATEV booking entries with accounts and amounts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-d",
+      "title": "The system must include tax information in DATEV exports with tax keys, tax amounts, and VAT ID",
+      "description": "The system must include tax information in DATEV exports with tax keys, tax amounts, and VAT ID",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-e",
+      "title": "The system must include document references with document numbers and external references in DATEV exports",
+      "description": "The system must include document references with document numbers and external references in DATEV exports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-f",
+      "title": "The system must validate DATEV export data using checksums and consistency checks",
+      "description": "The system must validate DATEV export data using checksums and consistency checks",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-g",
+      "title": "The system must support customer-specific billing rules in billing configuration",
+      "description": "The system must support customer-specific billing rules in billing configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-h",
+      "title": "The system must maintain rate and price tables for billing calculations",
+      "description": "The system must maintain rate and price tables for billing calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-i",
+      "title": "The system must configure and apply tax rates in billing operations",
+      "description": "The system must configure and apply tax rates in billing operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-j",
+      "title": "The system must support customizable invoice templates and layouts",
+      "description": "The system must support customizable invoice templates and layouts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-k",
+      "title": "The system must implement automation rules for billing processes",
+      "description": "The system must implement automation rules for billing processes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-l",
+      "title": "The system must support dunning levels with escalation mechanisms",
+      "description": "The system must support dunning levels with escalation mechanisms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-m",
+      "title": "The system must maintain communication history for dunning notices",
+      "description": "The system must maintain communication history for dunning notices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-n",
+      "title": "The system must calculate dunning fees and late payment interest",
+      "description": "The system must calculate dunning fees and late payment interest",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-o",
+      "title": "The system must support legal processes and collection procedures",
+      "description": "The system must support legal processes and collection procedures",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-p",
+      "title": "The system must offer settlement options including installment payments and settlement proposals",
+      "description": "The system must offer settlement options including installment payments and settlement proposals",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-q",
+      "title": "The FastAPI service must implement central billing logic and processing",
+      "description": "The FastAPI service must implement central billing logic and processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-r",
+      "title": "The FastAPI service must perform tax calculation and validation",
+      "description": "The FastAPI service must perform tax calculation and validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-s",
+      "title": "The FastAPI service must generate DATEV and other export formats",
+      "description": "The FastAPI service must generate DATEV and other export formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-t",
+      "title": "The FastAPI service must process and allocate payments",
+      "description": "The FastAPI service must process and allocate payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-u",
+      "title": "The system must automatically generate invoices",
+      "description": "The system must automatically generate invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-v",
+      "title": "The system must process and monitor payments",
+      "description": "The system must process and monitor payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-w",
+      "title": "The system must support export functionality for multiple formats",
+      "description": "The system must support export functionality for multiple formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-x",
+      "title": "The system must manage dunning and receivables collection",
+      "description": "The system must manage dunning and receivables collection",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-y",
+      "title": "The system must provide direct DATEV integration",
+      "description": "The system must provide direct DATEV integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-z",
+      "title": "The system must import and process banking data",
+      "description": "The system must import and process banking data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-27",
+      "title": "The system must generate PDF invoices and documents",
+      "description": "The system must generate PDF invoices and documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-28",
+      "title": "The system must send invoices and communications via email automatically",
+      "description": "The system must send invoices and communications via email automatically",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-29",
+      "title": "The n8n workflow must trigger invoice generation automatically after POD validation",
+      "description": "The n8n workflow must trigger invoice generation automatically after POD validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-30",
+      "title": "The n8n workflow must collect all billing-relevant data for invoice generation",
+      "description": "The n8n workflow must collect all billing-relevant data for invoice generation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-31",
+      "title": "The n8n workflow must calculate freight, additional services, and taxes",
+      "description": "The n8n workflow must calculate freight, additional services, and taxes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-32",
+      "title": "The n8n workflow must apply customer-specific templates to invoices",
+      "description": "The n8n workflow must apply customer-specific templates to invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-33",
+      "title": "The n8n workflow must prepare booking data for DATEV export",
+      "description": "The n8n workflow must prepare booking data for DATEV export",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-34",
+      "title": "The n8n workflow must validate export data against DATEV standards",
+      "description": "The n8n workflow must validate export data against DATEV standards",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-35",
+      "title": "The n8n workflow must generate DATEV export files",
+      "description": "The n8n workflow must generate DATEV export files",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-36",
+      "title": "The n8n workflow must transfer DATEV export files to the DATEV system",
+      "description": "The n8n workflow must transfer DATEV export files to the DATEV system",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-37",
+      "title": "The n8n workflow must import bank account statement data",
+      "description": "The n8n workflow must import bank account statement data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-38",
+      "title": "The n8n workflow must automatically match payments to invoices",
+      "description": "The n8n workflow must automatically match payments to invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-39",
+      "title": "The n8n workflow must reconcile payments and analyze differences",
+      "description": "The n8n workflow must reconcile payments and analyze differences",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-40",
+      "title": "The n8n workflow must notify users when payments are received",
+      "description": "The n8n workflow must notify users when payments are received",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-41",
+      "title": "The n8n workflow must monitor due dates for invoices",
+      "description": "The n8n workflow must monitor due dates for invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-42",
+      "title": "The n8n workflow must automatically escalate dunning levels",
+      "description": "The n8n workflow must automatically escalate dunning levels",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-43",
+      "title": "The n8n workflow must automatically send dunning notices",
+      "description": "The n8n workflow must automatically send dunning notices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-44",
+      "title": "The n8n workflow must calculate dunning fees",
+      "description": "The n8n workflow must calculate dunning fees",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-45",
+      "title": "The system must integrate with the Transport Service to receive POD data for invoice triggering",
+      "description": "The system must integrate with the Transport Service to receive POD data for invoice triggering",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-46",
+      "title": "The system must integrate with Order Management to receive order data and pricing agreements",
+      "description": "The system must integrate with Order Management to receive order data and pricing agreements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-47",
+      "title": "The system must integrate with Business Partner Service to receive customer master data and billing rules",
+      "description": "The system must integrate with Business Partner Service to receive customer master data and billing rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-48",
+      "title": "The system must integrate with Banking APIs to receive account statement and payment information",
+      "description": "The system must integrate with Banking APIs to receive account statement and payment information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-49",
+      "title": "The system must export booking data and files to the DATEV system",
+      "description": "The system must export booking data and files to the DATEV system",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-50",
+      "title": "The system must deliver invoices and payment status to the Customer Portal",
+      "description": "The system must deliver invoices and payment status to the Customer Portal",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-51",
+      "title": "The system must send invoices and communications via Email Service",
+      "description": "The system must send invoices and communications via Email Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-52",
+      "title": "The system must integrate with Factoring Partners for receivables sale and management",
+      "description": "The system must integrate with Factoring Partners for receivables sale and management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-53",
+      "title": "The system must trigger invoice generation on POD validation or manual request",
+      "description": "The system must trigger invoice generation on POD validation or manual request",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-54",
+      "title": "The system must aggregate all billing-relevant data for invoice processing",
+      "description": "The system must aggregate all billing-relevant data for invoice processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-55",
+      "title": "The system must calculate rates based on pricing agreements",
+      "description": "The system must calculate rates based on pricing agreements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-56",
+      "title": "The system must apply customer-specific layouts to invoices",
+      "description": "The system must apply customer-specific layouts to invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-57",
+      "title": "The system must check invoice data for completeness",
+      "description": "The system must check invoice data for completeness",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-58",
+      "title": "The system must apply business rules during invoice validation",
+      "description": "The system must apply business rules during invoice validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-59",
+      "title": "The system must implement an approval workflow for critical invoices",
+      "description": "The system must implement an approval workflow for critical invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-001-60",
+      "title": "The system must perform quality assurance checks before invoice delivery",
+      "description": "The system must perform quality assurance checks before invoice delivery",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002",
+      "title": "The system must aggregate all billing-relevant data for invoice generation",
+      "description": "The system must aggregate all billing-relevant data for invoice generation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-a",
+      "title": "The system must calculate invoice rates based on tariff agreements",
+      "description": "The system must calculate invoice rates based on tariff agreements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-b",
+      "title": "The system must apply customer-specific invoice layouts via templates",
+      "description": "The system must apply customer-specific invoice layouts via templates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-c",
+      "title": "The system must validate completeness of invoice data before processing",
+      "description": "The system must validate completeness of invoice data before processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-d",
+      "title": "The system must apply business rules during invoice validation",
+      "description": "The system must apply business rules during invoice validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-e",
+      "title": "The system must implement an approval workflow for critical invoices",
+      "description": "The system must implement an approval workflow for critical invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-f",
+      "title": "The system must perform quality assurance checks before invoice delivery",
+      "description": "The system must perform quality assurance checks before invoice delivery",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-g",
+      "title": "The system must export data in DATEV-compliant formats",
+      "description": "The system must export data in DATEV-compliant formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-h",
+      "title": "The system must support flexible account mapping configuration",
+      "description": "The system must support flexible account mapping configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-i",
+      "title": "The system must validate exports against DATEV standards",
+      "description": "The system must validate exports against DATEV standards",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-j",
+      "title": "The system must support batch processing for period exports",
+      "description": "The system must support batch processing for period exports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-k",
+      "title": "The system must automatically assign accounts to booking entries",
+      "description": "The system must automatically assign accounts to booking entries",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-l",
+      "title": "The system must handle tax processing and VAT treatment",
+      "description": "The system must handle tax processing and VAT treatment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-m",
+      "title": "The system must assign cost centers and cost carriers to bookings",
+      "description": "The system must assign cost centers and cost carriers to bookings",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-n",
+      "title": "The system must link booking entries to original documents",
+      "description": "The system must link booking entries to original documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-o",
+      "title": "The system must manage open items for payment tracking",
+      "description": "The system must manage open items for payment tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-p",
+      "title": "The system must track payment receipts and reconcile payments",
+      "description": "The system must track payment receipts and reconcile payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-q",
+      "title": "The system must perform aging analysis and generate payment due reports",
+      "description": "The system must perform aging analysis and generate payment due reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-r",
+      "title": "The system must monitor cash flow and support liquidity planning",
+      "description": "The system must monitor cash flow and support liquidity planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-s",
+      "title": "The system must automate dunning runs for overdue payments",
+      "description": "The system must automate dunning runs for overdue payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-t",
+      "title": "The system must implement escalation rules for dunning levels",
+      "description": "The system must implement escalation rules for dunning levels",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-u",
+      "title": "The system must support multi-channel communication for dunning notices",
+      "description": "The system must support multi-channel communication for dunning notices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-v",
+      "title": "The system must integrate with collection service providers",
+      "description": "The system must integrate with collection service providers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-w",
+      "title": "The system must track and report revenue metrics and development",
+      "description": "The system must track and report revenue metrics and development",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-x",
+      "title": "The system must calculate and report collection rates",
+      "description": "The system must calculate and report collection rates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-y",
+      "title": "The system must calculate Days Sales Outstanding metric",
+      "description": "The system must calculate Days Sales Outstanding metric",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-z",
+      "title": "The system must calculate and report bad debt rates and risk assessments",
+      "description": "The system must calculate and report bad debt rates and risk assessments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-27",
+      "title": "The system must measure and report invoice processing time",
+      "description": "The system must measure and report invoice processing time",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-28",
+      "title": "The system must track and report process automation rate",
+      "description": "The system must track and report process automation rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-29",
+      "title": "The system must measure and report error rates in invoice generation",
+      "description": "The system must measure and report error rates in invoice generation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-30",
+      "title": "The system must track customer satisfaction metrics for billing services",
+      "description": "The system must track customer satisfaction metrics for billing services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-31",
+      "title": "The system must monitor tax compliance requirements",
+      "description": "The system must monitor tax compliance requirements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-32",
+      "title": "The system must validate DATEV export conformance",
+      "description": "The system must validate DATEV export conformance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-33",
+      "title": "The system must maintain complete audit trails for all transactions",
+      "description": "The system must maintain complete audit trails for all transactions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-34",
+      "title": "The system must support regulatory reporting requirements",
+      "description": "The system must support regulatory reporting requirements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-35",
+      "title": "The system must include unit tests for calculation logic",
+      "description": "The system must include unit tests for calculation logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-36",
+      "title": "The system must include unit tests for tax processing",
+      "description": "The system must include unit tests for tax processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-37",
+      "title": "The system must include unit tests for DATEV export functionality",
+      "description": "The system must include unit tests for DATEV export functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-38",
+      "title": "The system must include unit tests for payment matching",
+      "description": "The system must include unit tests for payment matching",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-39",
+      "title": "The system must include integration tests for all API endpoints",
+      "description": "The system must include integration tests for all API endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-40",
+      "title": "The system must include integration tests for DATEV interface",
+      "description": "The system must include integration tests for DATEV interface",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-41",
+      "title": "The system must include integration tests for banking APIs",
+      "description": "The system must include integration tests for banking APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-42",
+      "title": "The system must include integration tests for n8n workflows",
+      "description": "The system must include integration tests for n8n workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-43",
+      "title": "The system must support performance testing with high invoice volumes",
+      "description": "The system must support performance testing with high invoice volumes",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-44",
+      "title": "The system must support performance testing with concurrent operations",
+      "description": "The system must support performance testing with concurrent operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-45",
+      "title": "The system must support performance testing for large export operations",
+      "description": "The system must support performance testing for large export operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-46",
+      "title": "The system must support performance testing for database load",
+      "description": "The system must support performance testing for database load",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-47",
+      "title": "The system must trigger invoice generation on POD validation events",
+      "description": "The system must trigger invoice generation on POD validation events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    },
+    {
+      "requirement_id": "REQ-6db097-002-48",
+      "title": "The system must support manual triggering of invoice generation",
+      "description": "The system must support manual triggering of invoice generation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Abrechnung.md"
+    }
+  ]
+}

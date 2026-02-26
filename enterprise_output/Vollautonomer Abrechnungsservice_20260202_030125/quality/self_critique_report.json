@@ -1,0 +1,478 @@
+{
+  "timestamp": "2026-02-02T04:02:17.926316",
+  "quality_score": 0.0,
+  "summary": {
+    "total_issues": 27,
+    "requirements_reviewed": 30,
+    "user_stories_reviewed": 30,
+    "test_cases_reviewed": 313,
+    "by_severity": {
+      "critical": 0,
+      "high": 10,
+      "medium": 13,
+      "low": 4,
+      "info": 0
+    },
+    "by_category": {
+      "consistency": 2,
+      "completeness": 12,
+      "testability": 10,
+      "traceability": 3,
+      "clarity": 0,
+      "feasibility": 0
+    }
+  },
+  "issues": [
+    {
+      "id": "CI-001",
+      "category": "consistency",
+      "severity": "medium",
+      "title": "Zero-touch vs escalation in exception handling",
+      "description": "AUTO-001 and STRAT-001 require invoice generation and billing to run without human intervention (zero-touch). NFR-AGENT-EXCEPTION-HANDLER-AGENT includes 'Eskalation', which typically implies human involvement. This creates a potential conflict with the zero-touch/no-human-intervention goal.",
+      "affected_artifacts": [
+        "AUTO-001",
+        "STRAT-001",
+        "NFR-AGENT-EXCEPTION-HANDLER-AGENT"
+      ],
+      "suggestion": "Clarify whether escalation is fully automated (to other agents/systems) or allows human intervention. If humans are involved, define exception thresholds and explicitly allow limited manual handling without violating zero-touch objectives.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-002",
+      "category": "consistency",
+      "severity": "low",
+      "title": "Overlapping responsibility for bank account creation",
+      "description": "REQ-016 states the system creates a new bank account for the user, while FR-FE-BANK-ACCOUNT-SETUP/US-003 specifies UI-based entry and management of bank accounts. The boundary between backend account creation and frontend data capture is not clear, leading to overlap.",
+      "affected_artifacts": [
+        "REQ-016",
+        "FR-FE-BANK-ACCOUNT-SETUP",
+        "US-003"
+      ],
+      "suggestion": "Separate responsibilities: specify REQ-016 as backend service behavior (e.g., account provisioning/storage) and FR-FE-BANK-ACCOUNT-SETUP as UI capture/validation only.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-003",
+      "category": "completeness",
+      "severity": "high",
+      "title": "Fehlende Fehlerbehandlung bei POD-Validierung",
+      "description": "REQ-001 l\u00f6st Rechnungen nach POD-Validierung aus, aber beschreibt keine Behandlung bei fehlender/ung\u00fcltiger POD oder Validierungsfehlern.",
+      "affected_artifacts": [
+        "REQ-001"
+      ],
+      "suggestion": "Fehlerpfade definieren (z. B. POD fehlend, fehlerhaft, versp\u00e4tet) inkl. Retry, Eskalation und manueller Freigabe.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-004",
+      "category": "completeness",
+      "severity": "medium",
+      "title": "Unklare Definitionen zentraler Begriffe",
+      "description": "Begriffe wie POD, Zero-Touch, Autonomie-Grad, spezialisierte Agenten sind nicht definiert, was zu Interpretationsl\u00fccken f\u00fchrt.",
+      "affected_artifacts": [
+        "REQ-001",
+        "AUTO-001",
+        "AUTO-002",
+        "STRAT-001",
+        "STRAT-009"
+      ],
+      "suggestion": "Glossar mit klaren Definitionen und Abgrenzungen erg\u00e4nzen.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-005",
+      "category": "completeness",
+      "severity": "high",
+      "title": "Fehlende Integrationspunkte zu Kernsystemen",
+      "description": "Rechnungserstellung, Steuerberechnung und Zahlungsabgleich ben\u00f6tigen ERP/Accounting/Banking-Integrationen, die nicht spezifiziert sind.",
+      "affected_artifacts": [
+        "AUTO-001",
+        "NFR-AGENT-RECHNUNGSERSTELLUNG-AGENT",
+        "NFR-AGENT-ZAHLUNGSRECONCILIATION-AGENT",
+        "NFR-AGENT-STEUERBERECHNUNGS-AGENT"
+      ],
+      "suggestion": "Explizite Integrationen (ERP, Buchhaltung, Bank-APIs, Steuer-DB, Email/SMS) inkl. Auth, Datenformate und Fehlerszenarien definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-006",
+      "category": "completeness",
+      "severity": "high",
+      "title": "Unvollst\u00e4ndige User Journey f\u00fcr Rechnungsprozess",
+      "description": "Es fehlt der End-to-End-Fluss von Kundenanlage, Auftrag, Rechnung, Versand, Zahlung, Mahnung, Gutschrift.",
+      "affected_artifacts": [
+        "REQ-001",
+        "FR-FE-CUSTOMER-MANAGEMENT",
+        "NFR-AGENT-MAHNAGENT"
+      ],
+      "suggestion": "Prozesskette und Zust\u00e4nde (Draft, Issued, Paid, Overdue, Canceled, Refunded) definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-007",
+      "category": "completeness",
+      "severity": "medium",
+      "title": "Fehlende Edge Cases bei Datenimport",
+      "description": "REQ-018/Customer Management erw\u00e4hnt Import, aber keine Behandlung von Duplikaten, Teilfehlern, Encoding, Pflichtfeldern.",
+      "affected_artifacts": [
+        "REQ-018",
+        "FR-FE-CUSTOMER-MANAGEMENT"
+      ],
+      "suggestion": "Import-Validierungen, Mapping, Fehlerberichte, Rollback/Partial-Commit festlegen.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-008",
+      "category": "completeness",
+      "severity": "high",
+      "title": "Unvollst\u00e4ndige Sicherheitsanforderungen f\u00fcr sensible Daten",
+      "description": "Bankverbindungen, Steuer-IDs, Zahlungsdaten ben\u00f6tigen Verschl\u00fcsselung, Zugriffskontrolle und Audit Trails.",
+      "affected_artifacts": [
+        "FR-FE-BANK-ACCOUNT-SETUP",
+        "FR-FE-COMPANY-SETTINGS",
+        "FR-FE-USER-PROFILE-SETTINGS"
+      ],
+      "suggestion": "NFRs f\u00fcr Verschl\u00fcsselung at-rest/in-transit, RBAC, Logging, Auditability definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-009",
+      "category": "completeness",
+      "severity": "medium",
+      "title": "Fehlende Performance- und SLA-Anforderungen f\u00fcr Kernfunktionen",
+      "description": "Event-driven Verf\u00fcgbarkeit ist definiert, aber keine Antwortzeiten/Throughput f\u00fcr Rechnungserstellung, Import, Dashboard.",
+      "affected_artifacts": [
+        "AUTO-001",
+        "AUTO-004",
+        "STRAT-003"
+      ],
+      "suggestion": "SLA/SLOs f\u00fcr Latenz, Durchsatz, Batch-Verarbeitung und Dashboard-Refresh spezifizieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-010",
+      "category": "completeness",
+      "severity": "high",
+      "title": "Unklarer Ausnahmefluss und Eskalation",
+      "description": "AUTO-003 nennt automatische Behebung, aber keine Grenzen, Freigaben oder menschliche Eskalation.",
+      "affected_artifacts": [
+        "AUTO-003",
+        "NFR-AGENT-EXCEPTION-HANDLER-AGENT"
+      ],
+      "suggestion": "Eskalationsmatrix, Schwellenwerte, Audit-Protokolle und menschliche Freigabe definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-011",
+      "category": "completeness",
+      "severity": "medium",
+      "title": "Fehlende Anforderungen an Rechtskonformit\u00e4t pro Land",
+      "description": "STRAT-002 nennt Compliance, aber keine l\u00e4nderspezifischen Regeln (Steuers\u00e4tze, E-Rechnungspflichten).",
+      "affected_artifacts": [
+        "STRAT-002",
+        "NFR-AGENT-STEUERBERECHNUNGS-AGENT"
+      ],
+      "suggestion": "Jurisdiktionen, Regelquellen, Update-Zyklen und Pr\u00fcfmechanismen definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-012",
+      "category": "completeness",
+      "severity": "high",
+      "title": "Unvollst\u00e4ndige Kontoerstellung (REQ-016)",
+      "description": "Kontoerstellung nennt keine Identit\u00e4tspr\u00fcfung, KYC/AML, Berechtigungen oder Fehlerf\u00e4lle.",
+      "affected_artifacts": [
+        "REQ-016"
+      ],
+      "suggestion": "KYC/AML-Checks, Zustimmungsfl\u00fcsse, Validierungen und Ablehnungsgr\u00fcnde erg\u00e4nzen.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-013",
+      "category": "completeness",
+      "severity": "medium",
+      "title": "Fehlende Anforderungen f\u00fcr Rechnungsvorlagen und Mehrw\u00e4hrung",
+      "description": "Rechnungserstellung erw\u00e4hnt Templates, aber keine Vorlageversionen, Branding, Mehrw\u00e4hrung, Lokalisierung.",
+      "affected_artifacts": [
+        "AUTO-001",
+        "NFR-AGENT-RECHNUNGSERSTELLUNG-AGENT"
+      ],
+      "suggestion": "Template-Management, Lokalisierung (Sprache, W\u00e4hrung, Steuerschl\u00fcssel) definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-014",
+      "category": "completeness",
+      "severity": "low",
+      "title": "Unklare Frontend-Komponenten ohne Funktionsumfang",
+      "description": "FR-FE-DATABASE-DESIGN, FR-FE-API-ENDPOINTS, FR-FE-FRONTEND-COMPONENTS sind unbestimmt.",
+      "affected_artifacts": [
+        "FR-FE-DATABASE-DESIGN",
+        "FR-FE-API-ENDPOINTS",
+        "FR-FE-FRONTEND-COMPONENTS"
+      ],
+      "suggestion": "Zweck, Eingaben/Ausgaben, Nutzerrollen und Akzeptanzkriterien definieren.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-015",
+      "category": "testability",
+      "severity": "high",
+      "title": "No explicit acceptance criteria",
+      "description": "User stories do not provide measurable acceptance criteria, making it hard to define pass/fail conditions beyond the listed tests.",
+      "affected_artifacts": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013",
+        "US-014",
+        "US-015",
+        "US-016",
+        "US-017",
+        "US-018",
+        "US-019",
+        "US-020"
+      ],
+      "suggestion": "Add measurable acceptance criteria per story (e.g., response times, validation rules, data fields, success/failure conditions, audit log requirements).",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-016",
+      "category": "testability",
+      "severity": "medium",
+      "title": "Vague terms in dashboard requirements",
+      "description": "Terms like \u201creal time,\u201d \u201cquickly,\u201d and \u201cimprove process efficiency\u201d are subjective without latency thresholds or defined KPIs.",
+      "affected_artifacts": [
+        "US-002"
+      ],
+      "suggestion": "Define concrete refresh/latency thresholds, KPI definitions, and exception detection rules.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-017",
+      "category": "testability",
+      "severity": "medium",
+      "title": "Unspecified validation and security controls for bank account setup",
+      "description": "US-003 references validation and security controls but does not define required fields, encryption, masking, role permissions, or audit logging.",
+      "affected_artifacts": [
+        "US-003"
+      ],
+      "suggestion": "Specify mandatory fields, validation rules, encryption/masking requirements, and audit log events.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-018",
+      "category": "testability",
+      "severity": "medium",
+      "title": "Company settings scope unclear",
+      "description": "US-004 mentions legal/tax/address/billing defaults without specifying field formats, required values, or rules per jurisdiction.",
+      "affected_artifacts": [
+        "US-004"
+      ],
+      "suggestion": "Provide field-level constraints and jurisdiction-specific validation rules.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-019",
+      "category": "testability",
+      "severity": "medium",
+      "title": "Customer management rules not defined",
+      "description": "US-005 lists attributes but does not define validation rules (e.g., tax ID formats, credit limit bounds, payment terms), making tests ambiguous.",
+      "affected_artifacts": [
+        "US-005"
+      ],
+      "suggestion": "Define field constraints, allowable values, and validation behavior for each attribute.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-020",
+      "category": "testability",
+      "severity": "medium",
+      "title": "User profile settings expectations are untestable",
+      "description": "US-006 references RBAC enforcement and reliable session management without specifying roles, permissions, session timeouts, or notification rules.",
+      "affected_artifacts": [
+        "US-006"
+      ],
+      "suggestion": "Define role matrix, session timeout values, notification triggers, and audit requirements.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-021",
+      "category": "testability",
+      "severity": "high",
+      "title": "Frontend database design is not testable",
+      "description": "US-007 implies configuring schemas via UI but provides no schema constraints, versioning rules, or validation criteria.",
+      "affected_artifacts": [
+        "US-007"
+      ],
+      "suggestion": "Specify allowable schema operations, validation rules, and success/failure outcomes.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-022",
+      "category": "testability",
+      "severity": "medium",
+      "title": "API endpoint configuration lacks measurable criteria",
+      "description": "US-008 mentions reliability and monitoring but no SLA, availability metrics, or validation for endpoint configuration.",
+      "affected_artifacts": [
+        "US-008"
+      ],
+      "suggestion": "Define expected endpoint configuration fields, validation, and availability/health-check thresholds.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-023",
+      "category": "testability",
+      "severity": "low",
+      "title": "Standardized frontend components undefined",
+      "description": "US-009 uses subjective terms like \u201cstandardized\u201d and \u201cimprove efficiency\u201d without defining component library or usage rules.",
+      "affected_artifacts": [
+        "US-009"
+      ],
+      "suggestion": "Define component set, required usage, and measurable outcomes (e.g., consistency checks).",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-024",
+      "category": "testability",
+      "severity": "high",
+      "title": "Verification stories lack measurable success criteria",
+      "description": "US-010 to US-020 use terms like \u201creliability,\u201d \u201caccuracy,\u201d \u201cmarket-leading,\u201d \u201cethical,\u201d and \u201czero-touch\u201d without thresholds, datasets, or audit requirements.",
+      "affected_artifacts": [
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013",
+        "US-014",
+        "US-015",
+        "US-016",
+        "US-017",
+        "US-018",
+        "US-019",
+        "US-020"
+      ],
+      "suggestion": "Define quantitative targets (latency, accuracy, availability, bias thresholds, compliance checks), test datasets, and audit evidence required.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-025",
+      "category": "traceability",
+      "severity": "high",
+      "title": "Orphan requirements",
+      "description": "Multiple requirements have no linked user stories, leaving them unvalidated by story-level traceability.",
+      "affected_artifacts": [
+        "STRAT-009",
+        "STRAT-010",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "NFR-AGENT-RECHNUNGSERSTELLUNG-AGENT",
+        "NFR-AGENT-ZAHLUNGSRECONCILIATION-AGENT",
+        "NFR-AGENT-MAHNAGENT",
+        "NFR-AGENT-STEUERBERECHNUNGS-AGENT",
+        "NFR-AGENT-EXCEPTION-HANDLER-AGENT"
+      ],
+      "suggestion": "Create user stories that explicitly link to these requirements.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-026",
+      "category": "traceability",
+      "severity": "medium",
+      "title": "Orphan user stories",
+      "description": "User stories without linked test cases reduce verifiability and coverage.",
+      "affected_artifacts": [
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013",
+        "US-014",
+        "US-015",
+        "US-016",
+        "US-017",
+        "US-018",
+        "US-019",
+        "US-020"
+      ],
+      "suggestion": "Add test cases for each orphan story and link them explicitly.",
+      "auto_fixable": false,
+      "fixed": false
+    },
+    {
+      "id": "CI-027",
+      "category": "traceability",
+      "severity": "low",
+      "title": "Missing bi-directional traceability",
+      "description": "Requirements do not list backlinks to their user stories, making bi-directional traceability incomplete.",
+      "affected_artifacts": [
+        "REQ-001",
+        "AUTO-001",
+        "AUTO-002",
+        "AUTO-003",
+        "AUTO-004",
+        "STRAT-001",
+        "STRAT-002",
+        "STRAT-003",
+        "STRAT-004",
+        "STRAT-005",
+        "STRAT-006",
+        "STRAT-007",
+        "STRAT-008",
+        "FR-FE-BANK-ACCOUNT-SETUP",
+        "FR-FE-COMPANY-SETTINGS",
+        "FR-FE-CUSTOMER-MANAGEMENT",
+        "FR-FE-USER-PROFILE-SETTINGS",
+        "FR-FE-DATABASE-DESIGN",
+        "FR-FE-API-ENDPOINTS",
+        "FR-FE-FRONTEND-COMPONENTS"
+      ],
+      "suggestion": "Add explicit back-references from requirements to linked user stories.",
+      "auto_fixable": false,
+      "fixed": false
+    }
+  ],
+  "recommendations": [
+    "Conduct additional requirement elicitation to fill identified gaps",
+    "Refine acceptance criteria to be more specific and measurable",
+    "Establish clear links between requirements, user stories, and test cases"
+  ]
+}

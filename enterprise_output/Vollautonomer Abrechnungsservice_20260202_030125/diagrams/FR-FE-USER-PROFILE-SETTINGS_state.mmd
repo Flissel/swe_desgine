@@ -1,0 +1,25 @@
+stateDiagram-v2
+    [*] --> ViewingProfileSettings
+    ViewingProfileSettings --> EditingRole : edit_user_role
+    ViewingProfileSettings --> EditingNotifications : edit_notification_preferences
+    ViewingProfileSettings --> EditingDashboard : edit_dashboard_customization
+    ViewingProfileSettings --> EditingLanguage : edit_language_settings
+    ViewingProfileSettings --> EditingSecurity : edit_security_settings
+    ViewingProfileSettings --> ViewingAccessControl : view_role_based_access_control
+    ViewingProfileSettings --> ViewingAuditTrail : view_audit_trail
+    ViewingProfileSettings --> ManagingSessions : manage_session
+
+    EditingRole --> SavingChanges : save_changes
+    EditingNotifications --> SavingChanges : save_changes
+    EditingDashboard --> SavingChanges : save_changes
+    EditingLanguage --> SavingChanges : save_changes
+    EditingSecurity --> SavingChanges : save_changes
+
+    SavingChanges --> ViewingProfileSettings : changes_saved
+    SavingChanges --> ViewingProfileSettings : save_failed_retry
+
+    ViewingAccessControl --> ViewingProfileSettings : back_to_settings
+    ViewingAuditTrail --> ViewingProfileSettings : back_to_settings
+    ManagingSessions --> ViewingProfileSettings : back_to_settings
+
+    ViewingProfileSettings --> [*] : exit_profile_settings

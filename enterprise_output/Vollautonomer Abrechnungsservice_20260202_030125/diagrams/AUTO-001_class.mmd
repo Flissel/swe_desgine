@@ -1,0 +1,60 @@
+classDiagram
+    class InvoiceGenerationSystem {
+        +systemId
+        +startGeneration(request)
+        +validateOutput(report)
+
+    class AgentCoordinator {
+        +coordinatorId
+        +assignTask(task)
+        +aggregateResults(results)
+
+    class AIAgent {
+        +agentId
+        +specialty
+        +processTask(task)
+        +produceInvoice(data)
+
+    class Invoice {
+        +invoiceId
+        +issueDate
+        +totalAmount
+        +calculateTotal(items)
+        +renderDocument(format)
+
+    class Customer {
+        +customerId
+        +name
+        +address
+        +getBillingDetails(reference)
+
+    class LineItem {
+        +itemId
+        +description
+        +quantity
+        +unitPrice
+        +lineTotal(quantity)
+
+    class DataSource {
+        +sourceId
+        +fetchUsage(customerId)
+        +fetchPricing(planId)
+
+    class InvoiceRepository {
+        +repositoryId
+        +saveInvoice(invoice)
+        +findInvoice(invoiceId)
+
+    class AuditLog {
+        +logId
+        +recordEvent(event)
+        +exportLog(format)
+
+    InvoiceGenerationSystem --> AgentCoordinator : uses
+    AgentCoordinator --> AIAgent : manages
+    AIAgent --> DataSource : queries
+    AIAgent --> Invoice : creates
+    Invoice --> LineItem : contains
+    Invoice --> Customer : billedTo
+    InvoiceGenerationSystem --> InvoiceRepository : stores
+    InvoiceGenerationSystem --> AuditLog : logs

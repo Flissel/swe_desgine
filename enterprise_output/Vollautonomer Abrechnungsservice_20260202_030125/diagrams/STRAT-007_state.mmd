@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> DataCollection
+    DataCollection --> DataQualityCheck : data_ingested
+    DataQualityCheck --> DataCleansing : issues_detected
+    DataQualityCheck --> ModelTraining : quality_passed
+    DataCleansing --> DataQualityCheck : data_cleaned
+    ModelTraining --> ModelEvaluation : training_complete
+    ModelEvaluation --> Deployment : metrics_passed
+    ModelEvaluation --> ModelTraining : metrics_failed
+    Deployment --> Monitoring : model_deployed
+    Monitoring --> ContinuousLearning : drift_detected
+    Monitoring --> [*] : retirement_decision
+    ContinuousLearning --> DataCollection : feedback_collected

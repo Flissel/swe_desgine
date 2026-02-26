@@ -1,0 +1,18 @@
+C4Context
+    title System Context - STRAT-005: Cybersecurity für autonome Systeme
+    Person(analyst, "Security Analyst", "Überwacht Sicherheitsereignisse und reagiert auf Vorfälle")
+    Person(operator, "System Operator", "Betreibt autonome Systeme und verwaltet Richtlinien")
+    System(main, "Zero-Trust Cybersecurity Platform", "KI-gestützte Bedrohungserkennung und -abwehr für autonome Systeme")
+    System_Ext(autonomous, "Autonomous Systems", "Autonome Systeme, die geschützt werden")
+    System_Ext(siemon, "SIEM Platform", "Zentrale Protokollierung und Korrelation von Sicherheitsereignissen")
+    System_Ext(threatintel, "Threat Intelligence API", "Externe Bedrohungsinformationen und IOC-Feeds")
+    System_Ext(ident, "Identity Provider", "Authentifizierung und Autorisierung von Benutzern und Geräten")
+    System_Ext(alerting, "Alerting/Notification Service", "Benachrichtigungen und Eskalationen")
+
+    Rel(analyst, main, "Überwacht, analysiert und reagiert auf Vorfälle")
+    Rel(operator, main, "Konfiguriert Richtlinien und Zugriffsregeln")
+    Rel(main, autonomous, "Schützt, überwacht und erzwingt Zero-Trust-Zugriff")
+    Rel(main, siemon, "Sendet Sicherheitsereignisse und Alarme")
+    Rel(main, threatintel, "Bezieht Bedrohungsdaten")
+    Rel(main, ident, "Validiert Identitäten und Zugriffskontext")
+    Rel(main, alerting, "Sendet Benachrichtigungen")

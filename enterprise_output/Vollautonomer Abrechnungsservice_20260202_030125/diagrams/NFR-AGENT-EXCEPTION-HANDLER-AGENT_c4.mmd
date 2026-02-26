@@ -1,0 +1,14 @@
+C4Context
+    title Exception-Handler-Agent - System Context
+    Person(user, "User", "Uses the agent to handle exceptions and unusual cases")
+    Person(ops, "Support Engineer", "Monitors escalations and handles critical incidents")
+    System(system, "Exception-Handler-Agent", "Analyzes exceptions, proposes solutions, escalates issues, and learns from outcomes")
+    System_Ext(errorAnalyzer, "ErrorAnalyzer", "Analyzes error patterns and root causes")
+    System_Ext(solutionRecommender, "SolutionRecommender", "Suggests remediation steps")
+    System_Ext(learningSystem, "LearningSystem", "Captures learnings and improves handling")
+
+    Rel(user, system, "Reports exceptions to")
+    Rel(ops, system, "Receives escalations from")
+    Rel(system, errorAnalyzer, "Uses")
+    Rel(system, solutionRecommender, "Uses")
+    Rel(system, learningSystem, "Stores learnings in")

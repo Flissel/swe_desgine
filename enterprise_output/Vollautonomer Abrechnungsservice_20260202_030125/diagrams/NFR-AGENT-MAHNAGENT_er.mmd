@@ -1,0 +1,64 @@
+erDiagram
+    MAHNAGENT ||--o{ MAHNPROZESS : verwaltet
+    RECHNUNG ||--o{ MAHNPROZESS : ist_ueberfaellig_fuer
+    MAHNPROZESS ||--|{ MAHNSTUFE : bestimmt
+    MAHNPROZESS ||--o{ MAHNSCHREIBEN : erstellt
+    MAHNSCHREIBEN ||--o{ VERSAND : wird_versendet
+    MAHNPROZESS ||--o{ KOSTENBERECHNUNG : berechnet
+    MAHNPROZESS ||--o{ INKASSOVORBEREITUNG : bereitet_vor
+    MAHNPROZESS }o--o{ TOOL : nutzt
+
+    MAHNAGENT {
+        string agent_id PK
+        string name
+
+    RECHNUNG {
+        string rechnung_id PK
+        string kunde_id
+        date faelligkeitsdatum
+        decimal betrag
+        string status
+
+    MAHNPROZESS {
+        string mahnprozess_id PK
+        string agent_id FK
+        string rechnung_id FK
+        date startdatum
+        string status
+
+    MAHNSTUFE {
+        string mahnstufe_id PK
+        string mahnprozess_id FK
+        int stufe
+        date bestimmungsdatum
+
+    MAHNSCHREIBEN {
+        string mahnschreiben_id PK
+        string mahnprozess_id FK
+        string mahnstufe_id FK
+        date erstellungsdatum
+        string inhalt
+
+    VERSAND {
+        string versand_id PK
+        string mahnschreiben_id FK
+        string versandart
+        date versanddatum
+        string status
+
+    KOSTENBERECHNUNG {
+        string kostenberechnung_id PK
+        string mahnprozess_id FK
+        decimal kostenbetrag
+        date berechnungsdatum
+
+    INKASSOVORBEREITUNG {
+        string inkassovorbereitung_id PK
+        string mahnprozess_id FK
+        date vorbereitungsdatum
+        string status
+
+    TOOL {
+        string tool_id PK
+        string name
+        string typ

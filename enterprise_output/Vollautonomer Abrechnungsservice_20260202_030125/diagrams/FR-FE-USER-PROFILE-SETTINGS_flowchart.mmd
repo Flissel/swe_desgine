@@ -1,0 +1,15 @@
+flowchart TD
+    Start([Start]) --> AuthenticateUser[Authenticate User Session]
+    AuthenticateUser --> SessionValid{Session Valid?}
+    SessionValid -- No --> End([End])
+    SessionValid -- Yes --> LoadProfile[Load User Profile Settings]
+    LoadProfile --> CheckRBAC{Role-Based Access Allowed?}
+    CheckRBAC -- No --> End
+    CheckRBAC -- Yes --> PersonalizeUI[Personalize UI]
+    PersonalizeUI --> SetNotifications[Apply Notification Preferences]
+    SetNotifications --> CustomizeDashboard[Apply Dashboard Customization]
+    CustomizeDashboard --> SetLanguage[Apply Language Settings]
+    SetLanguage --> ConfigureSecurity[Apply Security Settings]
+    ConfigureSecurity --> LogAudit[Write Audit Trail]
+    LogAudit --> ManageSession[Update Session Management]
+    ManageSession --> End([End])

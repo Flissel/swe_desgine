@@ -1,0 +1,60 @@
+erDiagram
+    AUTONOMOUS_SYSTEM ||--o{ DATA_PROCESSING : performs
+    AUTONOMOUS_SYSTEM ||--o{ COMPLIANCE_CHECK : undergoes
+    REGULATION ||--o{ REQUIREMENT : defines
+    REGULATION }o--|| JURISDICTION : applies_in
+    REQUIREMENT ||--o{ POLICY : implemented_by
+    POLICY ||--o{ COMPLIANCE_CHECK : evaluated_by
+    COMPLIANCE_CHECK ||--o{ AUDIT_LOG : logs
+    COMPLIANCE_CHECK ||--o{ EVIDENCE : produces
+    DATA_PROCESSING }o--|| POLICY : governed_by
+
+    AUTONOMOUS_SYSTEM {
+        string system_id PK
+        string name
+        string owner
+
+    DATA_PROCESSING {
+        string processing_id PK
+        string system_id FK
+        string data_category
+        string purpose
+
+    REGULATION {
+        string regulation_id PK
+        string name
+        string type
+
+    JURISDICTION {
+        string jurisdiction_id PK
+        string country
+        string region
+
+    REQUIREMENT {
+        string requirement_id PK
+        string regulation_id FK
+        string description
+
+    POLICY {
+        string policy_id PK
+        string requirement_id FK
+        string name
+
+    COMPLIANCE_CHECK {
+        string check_id PK
+        string system_id FK
+        string policy_id FK
+        string status
+        string checked_at
+
+    AUDIT_LOG {
+        string log_id PK
+        string check_id FK
+        string event
+        string timestamp
+
+    EVIDENCE {
+        string evidence_id PK
+        string check_id FK
+        string type
+        string location

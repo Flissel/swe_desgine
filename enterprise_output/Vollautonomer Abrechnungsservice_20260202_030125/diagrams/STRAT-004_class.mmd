@@ -1,0 +1,45 @@
+classDiagram
+    class AIGovernance {
+        +policyId: String
+        +description: String
+        +enforcePolicy(context): bool
+
+    class DecisionEngine {
+        +engineId: String
+        +modelVersion: String
+        +makeDecision(input): Decision
+
+    class Decision {
+        +decisionId: String
+        +timestamp: DateTime
+        +outcome: String
+        +getExplanation(detailLevel): String
+
+    class BiasDetector {
+        +detectorId: String
+        +metrics: String
+        +detectBias(dataset): BiasReport
+
+    class BiasReport {
+        +reportId: String
+        +severity: String
+        +summary: String
+        +recommendMitigation(strategy): String
+
+    class EthicsFramework {
+        +frameworkId: String
+        +principles: String
+        +validateDecision(decision): bool
+
+    class AuditLog {
+        +logId: String
+        +entries: int
+        +recordEvent(event): bool
+
+    AIGovernance "1" --> "1" EthicsFramework : uses
+    AIGovernance "1" --> "1" BiasDetector : governs
+    DecisionEngine "1" --> "1" AIGovernance : complies_with
+    DecisionEngine "1" --> "1" Decision : produces
+    Decision "1" --> "1" AuditLog : recorded_in
+    BiasDetector "1" --> "1" BiasReport : generates
+    EthicsFramework "1" --> "1" AuditLog : audits

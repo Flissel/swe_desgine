@@ -1,0 +1,37 @@
+classDiagram
+    class FrontendComponent {
+        +id: String
+        +name: String
+        +render(): String
+        +updateProps(props: ComponentProps): void
+
+    class UIComponent {
+        +template: String
+        +styles: String
+        +attachEvents(handler: EventHandler): void
+        +render(): String
+
+    class ComponentRegistry {
+        +components: Map~String, FrontendComponent~
+        +register(component: FrontendComponent): void
+        +getById(id: String): FrontendComponent
+
+    class ComponentRenderer {
+        +mountPoint: String
+        +renderComponent(component: FrontendComponent): void
+        +refresh(component: FrontendComponent): void
+
+    class ComponentProps {
+        +data: Map~String, String~
+        +set(key: String, value: String): void
+        +get(key: String): String
+
+    class EventHandler {
+        +eventType: String
+        +handleEvent(): void
+
+    FrontendComponent <|-- UIComponent
+    FrontendComponent --> ComponentProps
+    ComponentRegistry --> FrontendComponent
+    ComponentRenderer --> FrontendComponent
+    UIComponent --> EventHandler

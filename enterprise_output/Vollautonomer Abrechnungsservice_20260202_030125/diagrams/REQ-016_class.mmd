@@ -1,0 +1,21 @@
+classDiagram
+    class User {
+        +String userId
+        +String name
+
+    class BankAccount {
+        +String accountId
+        +String accountNumber
+        +String status
+        +createForUser(String userId): BankAccount
+
+    class AccountService {
+        +createAccountForUser(String userId): BankAccount
+
+    class AccountRepository {
+        +saveAccount(BankAccount account): void
+        +findById(String accountId): BankAccount
+
+    User "1" --> "0..*" BankAccount : owns
+    AccountService ..> AccountRepository : uses
+    AccountService ..> BankAccount : creates

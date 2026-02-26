@@ -1,0 +1,9 @@
+C4Context
+    title System Context
+    Person(user, "User", "Requests creation of a new bank account")
+    System(main, "Account Creation System", "Creates new bank accounts for users")
+    System_Ext(coreBanking, "Core Banking System", "Persists and manages bank accounts")
+    System_Ext(kycApi, "KYC/Identity Verification API", "Verifies user identity")
+    Rel(user, main, "Requests account creation")
+    Rel(main, coreBanking, "Creates account in")
+    Rel(main, kycApi, "Verifies identity via")

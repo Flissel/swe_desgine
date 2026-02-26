@@ -1,0 +1,13 @@
+flowchart TD
+    Start([Start]) --> Init[Monitoring-Dashboard starten]
+    Init --> Collect[Workflows, KPIs und Agenten-Leistung in Echtzeit sammeln]
+    Collect --> Aggregate[Daten aggregieren und normalisieren]
+    Aggregate --> Display[Dashboard anzeigen]
+    Display --> Decision{Anomalie oder Schwellwertüberschreitung?}
+    Decision -- Ja --> Alert[Alarm/Benachrichtigung auslösen]
+    Alert --> Manage[Managementschnittstelle: Maßnahmen/Anpassungen]
+    Manage --> Refresh[Dashboard aktualisieren]
+    Decision -- Nein --> Refresh[Dashboard aktualisieren]
+    Refresh --> Continue{Weiter überwachen?}
+    Continue -- Ja --> Collect
+    Continue -- Nein --> End([End])

@@ -1,0 +1,9 @@
+C4Context
+    title System Context - Company Settings
+    Person(admin, "Company Admin", "Configures company data and billing settings")
+    System(main, "Frontend: Company Settings", "Manages company_name, tax_id, vat_number, address, contact_details, default_payment_terms with multi-entity support, international address formats, and automated tax validation")
+    System_Ext(taxApi, "Tax Validation API", "Validates tax IDs and VAT numbers")
+    System_Ext(addressApi, "Address Validation API", "Validates and formats international addresses")
+    Rel(admin, main, "Uses")
+    Rel(main, taxApi, "Validates tax data")
+    Rel(main, addressApi, "Validates/normalizes addresses")

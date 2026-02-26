@@ -1,0 +1,50 @@
+classDiagram
+    class Customer {
+        +customer_name
+        +billing_address
+        +shipping_address
+        +tax_id
+        +payment_terms
+        +credit_limit
+        +preferred_payment_method
+        +validate()
+        +updateDetails()
+
+    class CustomerManagement {
+        +bulk_import_export
+        +duplicate_detection
+        +relationship_management
+        +importCustomers()
+        +exportCustomers()
+        +detectDuplicates()
+        +manageRelationships()
+
+    class Address {
+        +street
+        +city
+        +postal_code
+        +country
+        +validate()
+
+    class PaymentTerms {
+        +terms
+        +due_days
+        +calculateDueDate()
+
+    class CreditLimit {
+        +amount
+        +currency
+        +isWithinLimit()
+
+    class Relationship {
+        +relationship_type
+        +start_date
+        +end_date
+        +isActive()
+
+    Customer "1" --> "1" Address : billing_address
+    Customer "1" --> "1" Address : shipping_address
+    Customer "1" --> "1" PaymentTerms : payment_terms
+    Customer "1" --> "1" CreditLimit : credit_limit
+    Customer "1" --> "0..*" Relationship : relationships
+    CustomerManagement "1" --> "0..*" Customer : manages

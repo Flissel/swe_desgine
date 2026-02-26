@@ -1,0 +1,49 @@
+classDiagram
+    class CompanySettings {
+        +company_name: String
+        +tax_id: String
+        +vat_number: String
+        +address: Address
+        +contact_details: ContactDetails
+        +default_payment_terms: PaymentTerms
+        +multi_entity_support: Boolean
+        +international_address_formats: Boolean
+        +automated_tax_validation: Boolean
+        +updateCompanyName(newName: String)
+        +validateTaxId(taxId: String)
+        +setDefaultPaymentTerms(terms: PaymentTerms)
+
+    class Address {
+        +street: String
+        +city: String
+        +postal_code: String
+        +region: String
+        +country: String
+        +formatByCountry(countryCode: String)
+
+    class ContactDetails {
+        +email: String
+        +phone: String
+        +website: String
+        +updateEmail(newEmail: String)
+
+    class PaymentTerms {
+        +days: Integer
+        +description: String
+        +calculateDueDate(issueDate: Date)
+
+    class TaxValidationService {
+        +validateTaxId(taxId: String)
+        +validateVatNumber(vatNumber: String)
+
+    class Entity {
+        +entity_id: String
+        +name: String
+        +addEntity(entityName: String)
+        +removeEntity(entityId: String)
+
+    CompanySettings "1" --> "1" Address
+    CompanySettings "1" --> "1" ContactDetails
+    CompanySettings "1" --> "1" PaymentTerms
+    CompanySettings "1" --> "0..*" Entity
+    CompanySettings ..> TaxValidationService

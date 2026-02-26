@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> OverdueDetected
+    OverdueDetected --> DetermineDunningLevel : invoice_overdue
+    DetermineDunningLevel --> GenerateDunningLetter : level_determined
+    GenerateDunningLetter --> CalculateCosts : letter_generated
+    CalculateCosts --> SendDunningLetter : costs_calculated
+    SendDunningLetter --> PrepareCollections : not_paid_after_deadline
+    SendDunningLetter --> [*] : paid
+    PrepareCollections --> [*] : collections_prepared

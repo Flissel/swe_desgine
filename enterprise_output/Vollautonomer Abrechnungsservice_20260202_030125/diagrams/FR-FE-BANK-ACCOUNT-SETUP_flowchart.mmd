@@ -1,0 +1,17 @@
+flowchart TD
+    Start([Start]) --> OpenUI[Open Bank Account Setup Web Interface]
+    OpenUI --> EnterFields[Enter bank_name, account_holder, iban, bic, account_type, currency]
+    EnterFields --> Encrypt[Apply end-to-end encryption]
+    Encrypt --> Tokenize[Tokenize sensitive data]
+    Tokenize --> PCI[Ensure PCI DSS compliance]
+    PCI --> IbanCheck{IBAN format valid?}
+    IbanCheck -- No --> IbanError[Show IBAN format error]
+    IbanError --> EnterFields
+    IbanCheck -- Yes --> BicCheck{BIC exists?}
+    BicCheck -- No --> BicError[Show BIC not found error]
+    BicError --> EnterFields
+    BicCheck -- Yes --> DupCheck{Duplicate account?}
+    DupCheck -- Yes --> DupError[Show duplicate prevention error]
+    DupError --> EnterFields
+    DupCheck -- No --> Save[Save bank account setup]
+    Save --> End([End])

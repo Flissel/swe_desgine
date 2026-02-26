@@ -1,0 +1,11 @@
+flowchart TD
+    Start([Start]) --> Eingang[Transaktion eingegangen]
+    Eingang --> Kennzeichnung[Steuerkennzeichnung]
+    Kennzeichnung --> RateFinder[TaxRateFinder: Steuersatz ermitteln]
+    RateFinder --> RC{Reverse Charge?}
+    RC -->|Ja| RCPruefung[Reverse-Charge anwenden]
+    RC -->|Nein| MwStCalc[VATCalculator: MwSt. berechnen]
+    RCPruefung --> MwStCalc
+    MwStCalc --> Buchung[Buchungsvorschlag erstellen]
+    Buchung --> DATEV[DATEVExporter: DATEV-Export]
+    DATEV --> End([End])

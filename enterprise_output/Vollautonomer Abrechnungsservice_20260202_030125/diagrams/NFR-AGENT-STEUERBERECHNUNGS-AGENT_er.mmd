@@ -1,0 +1,57 @@
+erDiagram
+    AGENT ||--o{ AGENT_CAPABILITY : has
+    CAPABILITY ||--o{ AGENT_CAPABILITY : includes
+    AGENT ||--o{ AGENT_TOOL : uses
+    TOOL ||--o{ AGENT_TOOL : provides
+    AGENT ||--o{ TAX_CALCULATION : performs
+    TAX_CALCULATION ||--|| TAX_RATE : uses
+    TAX_CALCULATION ||--|| VAT_CALCULATION : computes
+    TAX_CALCULATION ||--o{ BOOKING_SUGGESTION : generates
+    TAX_CALCULATION ||--o{ DATEV_EXPORT : exports
+
+    AGENT {
+        string agent_id PK
+        string name
+        string description
+
+    CAPABILITY {
+        string capability_id PK
+        string name
+
+    TOOL {
+        string tool_id PK
+        string name
+
+    AGENT_CAPABILITY {
+        string agent_id FK
+        string capability_id FK
+
+    AGENT_TOOL {
+        string agent_id FK
+        string tool_id FK
+
+    TAX_CALCULATION {
+        string calculation_id PK
+        string agent_id FK
+        string calculation_type
+
+    TAX_RATE {
+        string tax_rate_id PK
+        string country
+        float rate
+
+    VAT_CALCULATION {
+        string vat_calc_id PK
+        string calculation_id FK
+        float vat_amount
+        boolean reverse_charge
+
+    BOOKING_SUGGESTION {
+        string booking_id PK
+        string calculation_id FK
+        string suggestion_text
+
+    DATEV_EXPORT {
+        string export_id PK
+        string calculation_id FK
+        string export_format

@@ -1,0 +1,60 @@
+classDiagram
+    class Event {
+        +id: String
+        +type: String
+        +timestamp: DateTime
+        +payload: String
+        +validate(schema: String): Boolean
+
+    class EventBus {
+        +availability: Float
+        +queueDepth: Int
+        +publish(event: Event): Boolean
+        +subscribe(subscriber: Subscriber): Void
+
+    class Publisher {
+        +name: String
+        +publishEvent(event: Event): Boolean
+
+    class Subscriber {
+        +name: String
+        +onEvent(event: Event): Void
+
+    class DecisionEngine {
+        +modelVersion: String
+        +latencyMs: Int
+        +evaluate(event: Event): Decision
+        +updateModel(version: String): Void
+
+    class Decision {
+        +id: String
+        +action: String
+        +confidence: Float
+        +execute(target: AutonomyService): Boolean
+
+    class AutonomyService {
+        +serviceId: String
+        +status: String
+        +applyDecision(decision: Decision): Boolean
+
+    class EventStore {
+        +retentionDays: Int
+        +storageType: String
+        +persist(event: Event): Boolean
+        +replay(fromTimestamp: DateTime): Event
+
+    class ReliabilityManager {
+        +targetAvailability: Float
+        +monitoringIntervalSec: Int
+        +checkHealth(component: String): Boolean
+        +triggerFailover(component: String): Void
+
+    Publisher --> EventBus : publishes
+    Subscriber --> EventBus : subscribes
+    EventBus --> Event : transports
+    EventBus --> EventStore : persists
+    Subscriber --> DecisionEngine : feeds
+    DecisionEngine --> Decision : produces
+    Decision --> AutonomyService : applies
+    ReliabilityManager --> EventBus : monitors
+    ReliabilityManager --> EventStore : monitors

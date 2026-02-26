@@ -1,0 +1,55 @@
+gantt
+    title Project Tasks - Project Schedule
+    dateFormat  YYYY-MM-DD
+    excludes    weekends
+
+    section FEAT-001
+    Architektur- und Datenflussdes :TASK-001, , 1d
+    Implementierung Agenten-basier :TASK-002, after TASK-001, 1d
+    Workflow-Routing implementiere :TASK-003, after TASK-001, 1d
+    Exception-Handling Agent imple :TASK-004, after TASK-001, 1d
+    Monitoring-Dashboard Backend-E :TASK-005, after TASK-002, 1d
+    section FEAT-002
+    Dashboard-Requirements und UI- :TASK-009, , 1d
+    Backend-API für Reporting-KPIs :TASK-010, after TASK-001, 1d
+    Frontend Dashboard-Ansicht imp :TASK-011, after TASK-001, 1d
+    Integration Exception-Handling :TASK-012, after TASK-002, 1d
+    Automatische Fakturierung Repo :TASK-013, after TASK-002, 1d
+    section FEAT-003
+    Security-Anforderungen & Threa :TASK-015, , 1d
+    AuthN/AuthZ für Fakturierung & :TASK-016, after TASK-001, 1d
+    Sicheres Bank Account Setup :TASK-017, after TASK-001, 1d
+    Service-to-Service Auth für Ag :TASK-018, after TASK-001, 1d
+    Security Logging & Exception-H :TASK-019, after TASK-002, 1d
+    section FEAT-004
+    UI/UX-Design für User-, Compan :TASK-021, , 1d
+    Backend-APIs für User- und Com :TASK-022, , 1d
+    Frontend User- und Company-Set :TASK-023, after TASK-001, 1d
+    Frontend Bank Account Setup :TASK-024, after TASK-001, 1d
+    Automatische Fakturierung: Age :TASK-025, , 1d
+    section FEAT-005
+    Datenbank-Schema für Kunden, R :TASK-028, , 1d
+    Backend: Agentenbasierte Rechn :TASK-029, after TASK-001, 1d
+    Backend: Workflow-Routing und  :TASK-030, after TASK-002, 1d
+    Frontend: Bank Account Setup U :TASK-031, after TASK-001, 1d
+    Monitoring-Dashboard für Rechn :TASK-032, after TASK-003, 1d
+    section FEAT-006
+    Performance-Anforderungen und  :TASK-035, , 1d
+    Profiling der Fakturierungs- u :TASK-036, after TASK-001, 1d
+    Optimierungen für automatische :TASK-037, after TASK-002, 1d
+    Dashboard-Performance optimier :TASK-038, after TASK-001, 1d
+    Frontend Performance Bank Acco :TASK-039, after TASK-001, 1d
+    section FEAT-007
+    API-Contract für Integration d :TASK-041, , 1d
+    Backend-Endpunkte implementier :TASK-042, after TASK-001, 1d
+    Monitoring-Dashboard API-Endpu :TASK-043, after TASK-001, 1d
+    Frontend-Integration Bank Acco :TASK-044, after TASK-001, 1d
+    Integrationstests für End-to-E :TASK-045, after TASK-002, 1d
+    section DATABASE
+    Create Invoice model and migra :TASK-047, , 1d
+    Create PODValidation model and :TASK-048, , 1d
+    Create Agent model and migrati :TASK-049, , 1d
+    Create Workflow model and migr :TASK-050, , 1d
+    Create CompliancePolicy model  :TASK-051, , 1d
+    section API
+    Implement api API endpoints :TASK-057, , 1d

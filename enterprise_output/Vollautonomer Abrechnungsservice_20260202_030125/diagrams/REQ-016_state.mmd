@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> AntragEingegangen
+    AntragEingegangen --> NutzerPruefen : kontoErstellenAnfrage
+    NutzerPruefen --> KontoAnlegen : nutzerValidiert
+    NutzerPruefen --> Abgelehnt : nutzerUngueltig
+    KontoAnlegen --> KontoErstellt : kontoAngelegt
+    KontoAnlegen --> Fehler : anlageFehlgeschlagen
+    KontoErstellt --> [*] : abgeschlossen
+    Abgelehnt --> [*] : beendet
+    Fehler --> [*] : beendet

@@ -1,0 +1,58 @@
+erDiagram
+    AI_SYSTEM ||--o{ AI_DECISION : produces
+    AI_SYSTEM ||--o{ BIAS_ASSESSMENT : evaluates
+    AI_SYSTEM ||--o{ ETHICAL_FRAMEWORK : adheres_to
+    AI_DECISION ||--o{ DECISION_EXPLANATION : has
+    BIAS_ASSESSMENT ||--o{ BIAS_METRIC : includes
+    ETHICAL_FRAMEWORK ||--o{ ETHICAL_PRINCIPLE : contains
+    ETHICAL_PRINCIPLE ||--o{ COMPLIANCE_CHECK : validated_by
+    AI_SYSTEM ||--o{ COMPLIANCE_CHECK : undergoes
+
+    AI_SYSTEM {
+        string system_id PK
+        string name
+        string version
+        string owner
+
+    AI_DECISION {
+        string decision_id PK
+        string system_id FK
+        string timestamp
+        string outcome
+
+    DECISION_EXPLANATION {
+        string explanation_id PK
+        string decision_id FK
+        string method
+        string summary
+
+    BIAS_ASSESSMENT {
+        string assessment_id PK
+        string system_id FK
+        string date
+        string assessor
+
+    BIAS_METRIC {
+        string metric_id PK
+        string assessment_id FK
+        string metric_name
+        string value
+
+    ETHICAL_FRAMEWORK {
+        string framework_id PK
+        string system_id FK
+        string name
+        string version
+
+    ETHICAL_PRINCIPLE {
+        string principle_id PK
+        string framework_id FK
+        string name
+        string description
+
+    COMPLIANCE_CHECK {
+        string check_id PK
+        string principle_id FK
+        string system_id FK
+        string status
+        string date

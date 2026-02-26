@@ -1,0 +1,16 @@
+C4Context
+    title Rechnungserstellung-Agent - System Context
+    Person(accountant, "Sachbearbeiter", "Erstellt und versendet Rechnungen")
+    Person(customer, "Kunde", "Empfänger der Rechnung")
+    System(agent, "Rechnungserstellung-Agent", "Automatisiert Datenaggregation, Rechnungsgenerierung, Steuerberechnung, Validierung und Versand")
+    System_Ext(templateEngine, "InvoiceTemplateEngine", "Generiert Rechnungsdokumente")
+    System_Ext(taxCalculator, "TaxCalculator", "Berechnet Steuern")
+    System_Ext(emailSender, "EmailSender", "Versendet E-Mails")
+    System_Ext(erpSystem, "ERP/CRM-System", "Quelle für Kundendaten und Leistungsdaten")
+
+    Rel(accountant, agent, "Nutzt zur Erstellung von Rechnungen")
+    Rel(agent, customer, "Sendet Rechnungen")
+    Rel(agent, templateEngine, "Verwendet für Rechnungsdokumente")
+    Rel(agent, taxCalculator, "Verwendet für Steuerberechnung")
+    Rel(agent, emailSender, "Verwendet für Versand")
+    Rel(agent, erpSystem, "Bezieht Daten")

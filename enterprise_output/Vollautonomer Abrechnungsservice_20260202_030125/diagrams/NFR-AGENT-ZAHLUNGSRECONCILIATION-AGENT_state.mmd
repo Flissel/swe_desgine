@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Parsing : Zahlungseingang_erkannt
+    Parsing --> Matching : Transaktion_geparst
+    Parsing --> Error : Parser_Fehler
+    Matching --> UpdatingStatus : Rechnung_zugeordnet
+    Matching --> Error : Keine_Zuordnung
+    UpdatingStatus --> ProposingBooking : Status_aktualisiert
+    UpdatingStatus --> Error : Status_Update_Fehler
+    ProposingBooking --> Completed : Buchungsvorschlag_erstellt
+    ProposingBooking --> Error : Buchungsvorschlag_Fehler
+    Completed --> [*]
+    Error --> [*]

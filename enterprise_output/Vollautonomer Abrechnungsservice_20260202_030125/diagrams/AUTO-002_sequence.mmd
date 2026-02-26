@@ -1,0 +1,33 @@
+sequenceDiagram
+    actor User
+    participant BillingSystem
+    participant RoutingEngine
+    participant AgentPool
+    participant SpecialistAgent
+    participant GeneralAgent
+    participant AuditLog
+
+    User->>BillingSystem: Submit billing task (type, complexity)
+    activate BillingSystem
+    BillingSystem->>RoutingEngine: Request routing decision
+    activate RoutingEngine
+    RoutingEngine->>AgentPool: Query available agents
+    activate AgentPool
+    AgentPool-->>RoutingEngine: Available agents & capabilities
+    deactivate AgentPool
+    RoutingEngine->>RoutingEngine: Evaluate type & complexity
+    alt High complexity or specialized type
+        RoutingEngine->>SpecialistAgent: Assign task
+        activate SpecialistAgent
+        SpecialistAgent-->>RoutingEngine: Accept assignment
+        deactivate SpecialistAgent
+    else Standard complexity
+        RoutingEngine->>GeneralAgent: Assign task
+        activate GeneralAgent
+        GeneralAgent-->>RoutingEngine: Accept assignment
+        deactivate GeneralAgent
+    end
+    RoutingEngine->>AuditLog: Record routing decision
+    deactivate RoutingEngine
+    BillingSystem-->>User: Confirmation & assigned agent
+    deactivate BillingSystem

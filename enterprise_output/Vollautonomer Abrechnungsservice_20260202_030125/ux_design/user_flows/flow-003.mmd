@@ -1,0 +1,29 @@
+flowchart TD
+    Start([Start: Bankkonto anlegen])
+    S1[User oeffnet das Finanz-Dashboard]
+    Start --> S1
+    S2[User klickt auf 'Bankkonten' im Navigationsmenu]
+    S1 --> S2
+    E2[/Zugriff verweigert bei fehlender Berechtigung/]
+    S2 -.-> E2
+    S3[User klickt auf 'Neues Bankkonto hinzufuegen']
+    S2 --> S3
+    S4[User gibt bank_name, account_holder, iban, bic, account_type und currency ein]
+    S3 --> S4
+    S5{User klickt auf 'Speichern'}
+    S4 --> S5
+    S6{System validiert IBAN-Format und BIC-Existenz}
+    S5 --> S6
+    E6[/Ungueltiger IBAN oder nicht existierender BIC/]
+    S6 -.-> E6
+    S7{System prueft, ob IBAN bereits existiert}
+    S6 --> S7
+    E7[/IBAN bereits vorhanden/]
+    S7 -.-> E7
+    S8[System speichert Bankkonto mit Ende-zu-Ende-Verschluesselung und Tokenization]
+    S7 --> S8
+    E8[/Speichern fehlgeschlagen aufgrund Serverfehler/]
+    S8 -.-> E8
+    S9[User sieht Erfolgsbestaetigung]
+    S8 --> S9
+    S9 --> End([End])

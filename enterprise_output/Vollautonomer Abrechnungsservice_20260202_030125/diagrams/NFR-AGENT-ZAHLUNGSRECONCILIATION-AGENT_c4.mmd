@@ -1,0 +1,12 @@
+C4Context
+    title Zahlungsreconciliation-Agent - System Context
+    Person(finance_user, "Finance User", "Überwacht und nutzt die Zahlungszuordnung")
+    System(main_system, "Zahlungsreconciliation-Agent", "Ordnet eingehende Zahlungen zu Rechnungen zu")
+    System_Ext(bank_parser, "BankTransactionParser", "Parst Banktransaktionen")
+    System_Ext(payment_matcher, "PaymentMatcher", "Gleicht Zahlungen mit Rechnungen ab")
+    System_Ext(accounting_connector, "AccountingSystemConnector", "Aktualisiert Buchhaltung und Status")
+
+    Rel(finance_user, main_system, "Nutzt")
+    Rel(main_system, bank_parser, "Bezieht Transaktionsdaten")
+    Rel(main_system, payment_matcher, "Löst Matching aus")
+    Rel(main_system, accounting_connector, "Übermittelt Buchungsvorschläge und Statusupdates")

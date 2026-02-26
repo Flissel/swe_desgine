@@ -1,0 +1,14 @@
+erDiagram
+    USER ||--o{ BANK_ACCOUNT : creates
+    USER {
+        string user_id PK
+        string name
+        string email
+
+    BANK_ACCOUNT {
+        string account_id PK
+        string user_id FK
+        string account_number
+        string account_type
+        string status
+        date created_at

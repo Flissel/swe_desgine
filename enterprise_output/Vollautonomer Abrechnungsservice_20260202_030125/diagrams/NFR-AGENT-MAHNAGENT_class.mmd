@@ -1,0 +1,49 @@
+classDiagram
+    class Mahnagent {
+        +String agentId
+        +String name
+        +manageDunningProcess(invoiceId: String)
+        +determineDunningLevel(invoice: Invoice)
+        +generateDunningLetter(invoice: Invoice)
+        +calculateCosts(invoice: Invoice)
+        +sendDunningLetter(letter: DunningLetter)
+        +prepareForCollection(invoice: Invoice)
+
+    class DunningLevelCalculator {
+        +String ruleset
+        +calculateLevel(invoice: Invoice)
+
+    class DunningLetterGenerator {
+        +String templateId
+        +generateLetter(invoice: Invoice, level: String)
+
+    class CostCalculator {
+        +String currency
+        +calculateCosts(invoice: Invoice, level: String)
+
+    class Invoice {
+        +String invoiceId
+        +String customerId
+        +Date dueDate
+        +Decimal amount
+        +String status
+        +isOverdue()
+
+    class DunningLetter {
+        +String letterId
+        +String level
+        +Date createdAt
+        +String content
+
+    class DunningProcess {
+        +String processId
+        +String status
+        +Date startedAt
+        +updateStatus(newStatus: String)
+
+    Mahnagent --> DunningLevelCalculator : uses
+    Mahnagent --> DunningLetterGenerator : uses
+    Mahnagent --> CostCalculator : uses
+    Mahnagent --> Invoice : manages
+    Mahnagent --> DunningLetter : creates
+    Mahnagent --> DunningProcess : coordinates

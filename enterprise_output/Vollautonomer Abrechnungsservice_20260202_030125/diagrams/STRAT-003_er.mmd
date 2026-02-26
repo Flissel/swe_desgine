@@ -1,0 +1,58 @@
+erDiagram
+    AUTONOMOUS_SYSTEM ||--o{ SERVICE : hosts
+    AUTONOMOUS_SYSTEM ||--o{ POLICY : applies
+    SERVICE ||--o{ EVENT : emits
+    EVENT_TYPE ||--o{ EVENT : classifies
+    EVENT ||--o{ DECISION : triggers
+    SERVICE ||--o{ SUBSCRIPTION : subscribes
+    EVENT_TYPE ||--o{ SUBSCRIPTION : subscribes_to
+    SERVICE ||--o{ AVAILABILITY_METRIC : reports
+    AUTONOMOUS_SYSTEM ||--o{ DECISION : produces
+
+    AUTONOMOUS_SYSTEM {
+        string system_id PK
+        string name
+        string description
+
+    SERVICE {
+        string service_id PK
+        string system_id FK
+        string name
+        string version
+
+    EVENT_TYPE {
+        string event_type_id PK
+        string name
+        string schema
+
+    EVENT {
+        string event_id PK
+        string event_type_id FK
+        string service_id FK
+        string payload
+        string occurred_at
+
+    DECISION {
+        string decision_id PK
+        string system_id FK
+        string event_id FK
+        string outcome
+        string decided_at
+
+    POLICY {
+        string policy_id PK
+        string system_id FK
+        string name
+        string rule_set
+
+    SUBSCRIPTION {
+        string subscription_id PK
+        string service_id FK
+        string event_type_id FK
+        string endpoint
+
+    AVAILABILITY_METRIC {
+        string metric_id PK
+        string service_id FK
+        float availability_percent
+        string measured_at

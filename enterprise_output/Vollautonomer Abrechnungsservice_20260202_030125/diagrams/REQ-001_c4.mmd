@@ -1,0 +1,12 @@
+C4Context
+    title Automatische Fakturierung – System Context
+    Person(user, "Sachbearbeiter", "Überwacht und prüft Rechnungen")
+    System(system, "Automatische Fakturierung", "Erstellt automatisch Rechnungen nach POD-Validierung")
+    System_Ext(pod, "POD-Validierungsservice", "Validiert Proof of Delivery")
+    System_Ext(billing, "Rechnungs-API", "Erstellt und verwaltet Rechnungen")
+    System_Ext(erp, "Finanzbuchhaltungssystem", "Bucht und verarbeitet Rechnungen")
+
+    Rel(pod, system, "Sendet POD-Validierungsstatus")
+    Rel(system, billing, "Generiert Rechnung über")
+    Rel(system, erp, "Übermittelt Rechnungsdaten")
+    Rel(user, system, "Überwacht")

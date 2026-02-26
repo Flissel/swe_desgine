@@ -1,0 +1,37 @@
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant DesignModule as Database Design Module
+    participant Backend
+    participant Database
+
+    User->>Frontend: Open database design screen
+    activate Frontend
+    Frontend->>DesignModule: Initialize design workspace
+    activate DesignModule
+    DesignModule->>Backend: Request existing schemas
+    activate Backend
+    Backend->>Database: Fetch schemas
+    activate Database
+    Database-->>Backend: Schemas
+    deactivate Database
+    Backend-->>DesignModule: Schemas data
+    deactivate Backend
+    DesignModule-->>Frontend: Render schemas
+    deactivate DesignModule
+
+    User->>Frontend: Create/modify tables and relations
+    Frontend->>DesignModule: Update design model
+    activate DesignModule
+    DesignModule->>Backend: Validate and save design
+    activate Backend
+    Backend->>Database: Persist design changes
+    activate Database
+    Database-->>Backend: Save confirmation
+    deactivate Database
+    Backend-->>DesignModule: Validation result
+    deactivate Backend
+    DesignModule-->>Frontend: Update UI with result
+    deactivate DesignModule
+    Frontend-->>User: Show success/errors
+    deactivate Frontend

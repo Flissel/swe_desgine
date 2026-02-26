@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> TaxClassification : requestTaxComputation
+    TaxClassification --> VATCalculation : taxClassified
+    VATCalculation --> ReverseCharge : reverseChargeNeeded
+    VATCalculation --> BookingProposal : reverseChargeNotNeeded
+    ReverseCharge --> BookingProposal : reverseChargeCalculated
+    BookingProposal --> DATEVExport : exportRequested
+    DATEVExport --> Completed : exportSucceeded
+    Completed --> [*]
+
+    TaxClassification --> Error : classificationFailed
+    VATCalculation --> Error : vatCalculationFailed
+    ReverseCharge --> Error : reverseChargeFailed
+    BookingProposal --> Error : bookingProposalFailed
+    DATEVExport --> Error : exportFailed
+    Error --> [*]

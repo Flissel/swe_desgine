@@ -1,0 +1,48 @@
+sequenceDiagram
+    actor User
+    participant FE as Frontend
+    participant BE as Company Settings Service
+    participant DB as Database
+    participant TAX as Tax Validation Service
+    participant BILL as Billing Service
+
+    User->>FE: Open Company Settings
+    activate FE
+    FE->>BE: Get company settings (entity_id)
+    activate BE
+    BE->>DB: Fetch company profile
+    activate DB
+    DB-->>BE: Company data
+    deactivate DB
+    BE-->>FE: Company settings
+    deactivate BE
+    FE-->>User: Display settings form
+    deactivate FE
+
+    User->>FE: Update fields
+(company_name, tax_id, vat_number,
+address, contact_details, payment_terms)
+    activate FE
+    FE->>FE: Validate international address format
+    FE->>BE: Save settings (multi_entity_support)
+    activate BE
+    BE->>TAX: Validate tax_id/vat_number
+    activate TAX
+    TAX-->>BE: Validation result
+    deactivate TAX
+    alt Validation OK
+        BE->>DB: Persist company settings
+        activate DB
+        DB-->>BE: Save OK
+        deactivate DB
+        BE->>BILL: Update default payment terms
+        activate BILL
+        BILL-->>BE: Updated
+        deactivate BILL
+        BE-->>FE: Save success
+    else Validation failed
+        BE-->>FE: Error (tax validation)
+    end
+    deactivate BE
+    FE-->>User: Show confirmation or error
+    deactivate FE

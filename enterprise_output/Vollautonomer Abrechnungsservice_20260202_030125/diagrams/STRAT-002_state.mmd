@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Monitoring
+    Monitoring --> EvaluateRegulations : new_data/transaction
+    EvaluateRegulations --> ComplianceCheck : regulations_loaded
+    ComplianceCheck --> Approved : compliant
+    ComplianceCheck --> NonComplianceDetected : violation_detected
+    NonComplianceDetected --> Remediation : trigger_fix
+    Remediation --> ComplianceCheck : fixes_applied
+    Approved --> ApplyControls : enforcement_required
+    ApplyControls --> AuditLog : controls_applied
+    AuditLog --> Reporting : audit_event
+    Reporting --> Monitoring : report_sent
+    Monitoring --> [*] : system_shutdown

@@ -1,0 +1,12 @@
+C4Context
+    title Steuerberechnungs-Agent – System Context
+    Person(financeUser, "Finance User", "Erstellt steuerrelevante Buchungen und prüft Steuerberechnungen")
+    System(taxAgent, "Steuerberechnungs-Agent", "Berechnet MwSt. und andere Steuern; Steuerkennzeichnung, Reverse Charge, Buchungsvorschlag, DATEV-Export")
+    System_Ext(taxRateFinder, "TaxRateFinder", "Ermittelt aktuelle Steuersätze")
+    System_Ext(vatCalculator, "VATCalculator", "Berechnet MwSt.-Beträge und Reverse Charge")
+    System_Ext(datevExporter, "DATEVExporter", "Exportiert Buchungen im DATEV-Format")
+
+    Rel(financeUser, taxAgent, "Nutzt")
+    Rel(taxAgent, taxRateFinder, "Fragt Steuersätze ab")
+    Rel(taxAgent, vatCalculator, "Berechnet MwSt. und Reverse Charge")
+    Rel(taxAgent, datevExporter, "Exportiert Buchungsvorschläge")

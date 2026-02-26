@@ -1,0 +1,36 @@
+classDiagram
+    class BankAccount {
+        +bank_name: String
+        +account_holder: String
+        +iban: String
+        +bic: String
+        +account_type: String
+        +currency: String
+        +validateIbanFormat(iban: String): Boolean
+        +checkBicExistence(bic: String): Boolean
+        +preventDuplicate(iban: String): Boolean
+
+    class BankAccountSetupForm {
+        +renderForm(): void
+        +submitForm(data: BankAccount): void
+        +showValidationErrors(errors: List~String~): void
+
+    class ValidationService {
+        +ibanFormatValidation(iban: String): Boolean
+        +bicExistenceCheck(bic: String): Boolean
+        +duplicatePrevention(iban: String): Boolean
+
+    class SecurityService {
+        +endToEndEncryption(data: String): String
+        +tokenize(data: String): String
+        +ensurePciDssCompliance(): Boolean
+
+    class BankAccountRepository {
+        +save(account: BankAccount): void
+        +findByIban(iban: String): BankAccount
+
+    BankAccountSetupForm --> BankAccount
+    BankAccountSetupForm --> ValidationService
+    BankAccountSetupForm --> SecurityService
+    BankAccountSetupForm --> BankAccountRepository
+    BankAccountRepository --> BankAccount

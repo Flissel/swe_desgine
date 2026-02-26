@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> Monitoring
+    Monitoring --> ExceptionDetected : anomaly detected
+    ExceptionDetected --> Classification : log captured
+    Classification --> LLMAnalysis : exception type unknown
+    Classification --> AgentDispatch : exception type known
+    LLMAnalysis --> AgentDispatch : remediation plan generated
+    AgentDispatch --> Recovery : agent executed fix
+    Recovery --> Verification : fix applied
+    Verification --> Resolved : health checks pass
+    Verification --> Escalation : checks fail
+    Escalation --> Failed : manual intervention required
+    Resolved --> [*]
+    Failed --> [*]

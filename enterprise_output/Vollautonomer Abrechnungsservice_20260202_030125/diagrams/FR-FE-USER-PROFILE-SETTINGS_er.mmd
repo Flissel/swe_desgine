@@ -1,0 +1,59 @@
+erDiagram
+    USER ||--o{ AUDIT_TRAIL : has
+    USER ||--o{ SESSION : has
+    USER ||--|| USER_PROFILE_SETTINGS : has
+    USER_ROLE ||--o{ USER : assigned_to
+    USER_PROFILE_SETTINGS ||--|| NOTIFICATION_PREFERENCES : includes
+    USER_PROFILE_SETTINGS ||--|| DASHBOARD_CUSTOMIZATION : includes
+    USER_PROFILE_SETTINGS ||--|| LANGUAGE_SETTINGS : includes
+    USER_PROFILE_SETTINGS ||--|| SECURITY_SETTINGS : includes
+
+    USER {
+        string user_id PK
+        string username
+        string email
+        string role_id FK
+
+    USER_ROLE {
+        string role_id PK
+        string role_name
+        string permissions
+
+    USER_PROFILE_SETTINGS {
+        string settings_id PK
+        string user_id FK
+
+    NOTIFICATION_PREFERENCES {
+        string notification_id PK
+        string settings_id FK
+        string preferences
+
+    DASHBOARD_CUSTOMIZATION {
+        string customization_id PK
+        string settings_id FK
+        string layout
+        string widgets
+
+    LANGUAGE_SETTINGS {
+        string language_id PK
+        string settings_id FK
+        string language_code
+        string locale
+
+    SECURITY_SETTINGS {
+        string security_id PK
+        string settings_id FK
+        string mfa_enabled
+        string password_policy
+
+    AUDIT_TRAIL {
+        string audit_id PK
+        string user_id FK
+        string action
+        string timestamp
+
+    SESSION {
+        string session_id PK
+        string user_id FK
+        string created_at
+        string expires_at

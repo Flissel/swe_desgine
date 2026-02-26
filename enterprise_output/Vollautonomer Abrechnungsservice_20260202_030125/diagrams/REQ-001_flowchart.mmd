@@ -1,0 +1,8 @@
+flowchart TD
+    Start([Start]) --> A[POD-Daten empfangen]
+    A --> B{POD validiert?}
+    B -- Ja --> C[Automatische Rechnungsgenerierung]
+    C --> D[Rechnung speichern/versenden]
+    D --> End([End])
+    B -- Nein --> E[Fehlerbehandlung / Nacharbeit anstoßen]
+    E --> End([End])

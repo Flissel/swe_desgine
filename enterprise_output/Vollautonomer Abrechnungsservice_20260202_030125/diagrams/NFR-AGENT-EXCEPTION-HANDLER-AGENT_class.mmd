@@ -1,0 +1,33 @@
+classDiagram
+    class ExceptionHandlerAgent {
+        +name: String
+        +capabilities: String
+        +handleException(caseId: String)
+        +analyzeException(details: String)
+        +recommendSolution(details: String)
+        +escalate(caseId: String)
+        +learnFromCase(caseId: String)
+
+    class ErrorAnalyzer {
+        +analyze(details: String)
+        +identifyRootCause(details: String)
+
+    class SolutionRecommender {
+        +recommend(details: String)
+        +rankSolutions(details: String)
+
+    class LearningSystem {
+        +storeCase(caseId: String)
+        +updateModel(caseId: String)
+        +retrieveInsights(query: String)
+
+    class ExceptionCase {
+        +caseId: String
+        +description: String
+        +severity: String
+        +status: String
+
+    ExceptionHandlerAgent --> ErrorAnalyzer : uses
+    ExceptionHandlerAgent --> SolutionRecommender : uses
+    ExceptionHandlerAgent --> LearningSystem : uses
+    ExceptionHandlerAgent --> ExceptionCase : handles

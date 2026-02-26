@@ -1,0 +1,30 @@
+erDiagram
+    IMPORT_BATCH ||--o{ CUSTOMER : imports
+    IMPORT_BATCH ||--|| IMPORT_FILE : uses
+    IMPORT_FILE ||--|| SOURCE_TYPE : type
+
+    IMPORT_BATCH {
+        string import_batch_id PK
+        datetime imported_at
+        string status
+        string import_file_id FK
+
+    IMPORT_FILE {
+        string import_file_id PK
+        string file_name
+        string file_format
+        int file_size
+        string source_type_id FK
+
+    SOURCE_TYPE {
+        string source_type_id PK
+        string name
+
+    CUSTOMER {
+        string customer_id PK
+        string first_name
+        string last_name
+        string email
+        string phone
+        string address
+        string import_batch_id FK

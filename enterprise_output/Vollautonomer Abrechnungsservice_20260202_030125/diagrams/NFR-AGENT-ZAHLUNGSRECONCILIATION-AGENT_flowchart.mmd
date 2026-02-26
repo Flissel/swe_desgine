@@ -1,0 +1,12 @@
+flowchart TD
+    Start([Start]) --> Eingang[Zahlungseingang erfassen]
+    Eingang --> Parser[BankTransactionParser: Transaktionen parsen]
+    Parser --> Analyse[Transaktionsanalyse durchführen]
+    Analyse --> Match{Rechnung zuordenbar?}
+    Match -->|Ja| Zuordnung[PaymentMatcher: Rechnungszuordnung]
+    Match -->|Nein| Klärung[Unklare Zahlung zur Klärung markieren]
+    Zuordnung --> Status[Status der Rechnung aktualisieren]
+    Status --> Buchung[Buchungsvorschlag erstellen]
+    Buchung --> Connector[AccountingSystemConnector: Vorschlag übertragen]
+    Connector --> End([End])
+    Klärung --> End([End])

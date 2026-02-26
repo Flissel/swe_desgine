@@ -1,0 +1,72 @@
+classDiagram
+    class RechnungserstellungAgent {
+        +agentName
+        +aggregateData(dataSources)
+        +generateInvoice(invoiceData)
+        +calculateTax(invoiceData)
+        +validateInvoice(invoice)
+        +sendInvoice(invoice)
+
+    class DatenAggregator {
+        +sourceList
+        +collectData(source)
+        +mergeData(dataSets)
+
+    class Rechnungsgenerator {
+        +templateId
+        +createInvoice(data)
+        +renderTemplate(data)
+
+    class SteuerRechner {
+        +taxRate
+        +computeTax(amount)
+        +applyTaxRules(invoiceData)
+
+    class Validator {
+        +validationRules
+        +validate(data)
+        +reportIssues(data)
+
+    class VersandService {
+        +senderAddress
+        +sendEmail(recipient)
+        +attachInvoice(invoice)
+
+    class InvoiceTemplateEngine {
+        +engineVersion
+        +loadTemplate(templateId)
+        +render(data)
+
+    class TaxCalculator {
+        +calculatorVersion
+        +calculate(amount)
+        +getTaxRules(region)
+
+    class EmailSender {
+        +smtpServer
+        +send(recipient)
+        +queue(message)
+
+    class Rechnung {
+        +invoiceNumber
+        +issueDate
+        +totalAmount
+        +addLineItem(item)
+        +calculateTotal(items)
+
+    class Rechnungsposten {
+        +description
+        +quantity
+        +unitPrice
+        +lineTotal
+        +calculateLineTotal(qty)
+
+    RechnungserstellungAgent --> DatenAggregator
+    RechnungserstellungAgent --> Rechnungsgenerator
+    RechnungserstellungAgent --> SteuerRechner
+    RechnungserstellungAgent --> Validator
+    RechnungserstellungAgent --> VersandService
+    Rechnungsgenerator --> InvoiceTemplateEngine
+    SteuerRechner --> TaxCalculator
+    VersandService --> EmailSender
+    Rechnung "1" --> "*" Rechnungsposten

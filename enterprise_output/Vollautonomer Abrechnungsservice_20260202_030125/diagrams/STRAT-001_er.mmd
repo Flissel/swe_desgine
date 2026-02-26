@@ -1,0 +1,47 @@
+erDiagram
+    REQUIREMENT ||--o{ STRATEGY : defines
+    STRATEGY ||--|| MARKET_POSITION : targets
+    STRATEGY ||--o{ AI_LEADERSHIP_INITIATIVE : includes
+    AI_LEADERSHIP_INITIATIVE ||--o{ FINANCE_AUTOMATION_SYSTEM : enables
+    FINANCE_AUTOMATION_SYSTEM ||--o{ ZERO_TOUCH_BILLING : supports
+    FINANCE_AUTOMATION_SYSTEM ||--o{ AUTOMATION_PROCESS : executes
+
+    REQUIREMENT {
+        string requirement_id PK
+        string code
+        string title
+        string description
+
+    STRATEGY {
+        string strategy_id PK
+        string name
+        string objective
+        string requirement_id FK
+
+    MARKET_POSITION {
+        string position_id PK
+        string target_rank
+        string description
+        string strategy_id FK
+
+    AI_LEADERSHIP_INITIATIVE {
+        string initiative_id PK
+        string name
+        string focus_area
+        string strategy_id FK
+
+    FINANCE_AUTOMATION_SYSTEM {
+        string system_id PK
+        string name
+        string autonomy_level
+        string initiative_id FK
+
+    ZERO_TOUCH_BILLING {
+        string billing_id PK
+        string level
+        string system_id FK
+
+    AUTOMATION_PROCESS {
+        string process_id PK
+        string name
+        string system_id FK

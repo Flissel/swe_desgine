@@ -1,0 +1,39 @@
+{
+  "project_name": "Vollautonomer Abrechnungsservice",
+  "frontend_framework": "React",
+  "frontend_languages": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "ui_library": "Material-UI",
+  "state_management": "Redux Toolkit",
+  "backend_language": "Python",
+  "backend_framework": "FastAPI",
+  "api_style": "REST",
+  "primary_database": "PostgreSQL",
+  "cache_layer": "Redis",
+  "search_engine": "Elasticsearch",
+  "cloud_provider": "AWS",
+  "container_runtime": "Docker",
+  "orchestration": "Kubernetes",
+  "ci_cd": "GitHub Actions",
+  "message_queue": "Kafka",
+  "api_gateway": "AWS API Gateway",
+  "rationale": {
+    "frontend_framework": "React mit TypeScript bietet hohe Entwicklerproduktivität, große Community, ausgereifte Komponentenökosysteme und eignet sich für komplexe Dashboards sowie sichere Formulare (Bankkonto/Company Settings).",
+    "backend_framework": "FastAPI liefert hohe Performance, async Support und exzellente API-Dokumentation; ideal für AI-Agenten-Orchestrierung, Event-Driven Workflows und Integration von LLM-Services.",
+    "primary_database": "PostgreSQL bietet starke ACID-Garantien für Finanzdaten, Unterstützung für komplexe Abfragen, JSONB für flexible Metadaten sowie Skalierung via Read-Replicas."
+  },
+  "alternatives": {
+    "frontend_framework": [
+      "Vue.js",
+      "Angular"
+    ],
+    "backend_framework": [
+      "Spring Boot",
+      "Node.js (NestJS)"
+    ]
+  },
+  "architecture_pattern": "Microservices",
+  "deployment_model": "Cloud-native"
+}

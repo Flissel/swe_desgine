@@ -1,0 +1,851 @@
+{
+  "Name": "business-partner-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Geschaeftspartner.md",
+    "requirement_count": 101,
+    "categories": {
+      "functional": 90,
+      "security": 5,
+      "performance": 6
+    },
+    "priorities": {
+      "should": 101
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-f047ca-000",
+      "title": "The Business Partner Service must manage all business partners (customers, suppliers, subcontractors) with complete master data maintenance",
+      "description": "The Business Partner Service must manage all business partners (customers, suppliers, subcontractors) with complete master data maintenance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-a",
+      "title": "The Business Partner Service must be implemented as a standalone FastAPI service with direct database connection",
+      "description": "The Business Partner Service must be implemented as a standalone FastAPI service with direct database connection",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-b",
+      "title": "The system must store and manage partner master data including name, address, contact information, and tax information",
+      "description": "The system must store and manage partner master data including name, address, contact information, and tax information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-c",
+      "title": "The system must categorize business partners into types: customer, supplier, subcontractor, and freight forwarder",
+      "description": "The system must categorize business partners into types: customer, supplier, subcontractor, and freight forwarder",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-d",
+      "title": "The system must automatically validate and standardize partner addresses",
+      "description": "The system must automatically validate and standardize partner addresses",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-e",
+      "title": "The system must intelligently detect and identify duplicate partner entries",
+      "description": "The system must intelligently detect and identify duplicate partner entries",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-f",
+      "title": "The system must support upload and management of partner documents including contracts, certificates, and licenses",
+      "description": "The system must support upload and management of partner documents including contracts, certificates, and licenses",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-g",
+      "title": "The system must perform OCR processing to automatically extract data from documents",
+      "description": "The system must perform OCR processing to automatically extract data from documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-h",
+      "title": "The system must maintain document version history for all partner documents",
+      "description": "The system must maintain document version history for all partner documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-i",
+      "title": "The system must automatically notify users when partner documents are about to expire",
+      "description": "The system must automatically notify users when partner documents are about to expire",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-j",
+      "title": "The system must track and score partner quality based on performance metrics and KPIs",
+      "description": "The system must track and score partner quality based on performance metrics and KPIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-k",
+      "title": "The system must automatically calculate partner scores based on transport history",
+      "description": "The system must automatically calculate partner scores based on transport history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-l",
+      "title": "The system must monitor partner compliance with legal requirements",
+      "description": "The system must monitor partner compliance with legal requirements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-m",
+      "title": "The system must manage blacklists and risk assessments for business partners",
+      "description": "The system must manage blacklists and risk assessments for business partners",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-n",
+      "title": "The API must provide complete CRUD operations for business partner management",
+      "description": "The API must provide complete CRUD operations for business partner management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-o",
+      "title": "The API must provide advanced search functions with filtering and sorting capabilities",
+      "description": "The API must provide advanced search functions with filtering and sorting capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-p",
+      "title": "The API must support bulk operations for efficient mass processing of partners",
+      "description": "The API must support bulk operations for efficient mass processing of partners",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-q",
+      "title": "The API must provide secure document transfer capabilities for partner documents",
+      "description": "The API must provide secure document transfer capabilities for partner documents",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-r",
+      "title": "The API must manage structured document metadata for all partner documents",
+      "description": "The API must manage structured document metadata for all partner documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-s",
+      "title": "The API must enforce role-based access control for document permissions",
+      "description": "The API must enforce role-based access control for document permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-t",
+      "title": "The API must provide rating CRUD operations for partner rating management",
+      "description": "The API must provide rating CRUD operations for partner rating management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-u",
+      "title": "The API must automatically aggregate and calculate partner ratings",
+      "description": "The API must automatically aggregate and calculate partner ratings",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-v",
+      "title": "The API must track and maintain historical records of rating changes",
+      "description": "The API must track and maintain historical records of rating changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-w",
+      "title": "The Business Partner entity must include unique identification and tenant assignment",
+      "description": "The Business Partner entity must include unique identification and tenant assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-x",
+      "title": "The Business Partner entity must store company name, legal form, and tax/registration numbers",
+      "description": "The Business Partner entity must store company name, legal form, and tax/registration numbers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-y",
+      "title": "The Business Partner entity must store complete address information with country code",
+      "description": "The Business Partner entity must store complete address information with country code",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-z",
+      "title": "The Business Partner entity must store contact information including phone, email, and website",
+      "description": "The Business Partner entity must store contact information including phone, email, and website",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-27",
+      "title": "The Business Partner entity must store business terms including payment terms, credit limits, and currency",
+      "description": "The Business Partner entity must store business terms including payment terms, credit limits, and currency",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-28",
+      "title": "The Business Partner entity must track status (active, inactive, blocked) and maintain timestamps",
+      "description": "The Business Partner entity must track status (active, inactive, blocked) and maintain timestamps",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-29",
+      "title": "The Partner Document entity must classify documents by type (contracts, certificates, licenses, insurance)",
+      "description": "The Partner Document entity must classify documents by type (contracts, certificates, licenses, insurance)",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-30",
+      "title": "The Partner Document entity must store file metadata including name, path, size, and MIME type",
+      "description": "The Partner Document entity must store file metadata including name, path, size, and MIME type",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-31",
+      "title": "The Partner Document entity must track document validity period with from and to dates",
+      "description": "The Partner Document entity must track document validity period with from and to dates",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-32",
+      "title": "The Partner Document entity must store OCR-extracted text and structured data",
+      "description": "The Partner Document entity must store OCR-extracted text and structured data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-33",
+      "title": "The Partner Document entity must maintain document history and track changes",
+      "description": "The Partner Document entity must maintain document history and track changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-34",
+      "title": "The Partner Rating entity must evaluate partners across dimensions of quality, reliability, and communication",
+      "description": "The Partner Rating entity must evaluate partners across dimensions of quality, reliability, and communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-35",
+      "title": "The Partner Rating entity must track performance metrics including punctuality, damage rate, and complaints",
+      "description": "The Partner Rating entity must track performance metrics including punctuality, damage rate, and complaints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-36",
+      "title": "The Partner Rating entity must calculate weighted overall scores on a 1-5 scale",
+      "description": "The Partner Rating entity must calculate weighted overall scores on a 1-5 scale",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-37",
+      "title": "The Partner Rating entity must track rating trends over time",
+      "description": "The Partner Rating entity must track rating trends over time",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-38",
+      "title": "The Partner Rating entity must automatically calculate ratings using AI-based logic",
+      "description": "The Partner Rating entity must automatically calculate ratings using AI-based logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-39",
+      "title": "The FastAPI service must implement a service layer for partner management business logic",
+      "description": "The FastAPI service must implement a service layer for partner management business logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-40",
+      "title": "The FastAPI service must use the Repository Pattern for data access abstraction",
+      "description": "The FastAPI service must use the Repository Pattern for data access abstraction",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-41",
+      "title": "The FastAPI service must implement dependency injection for loose coupling between components",
+      "description": "The FastAPI service must implement dependency injection for loose coupling between components",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-42",
+      "title": "The FastAPI service must implement structured error handling with custom exceptions",
+      "description": "The FastAPI service must implement structured error handling with custom exceptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-43",
+      "title": "The service must implement partner management CRUD operations with validation",
+      "description": "The service must implement partner management CRUD operations with validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-44",
+      "title": "The service must implement document processing including upload, OCR, and metadata extraction",
+      "description": "The service must implement document processing including upload, OCR, and metadata extraction",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-45",
+      "title": "The service must implement a rating engine with performance-based scoring logic",
+      "description": "The service must implement a rating engine with performance-based scoring logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-46",
+      "title": "The service must implement intelligent duplicate detection for partner records",
+      "description": "The service must implement intelligent duplicate detection for partner records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-47",
+      "title": "The n8n OCR document processing workflow must trigger on document upload events",
+      "description": "The n8n OCR document processing workflow must trigger on document upload events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-48",
+      "title": "The n8n OCR workflow must integrate with OCR engines (Tesseract or Cloud Vision) for document processing",
+      "description": "The n8n OCR workflow must integrate with OCR engines (Tesseract or Cloud Vision) for document processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-000-49",
+      "title": "The n8n OCR workflow must validate data quality and structure of extracted information",
+      "description": "The n8n OCR workflow must validate data quality and structure of extracted information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001",
+      "title": "The system must calculate weighted overall ratings on a 1-5 scale",
+      "description": "The system must calculate weighted overall ratings on a 1-5 scale",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-a",
+      "title": "The system must track rating development trends over time",
+      "description": "The system must track rating development trends over time",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-b",
+      "title": "The system must automatically calculate ratings using AI-based logic",
+      "description": "The system must automatically calculate ratings using AI-based logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-c",
+      "title": "The FastAPI service must implement a Service Layer for partner management business logic",
+      "description": "The FastAPI service must implement a Service Layer for partner management business logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-d",
+      "title": "The system must use Repository Pattern for data access abstraction",
+      "description": "The system must use Repository Pattern for data access abstraction",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-e",
+      "title": "The system must implement Dependency Injection for loose coupling between components",
+      "description": "The system must implement Dependency Injection for loose coupling between components",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-f",
+      "title": "The system must provide structured error handling with custom exceptions",
+      "description": "The system must provide structured error handling with custom exceptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-g",
+      "title": "The system must support CRUD operations for partner management with validation",
+      "description": "The system must support CRUD operations for partner management with validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-h",
+      "title": "The system must process documents including upload, OCR, and metadata extraction",
+      "description": "The system must process documents including upload, OCR, and metadata extraction",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-i",
+      "title": "The system must implement a rating engine with performance-based scoring logic",
+      "description": "The system must implement a rating engine with performance-based scoring logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-j",
+      "title": "The system must detect duplicate partners using intelligent algorithms",
+      "description": "The system must detect duplicate partners using intelligent algorithms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-k",
+      "title": "The n8n OCR workflow must trigger on document upload events",
+      "description": "The n8n OCR workflow must trigger on document upload events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-l",
+      "title": "The OCR workflow must integrate with OCR engines (Tesseract or Cloud Vision)",
+      "description": "The OCR workflow must integrate with OCR engines (Tesseract or Cloud Vision)",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-m",
+      "title": "The OCR workflow must validate data quality and structure",
+      "description": "The OCR workflow must validate data quality and structure",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-n",
+      "title": "The OCR workflow must update metadata in the database after processing",
+      "description": "The OCR workflow must update metadata in the database after processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-o",
+      "title": "The rating calculation workflow must trigger on transport completion events",
+      "description": "The rating calculation workflow must trigger on transport completion events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-p",
+      "title": "The rating workflow must collect performance metrics from multiple services",
+      "description": "The rating workflow must collect performance metrics from multiple services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-q",
+      "title": "The rating workflow must calculate weighted ratings based on collected metrics",
+      "description": "The rating workflow must calculate weighted ratings based on collected metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-r",
+      "title": "The system must automatically notify users when ratings change",
+      "description": "The system must automatically notify users when ratings change",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-s",
+      "title": "The system must integrate with Order Management Service for customer information",
+      "description": "The system must integrate with Order Management Service for customer information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-t",
+      "title": "The system must integrate with Transport Service for performance data",
+      "description": "The system must integrate with Transport Service for performance data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-u",
+      "title": "The system must integrate with Billing Service for payment behavior data",
+      "description": "The system must integrate with Billing Service for payment behavior data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-v",
+      "title": "The system must integrate with external address validation APIs",
+      "description": "The system must integrate with external address validation APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-w",
+      "title": "The system must integrate with credit check APIs for creditworthiness assessment",
+      "description": "The system must integrate with credit check APIs for creditworthiness assessment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-x",
+      "title": "The system must integrate with government APIs for license and registration verification",
+      "description": "The system must integrate with government APIs for license and registration verification",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-y",
+      "title": "The system must be fully compliant with GDPR data protection regulations",
+      "description": "The system must be fully compliant with GDPR data protection regulations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-z",
+      "title": "The system must automatically delete data after retention periods expire",
+      "description": "The system must automatically delete data after retention periods expire",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-27",
+      "title": "The system must maintain a complete audit trail of all changes",
+      "description": "The system must maintain a complete audit trail of all changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-28",
+      "title": "The database must implement row-level security for tenant isolation",
+      "description": "The database must implement row-level security for tenant isolation",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-29",
+      "title": "The system must implement role-based access control",
+      "description": "The system must implement role-based access control",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-30",
+      "title": "The API must use JWT-based authentication",
+      "description": "The API must use JWT-based authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-31",
+      "title": "The system must track the count of active partners by type",
+      "description": "The system must track the count of active partners by type",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-32",
+      "title": "The system must measure OCR document processing time",
+      "description": "The system must measure OCR document processing time",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-33",
+      "title": "The system must track the distribution of partner ratings",
+      "description": "The system must track the distribution of partner ratings",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-34",
+      "title": "The system must measure API response times",
+      "description": "The system must measure API response times",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-35",
+      "title": "The system must alert on expiring documents",
+      "description": "The system must alert on expiring documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-36",
+      "title": "The system must alert on partners with low ratings",
+      "description": "The system must alert on partners with low ratings",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-37",
+      "title": "The system must alert on failed OCR processing",
+      "description": "The system must alert on failed OCR processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-38",
+      "title": "The system must alert on potential duplicate partners",
+      "description": "The system must alert on potential duplicate partners",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-39",
+      "title": "The system must support unit testing of partner CRUD operations",
+      "description": "The system must support unit testing of partner CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-40",
+      "title": "The system must support unit testing of document upload and processing",
+      "description": "The system must support unit testing of document upload and processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-41",
+      "title": "The system must support unit testing of rating calculation logic",
+      "description": "The system must support unit testing of rating calculation logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-42",
+      "title": "The system must support unit testing of validation rules",
+      "description": "The system must support unit testing of validation rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-43",
+      "title": "The system must support integration testing of API endpoints",
+      "description": "The system must support integration testing of API endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-44",
+      "title": "The system must support integration testing of database operations",
+      "description": "The system must support integration testing of database operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-45",
+      "title": "The system must support integration testing of file storage",
+      "description": "The system must support integration testing of file storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-46",
+      "title": "The system must support integration testing of n8n workflows",
+      "description": "The system must support integration testing of n8n workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-47",
+      "title": "The system must handle large partner datasets in performance tests",
+      "description": "The system must handle large partner datasets in performance tests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-48",
+      "title": "The system must handle concurrent document processing",
+      "description": "The system must handle concurrent document processing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-49",
+      "title": "The system must support search performance testing",
+      "description": "The system must support search performance testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    },
+    {
+      "requirement_id": "REQ-f047ca-001-50",
+      "title": "The system must support rating calculation performance testing",
+      "description": "The system must support rating calculation performance testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Geschaeftspartner.md"
+    }
+  ]
+}

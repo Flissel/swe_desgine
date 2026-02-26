@@ -1,0 +1,17 @@
+flowchart TD
+    Start([Start]) --> Init[Initialisiere Zero-Trust-Architektur]
+    Init --> Ident[Identitätsprüfung & Gerätezustand]
+    Ident --> Access{Zugriff genehmigt?}
+    Access -->|Nein| Block[Zugriff blockieren & protokollieren]
+    Block --> End([End])
+    Access -->|Ja| Monitor[Kontinuierliches Monitoring von System & Netzwerk]
+    Monitor --> AI[KI-gestützte Bedrohungserkennung]
+    AI --> Threat{Bedrohung erkannt?}
+    Threat -->|Nein| Operate[Normalbetrieb fortsetzen]
+    Operate --> Monitor
+    Threat -->|Ja| Response[Automatisierte Abwehrmaßnahmen]
+    Response --> Validate{Bedrohung eingedämmt?}
+    Validate -->|Nein| Escalate[Isolation & Incident Response]
+    Escalate --> End
+    Validate -->|Ja| Recover[Wiederherstellung & Hardening]
+    Recover --> Monitor

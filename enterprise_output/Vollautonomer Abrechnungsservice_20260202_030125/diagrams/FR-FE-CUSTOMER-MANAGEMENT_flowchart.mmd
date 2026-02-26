@@ -1,0 +1,15 @@
+flowchart TD
+    Start([Start]) --> Mode{Import/Manuell?}
+    Mode -->|Bulk Import| BulkImport[Bulk Import/Export starten]
+    Mode -->|Manuelle Eingabe| Input[Customer-Daten erfassen]
+    BulkImport --> Validate[Pflichtfelder prüfen]
+    Input --> Validate
+    Validate --> Duplicate{Duplikat erkannt?}
+    Duplicate -->|Ja| Resolve[Duplicate Detection & Zusammenführen]
+    Duplicate -->|Nein| Enrich[Beziehungen verwalten]
+    Resolve --> Enrich
+    Enrich --> Save[Kundendaten speichern/aktualisieren]
+    Save --> Export{Export erforderlich?}
+    Export -->|Ja| DoExport[Bulk Export ausführen]
+    Export -->|Nein| End([End])
+    DoExport --> End([End])

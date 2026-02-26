@@ -1,0 +1,12 @@
+C4Context
+    title System Context
+    Person(credit_controller, "Sachbearbeiter Mahnwesen", "Überwacht und steuert den Mahnprozess")
+    System(mahnagent, "Mahnagent", "Verwaltet den Mahnprozess für überfällige Rechnungen")
+    System(dunning_calc, "DunningLevelCalculator", "Bestimmt Mahnstufen")
+    System(letter_gen, "DunningLetterGenerator", "Erstellt Mahnschreiben")
+    System(cost_calc, "CostCalculator", "Berechnet Mahnkosten")
+
+    Rel(credit_controller, mahnagent, "Nutzt")
+    Rel(mahnagent, dunning_calc, "Bestimmt Mahnstufe")
+    Rel(mahnagent, letter_gen, "Erstellt Mahnschreiben")
+    Rel(mahnagent, cost_calc, "Berechnet Kosten")

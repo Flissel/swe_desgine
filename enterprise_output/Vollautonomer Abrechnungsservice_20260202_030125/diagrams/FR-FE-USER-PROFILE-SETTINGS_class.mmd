@@ -1,0 +1,77 @@
+classDiagram
+    class UserProfileSettings {
+        +userId: String
+        +user_role: String
+        +notification_preferences: String
+        +dashboard_customization: String
+        +language_settings: String
+        +security_settings: String
+        +updateRole(newRole: String)
+        +updatePreferences(prefs: String)
+        +applyDashboardLayout(layoutId: String)
+
+    class UserRole {
+        +roleId: String
+        +name: String
+        +permissions: String
+        +assignToUser(userId: String)
+        +revokeFromUser(userId: String)
+
+    class NotificationPreferences {
+        +channels: String
+        +frequency: String
+        +enabled: Boolean
+        +enableChannel(channel: String)
+        +disableChannel(channel: String)
+
+    class DashboardCustomization {
+        +layoutId: String
+        +widgets: String
+        +theme: String
+        +addWidget(widgetId: String)
+        +removeWidget(widgetId: String)
+
+    class LanguageSettings {
+        +locale: String
+        +timezone: String
+        +dateFormat: String
+        +setLocale(locale: String)
+        +setTimezone(timezone: String)
+
+    class SecuritySettings {
+        +mfaEnabled: Boolean
+        +passwordPolicy: String
+        +sessionTimeoutMinutes: int
+        +enableMfa()
+        +updatePasswordPolicy(policy: String)
+
+    class RoleBasedAccessControl {
+        +policyId: String
+        +rules: String
+        +evaluateAccess(userId: String, resource: String)
+        +syncRoles()
+
+    class AuditTrail {
+        +eventId: String
+        +timestamp: String
+        +actorId: String
+        +action: String
+        +recordEvent(actorId: String, action: String)
+        +queryByUser(userId: String)
+
+    class SessionManagement {
+        +sessionId: String
+        +userId: String
+        +createdAt: String
+        +expiresAt: String
+        +startSession(userId: String)
+        +endSession(sessionId: String)
+
+    UserProfileSettings --> UserRole : uses
+    UserProfileSettings --> NotificationPreferences : uses
+    UserProfileSettings --> DashboardCustomization : uses
+    UserProfileSettings --> LanguageSettings : uses
+    UserProfileSettings --> SecuritySettings : uses
+    RoleBasedAccessControl --> UserRole : enforces
+    AuditTrail --> UserProfileSettings : records
+    SessionManagement --> SecuritySettings : applies

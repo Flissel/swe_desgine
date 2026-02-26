@@ -1,0 +1,28 @@
+erDiagram
+    CUSTOMER ||--o{ SHIPMENT : places
+    SHIPMENT ||--|| POD : has
+    POD ||--o{ INVOICE : triggers
+    CUSTOMER ||--o{ INVOICE : billed_to
+
+    CUSTOMER {
+        string customer_id PK
+        string name
+        string billing_address
+
+    SHIPMENT {
+        string shipment_id PK
+        string customer_id FK
+        string status
+
+    POD {
+        string pod_id PK
+        string shipment_id FK
+        string validation_status
+        date validated_at
+
+    INVOICE {
+        string invoice_id PK
+        string pod_id FK
+        string customer_id FK
+        date issued_at
+        decimal amount

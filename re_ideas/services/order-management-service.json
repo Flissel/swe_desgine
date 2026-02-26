@@ -1,0 +1,1210 @@
+{
+  "Name": "order-management-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Auftragsmanagement.md",
+    "requirement_count": 146,
+    "categories": {
+      "functional": 136,
+      "performance": 10
+    },
+    "priorities": {
+      "should": 146
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-f359e5-000",
+      "title": "The Order Management Service must support flexible order capture through multiple channels including web interface, email import, CSV/FTP import, API integration, and EDI integration",
+      "description": "The Order Management Service must support flexible order capture through multiple channels including web interface, email import, CSV/FTP import, API integration, and EDI integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-a",
+      "title": "The system must automatically validate all input data during order capture",
+      "description": "The system must automatically validate all input data during order capture",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-b",
+      "title": "The system must verify pickup and delivery addresses during order validation",
+      "description": "The system must verify pickup and delivery addresses during order validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-c",
+      "title": "The system must check vehicle and driver availability during order validation",
+      "description": "The system must check vehicle and driver availability during order validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-d",
+      "title": "The system must validate the feasibility of requested delivery time windows",
+      "description": "The system must validate the feasibility of requested delivery time windows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-e",
+      "title": "The system must automatically calculate order costs",
+      "description": "The system must automatically calculate order costs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-f",
+      "title": "The system must provide complete order status tracking throughout the order lifecycle",
+      "description": "The system must provide complete order status tracking throughout the order lifecycle",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-g",
+      "title": "The system must manage order modifications and changes",
+      "description": "The system must manage order modifications and changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-h",
+      "title": "The system must handle structured order cancellations",
+      "description": "The system must handle structured order cancellations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-i",
+      "title": "The system must manage order-related documents including CMR, delivery notes, and invoices",
+      "description": "The system must manage order-related documents including CMR, delivery notes, and invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-j",
+      "title": "The system must send automatic notifications to all involved parties for order events",
+      "description": "The system must send automatic notifications to all involved parties for order events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-k",
+      "title": "The API must provide complete CRUD operations for order management",
+      "description": "The API must provide complete CRUD operations for order management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-l",
+      "title": "The API must support bulk operations for multiple orders",
+      "description": "The API must support bulk operations for multiple orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-m",
+      "title": "The API must provide advanced search and filter capabilities",
+      "description": "The API must provide advanced search and filter capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-n",
+      "title": "The API must implement pagination for efficient data transfer with large datasets",
+      "description": "The API must implement pagination for efficient data transfer with large datasets",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-o",
+      "title": "The system must provide status management endpoints with validation",
+      "description": "The system must provide status management endpoints with validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-p",
+      "title": "The system must track complete history of all order changes",
+      "description": "The system must track complete history of all order changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-q",
+      "title": "The system must provide real-time order updates via WebSocket integration",
+      "description": "The system must provide real-time order updates via WebSocket integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-r",
+      "title": "The system must send automatic event notifications when order status changes",
+      "description": "The system must send automatic event notifications when order status changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-s",
+      "title": "The system must support import and export in multiple formats including CSV, Excel, XML, and JSON",
+      "description": "The system must support import and export in multiple formats including CSV, Excel, XML, and JSON",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-t",
+      "title": "The system must process large files asynchronously for batch operations",
+      "description": "The system must process large files asynchronously for batch operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-u",
+      "title": "The system must implement multi-stage data validation for imported files",
+      "description": "The system must implement multi-stage data validation for imported files",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-v",
+      "title": "The system must provide detailed error reporting for file processing failures",
+      "description": "The system must provide detailed error reporting for file processing failures",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-w",
+      "title": "The system must calculate prices dynamically in real-time based on current parameters",
+      "description": "The system must calculate prices dynamically in real-time based on current parameters",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-x",
+      "title": "The system must support flexible price rule configuration through a rule engine",
+      "description": "The system must support flexible price rule configuration through a rule engine",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-y",
+      "title": "The system must manage quote creation and administration",
+      "description": "The system must manage quote creation and administration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-z",
+      "title": "The system must track price change history",
+      "description": "The system must track price change history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-27",
+      "title": "Each order must have a unique identifier, tenant reference, order number, and external reference",
+      "description": "Each order must have a unique identifier, tenant reference, order number, and external reference",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-28",
+      "title": "The order entity must contain customer reference and internal customer number",
+      "description": "The order entity must contain customer reference and internal customer number",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-29",
+      "title": "The order entity must store pickup address, date, time window, and contact information",
+      "description": "The order entity must store pickup address, date, time window, and contact information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-30",
+      "title": "The order entity must store delivery address, date, time window, and contact information",
+      "description": "The order entity must store delivery address, date, time window, and contact information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-31",
+      "title": "The order entity must include goods description, type, and hazardous material classification",
+      "description": "The order entity must include goods description, type, and hazardous material classification",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-32",
+      "title": "The order entity must store quantity information including count, weight, volume, and loading meters",
+      "description": "The order entity must store quantity information including count, weight, volume, and loading meters",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-33",
+      "title": "The order entity must include transport requirements such as temperature control and equipment type",
+      "description": "The order entity must include transport requirements such as temperature control and equipment type",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-34",
+      "title": "The order entity must store customer price, subcontractor price, and currency",
+      "description": "The order entity must store customer price, subcontractor price, and currency",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-35",
+      "title": "The order entity must track current status and priority level",
+      "description": "The order entity must track current status and priority level",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-36",
+      "title": "The order entity must maintain audit trail with creation and modification data",
+      "description": "The order entity must maintain audit trail with creation and modification data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-37",
+      "title": "The system must support Draft status for incomplete orders",
+      "description": "The system must support Draft status for incomplete orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-38",
+      "title": "The system must support Confirmed status for validated orders",
+      "description": "The system must support Confirmed status for validated orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-39",
+      "title": "The system must support Planned status for orders in route planning",
+      "description": "The system must support Planned status for orders in route planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-40",
+      "title": "The system must support In Transit status for orders being executed",
+      "description": "The system must support In Transit status for orders being executed",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-41",
+      "title": "The system must support Delivered status for successfully completed orders",
+      "description": "The system must support Delivered status for successfully completed orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-42",
+      "title": "The system must support Cancelled status for cancelled orders",
+      "description": "The system must support Cancelled status for cancelled orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-43",
+      "title": "The system must support Invoiced status for billed orders",
+      "description": "The system must support Invoiced status for billed orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-44",
+      "title": "Each order item must include article number, description, and unit of measure",
+      "description": "Each order item must include article number, description, and unit of measure",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-45",
+      "title": "Each order item must store quantity and unit of measure",
+      "description": "Each order item must store quantity and unit of measure",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-46",
+      "title": "Each order item must include physical properties such as dimensions and weight",
+      "description": "Each order item must include physical properties such as dimensions and weight",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-47",
+      "title": "Each order item must track handling properties including stackability, fragility, and hazardous material classification",
+      "description": "Each order item must track handling properties including stackability, fragility, and hazardous material classification",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-48",
+      "title": "Each order item must record creation date and modification history",
+      "description": "Each order item must record creation date and modification history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-49",
+      "title": "The Order Management Service must be implemented as an independent FastAPI service",
+      "description": "The Order Management Service must be implemented as an independent FastAPI service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-000-50",
+      "title": "The Order Management Service must integrate with n8n for multi-channel processing",
+      "description": "The Order Management Service must integrate with n8n for multi-channel processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001",
+      "title": "The system must store order pricing structure including customer price, subcontractor price, and currency",
+      "description": "The system must store order pricing structure including customer price, subcontractor price, and currency",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-a",
+      "title": "The system must maintain audit trail with creation and modification timestamps for all orders",
+      "description": "The system must maintain audit trail with creation and modification timestamps for all orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-b",
+      "title": "The system must support order status lifecycle with states: Draft, Confirmed, Planned, In Transit, Delivered, Cancelled, and Invoiced",
+      "description": "The system must support order status lifecycle with states: Draft, Confirmed, Planned, In Transit, Delivered, Cancelled, and Invoiced",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-c",
+      "title": "The system must store order item identification including article number, description, and unit",
+      "description": "The system must store order item identification including article number, description, and unit",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-d",
+      "title": "The system must store order item quantity including amount and unit of measure",
+      "description": "The system must store order item quantity including amount and unit of measure",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-e",
+      "title": "The system must store order item physical properties including dimensions and weight",
+      "description": "The system must store order item physical properties including dimensions and weight",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-f",
+      "title": "The system must store order item handling properties including stackability, fragility, and hazardous goods classification",
+      "description": "The system must store order item handling properties including stackability, fragility, and hazardous goods classification",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-g",
+      "title": "The system must track order item creation date and modification history",
+      "description": "The system must track order item creation date and modification history",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-h",
+      "title": "The FastAPI service must implement dependency injection for loose coupling between service components",
+      "description": "The FastAPI service must implement dependency injection for loose coupling between service components",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-i",
+      "title": "The FastAPI service must implement asynchronous processing for improved performance",
+      "description": "The FastAPI service must implement asynchronous processing for improved performance",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-j",
+      "title": "The FastAPI service must implement structured error handling with custom exceptions",
+      "description": "The FastAPI service must implement structured error handling with custom exceptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-k",
+      "title": "The FastAPI service must implement multi-stage data validation pipeline",
+      "description": "The FastAPI service must implement multi-stage data validation pipeline",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-l",
+      "title": "The system must support CRUD operations for order management with business rules enforcement",
+      "description": "The system must support CRUD operations for order management with business rules enforcement",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-m",
+      "title": "The system must support multi-format data import with validation",
+      "description": "The system must support multi-format data import with validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-n",
+      "title": "The system must implement dynamic price calculation with rule engine",
+      "description": "The system must implement dynamic price calculation with rule engine",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-o",
+      "title": "The system must manage order status transitions with validation",
+      "description": "The system must manage order status transitions with validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-p",
+      "title": "The system must implement event-based notification system",
+      "description": "The system must implement event-based notification system",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-q",
+      "title": "The n8n email workflow must process incoming emails with order content",
+      "description": "The n8n email workflow must process incoming emails with order content",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-r",
+      "title": "The n8n email workflow must extract order data through intelligent text analysis",
+      "description": "The n8n email workflow must extract order data through intelligent text analysis",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-s",
+      "title": "The n8n email workflow must process PDF and Excel attachments with OCR capability",
+      "description": "The n8n email workflow must process PDF and Excel attachments with OCR capability",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-t",
+      "title": "The n8n email workflow must validate extracted data and perform plausibility checks",
+      "description": "The n8n email workflow must validate extracted data and perform plausibility checks",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-u",
+      "title": "The n8n file import workflow must monitor FTP/SFTP directories automatically",
+      "description": "The n8n file import workflow must monitor FTP/SFTP directories automatically",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-v",
+      "title": "The n8n file import workflow must automatically detect file formats",
+      "description": "The n8n file import workflow must automatically detect file formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-w",
+      "title": "The n8n file import workflow must transform data to internal data structures",
+      "description": "The n8n file import workflow must transform data to internal data structures",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-x",
+      "title": "The n8n file import workflow must process files in batch mode efficiently",
+      "description": "The n8n file import workflow must process files in batch mode efficiently",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-y",
+      "title": "The n8n price calculation workflow must integrate with routing APIs for distance calculation",
+      "description": "The n8n price calculation workflow must integrate with routing APIs for distance calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-z",
+      "title": "The n8n price calculation workflow must implement flexible tariff calculation based on rules",
+      "description": "The n8n price calculation workflow must implement flexible tariff calculation based on rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-27",
+      "title": "The n8n price calculation workflow must calculate additional services charges",
+      "description": "The n8n price calculation workflow must calculate additional services charges",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-28",
+      "title": "The n8n price calculation workflow must adjust prices in real-time based on market conditions",
+      "description": "The n8n price calculation workflow must adjust prices in real-time based on market conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-29",
+      "title": "The n8n status update workflow must process order status change events",
+      "description": "The n8n status update workflow must process order status change events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-30",
+      "title": "The n8n status update workflow must validate status transitions according to rules",
+      "description": "The n8n status update workflow must validate status transitions according to rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-31",
+      "title": "The n8n status update workflow must send notifications through multiple channels",
+      "description": "The n8n status update workflow must send notifications through multiple channels",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-32",
+      "title": "The n8n status update workflow must synchronize status updates with external systems",
+      "description": "The n8n status update workflow must synchronize status updates with external systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-33",
+      "title": "The system must accept orders from multiple input channels including web interface, email, CSV/FTP, and API",
+      "description": "The system must accept orders from multiple input channels including web interface, email, CSV/FTP, and API",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-34",
+      "title": "The system must validate orders and enforce business rules before storage",
+      "description": "The system must validate orders and enforce business rules before storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-35",
+      "title": "The system must calculate prices before storing orders in database",
+      "description": "The system must calculate prices before storing orders in database",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-36",
+      "title": "The system must provide real-time order status updates to frontend dashboard",
+      "description": "The system must provide real-time order status updates to frontend dashboard",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-37",
+      "title": "The system must integrate with Business Partner Service for customer and supplier data",
+      "description": "The system must integrate with Business Partner Service for customer and supplier data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-38",
+      "title": "The system must integrate with Pricing Service for tariff calculation and price rules",
+      "description": "The system must integrate with Pricing Service for tariff calculation and price rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-39",
+      "title": "The system must integrate with Address Service for address validation and geocoding",
+      "description": "The system must integrate with Address Service for address validation and geocoding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-40",
+      "title": "The system must integrate with external APIs for email, FTP, and EDI systems",
+      "description": "The system must integrate with external APIs for email, FTP, and EDI systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-41",
+      "title": "The system must send orders to Disposition Service for route planning",
+      "description": "The system must send orders to Disposition Service for route planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-42",
+      "title": "The system must send transport orders to Transport Service",
+      "description": "The system must send transport orders to Transport Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-43",
+      "title": "The system must send billing-relevant data to Billing Service",
+      "description": "The system must send billing-relevant data to Billing Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-44",
+      "title": "The system must send notifications through Notification Service",
+      "description": "The system must send notifications through Notification Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-45",
+      "title": "The system must calculate base freight price based on distance and rate per kilometer",
+      "description": "The system must calculate base freight price based on distance and rate per kilometer",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-46",
+      "title": "The system must calculate loading and unloading fees as part of price calculation",
+      "description": "The system must calculate loading and unloading fees as part of price calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-47",
+      "title": "The system must calculate waiting time fees as part of price calculation",
+      "description": "The system must calculate waiting time fees as part of price calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-48",
+      "title": "The system must calculate express surcharge as part of price calculation",
+      "description": "The system must calculate express surcharge as part of price calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-49",
+      "title": "The system must calculate dangerous goods surcharge for hazardous materials",
+      "description": "The system must calculate dangerous goods surcharge for hazardous materials",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-50",
+      "title": "The system must calculate temperature-controlled surcharge for temperature-sensitive goods",
+      "description": "The system must calculate temperature-controlled surcharge for temperature-sensitive goods",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-51",
+      "title": "The system must calculate oversized surcharge for oversized shipments",
+      "description": "The system must calculate oversized surcharge for oversized shipments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-52",
+      "title": "The system must apply customer discounts to price calculation",
+      "description": "The system must apply customer discounts to price calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-53",
+      "title": "The system must apply fuel surcharge to price calculation",
+      "description": "The system must apply fuel surcharge to price calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-54",
+      "title": "The system must include toll costs in price calculation",
+      "description": "The system must include toll costs in price calculation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-55",
+      "title": "The system must calculate tax amount based on subtotal and tax rate",
+      "description": "The system must calculate tax amount based on subtotal and tax rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-56",
+      "title": "The system must calculate total price including all components and taxes",
+      "description": "The system must calculate total price including all components and taxes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-57",
+      "title": "The system must support pricing rules with unique identifier and tenant isolation",
+      "description": "The system must support pricing rules with unique identifier and tenant isolation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-58",
+      "title": "The system must support pricing rules with configurable rule types: DISTANCE, WEIGHT, VOLUME, FIXED",
+      "description": "The system must support pricing rules with configurable rule types: DISTANCE, WEIGHT, VOLUME, FIXED",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-59",
+      "title": "The system must support pricing rules with optional customer-specific conditions",
+      "description": "The system must support pricing rules with optional customer-specific conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-60",
+      "title": "The system must support pricing rules with optional equipment type conditions",
+      "description": "The system must support pricing rules with optional equipment type conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-61",
+      "title": "The system must support pricing rules with optional goods type conditions",
+      "description": "The system must support pricing rules with optional goods type conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-62",
+      "title": "The system must support pricing rules with optional distance range conditions",
+      "description": "The system must support pricing rules with optional distance range conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-63",
+      "title": "The system must support pricing rules with configurable base rate",
+      "description": "The system must support pricing rules with configurable base rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-64",
+      "title": "The system must support pricing rules with configurable rate per unit",
+      "description": "The system must support pricing rules with configurable rate per unit",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-65",
+      "title": "The system must support pricing rules with configurable minimum charge",
+      "description": "The system must support pricing rules with configurable minimum charge",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-001-66",
+      "title": "The system must support pricing rules with validity date range",
+      "description": "The system must support pricing rules with validity date range",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002",
+      "title": "The system must validate that all mandatory fields in the PriceCalculation model are complete",
+      "description": "The system must validate that all mandatory fields in the PriceCalculation model are complete",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-a",
+      "title": "The system must perform type-safe validation on all pricing data fields",
+      "description": "The system must perform type-safe validation on all pricing data fields",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-b",
+      "title": "The system must validate business rules for pricing calculations",
+      "description": "The system must validate business rules for pricing calculations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-c",
+      "title": "The system must validate referential integrity for pricing rules linked to other entities",
+      "description": "The system must validate referential integrity for pricing rules linked to other entities",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-d",
+      "title": "The system must determine geographic coordinates for delivery addresses using geocoding",
+      "description": "The system must determine geographic coordinates for delivery addresses using geocoding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-e",
+      "title": "The system must standardize all addresses to a uniform format",
+      "description": "The system must standardize all addresses to a uniform format",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-f",
+      "title": "The system must validate that delivery addresses are accessible by truck",
+      "description": "The system must validate that delivery addresses are accessible by truck",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-g",
+      "title": "The system must validate delivery time windows against location opening hours",
+      "description": "The system must validate delivery time windows against location opening hours",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-h",
+      "title": "The system must track the order volume metric as the count of orders per time period",
+      "description": "The system must track the order volume metric as the count of orders per time period",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-i",
+      "title": "The system must track the processing time metric for each import channel",
+      "description": "The system must track the processing time metric for each import channel",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-j",
+      "title": "The system must track the error rate metric for import and validation operations",
+      "description": "The system must track the error rate metric for import and validation operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-k",
+      "title": "The system must track the price accuracy metric for price calculations",
+      "description": "The system must track the price accuracy metric for price calculations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-l",
+      "title": "The system must generate an alert when data imports fail",
+      "description": "The system must generate an alert when data imports fail",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-m",
+      "title": "The system must generate an alert when validation errors occur frequently",
+      "description": "The system must generate an alert when validation errors occur frequently",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-n",
+      "title": "The system must generate an alert when price deviations are detected",
+      "description": "The system must generate an alert when price deviations are detected",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-o",
+      "title": "The system must generate an alert when system load is high",
+      "description": "The system must generate an alert when system load is high",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-p",
+      "title": "The system must support unit tests for order CRUD operations",
+      "description": "The system must support unit tests for order CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-q",
+      "title": "The system must support unit tests for price calculation logic",
+      "description": "The system must support unit tests for price calculation logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-r",
+      "title": "The system must support unit tests for validation rules",
+      "description": "The system must support unit tests for validation rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-s",
+      "title": "The system must support unit tests for data import and export operations",
+      "description": "The system must support unit tests for data import and export operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-t",
+      "title": "The system must support integration tests for multi-channel import",
+      "description": "The system must support integration tests for multi-channel import",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-u",
+      "title": "The system must support integration tests for API endpoint functionality",
+      "description": "The system must support integration tests for API endpoint functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-v",
+      "title": "The system must support integration tests for database operations",
+      "description": "The system must support integration tests for database operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-w",
+      "title": "The system must support integration tests for external service integration",
+      "description": "The system must support integration tests for external service integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-x",
+      "title": "The system must support performance tests for bulk order processing",
+      "description": "The system must support performance tests for bulk order processing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-y",
+      "title": "The system must support performance tests for concurrent API requests",
+      "description": "The system must support performance tests for concurrent API requests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-z",
+      "title": "The system must support performance tests for large file import",
+      "description": "The system must support performance tests for large file import",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    },
+    {
+      "requirement_id": "REQ-f359e5-002-27",
+      "title": "The system must support performance tests for price calculation performance",
+      "description": "The system must support performance tests for price calculation performance",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Auftragsmanagement.md"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+classDiagram
+    class ZahlungsreconciliationAgent {
+        +agentId: String
+        +name: String
+        +analyzeTransactions(transactions: List~Transaction~)
+        +matchPaymentsToInvoices(payments: List~Payment~, invoices: List~Invoice~)
+        +updateStatus(invoice: Invoice, status: String)
+        +proposeBooking(payment: Payment)
+
+    class BankTransactionParser {
+        +parse(rawData: String): List~Transaction~
+
+    class PaymentMatcher {
+        +match(transactions: List~Transaction~, invoices: List~Invoice~): List~Payment~
+
+    class AccountingSystemConnector {
+        +updateInvoiceStatus(invoiceId: String, status: String)
+        +createBookingProposal(paymentId: String)
+
+    class Transaction {
+        +transactionId: String
+        +amount: Decimal
+        +date: Date
+        +reference: String
+
+    class Payment {
+        +paymentId: String
+        +amount: Decimal
+        +date: Date
+        +invoiceId: String
+
+    class Invoice {
+        +invoiceId: String
+        +amountDue: Decimal
+        +status: String
+        +dueDate: Date
+
+    ZahlungsreconciliationAgent --> BankTransactionParser : uses
+    ZahlungsreconciliationAgent --> PaymentMatcher : uses
+    ZahlungsreconciliationAgent --> AccountingSystemConnector : uses
+    BankTransactionParser --> Transaction : produces
+    PaymentMatcher --> Payment : produces
+    PaymentMatcher --> Invoice : matches
+    Payment --> Invoice : refersTo

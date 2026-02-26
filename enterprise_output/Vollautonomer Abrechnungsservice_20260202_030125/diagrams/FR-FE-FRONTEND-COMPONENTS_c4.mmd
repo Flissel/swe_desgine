@@ -1,0 +1,7 @@
+C4Context
+    title System Context
+    Person(user, "Frontend User", "Uses frontend components")
+    System(frontendComponents, "Frontend Components", "Frontend component for frontend components")
+    System_Ext(externalApi, "External API", "Provides data/services")
+    Rel(user, frontendComponents, "Uses")
+    Rel(frontendComponents, externalApi, "Consumes")

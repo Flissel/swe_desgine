@@ -1,0 +1,124 @@
+{
+  "total_services": 11,
+  "total_requirements": 1791,
+  "services": [
+    {
+      "service": "api-gateway-service",
+      "source": "Integration_API_Gateway.md",
+      "requirements": 278,
+      "categories": {
+        "functional": 228,
+        "performance": 24,
+        "security": 26
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\api-gateway-service.json"
+    },
+    {
+      "service": "user-role-management-service",
+      "source": "Benutzer_Rollenverwaltung.md",
+      "requirements": 232,
+      "categories": {
+        "security": 70,
+        "functional": 146,
+        "performance": 16
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\user-role-management-service.json"
+    },
+    {
+      "service": "dispatch-planning-service",
+      "source": "Disposition.md",
+      "requirements": 226,
+      "categories": {
+        "functional": 190,
+        "performance": 35,
+        "security": 1
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\dispatch-planning-service.json"
+    },
+    {
+      "service": "pod-management-service",
+      "source": "POD_Management.md",
+      "requirements": 201,
+      "categories": {
+        "functional": 180,
+        "security": 12,
+        "performance": 9
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\pod-management-service.json"
+    },
+    {
+      "service": "transport-tracking-service",
+      "source": "Transport_Tracking.md",
+      "requirements": 191,
+      "categories": {
+        "functional": 179,
+        "security": 3,
+        "performance": 9
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\transport-tracking-service.json"
+    },
+    {
+      "service": "billing-service",
+      "source": "Abrechnung.md",
+      "requirements": 161,
+      "categories": {
+        "functional": 156,
+        "performance": 5
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\billing-service.json"
+    },
+    {
+      "service": "order-management-service",
+      "source": "Auftragsmanagement.md",
+      "requirements": 146,
+      "categories": {
+        "functional": 136,
+        "performance": 10
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\order-management-service.json"
+    },
+    {
+      "service": "service-architecture",
+      "source": "SERVICE_ARCHITECTURE.md",
+      "requirements": 119,
+      "categories": {
+        "functional": 101,
+        "security": 17,
+        "performance": 1
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\service-architecture.json"
+    },
+    {
+      "service": "business-partner-service",
+      "source": "Geschaeftspartner.md",
+      "requirements": 101,
+      "categories": {
+        "functional": 90,
+        "security": 5,
+        "performance": 6
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\business-partner-service.json"
+    },
+    {
+      "service": "features-overview",
+      "source": "FEATURES.md",
+      "requirements": 72,
+      "categories": {
+        "functional": 65,
+        "security": 7
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\features-overview.json"
+    },
+    {
+      "service": "project-overview",
+      "source": "README.md",
+      "requirements": 64,
+      "categories": {
+        "functional": 55,
+        "security": 7,
+        "performance": 2
+      },
+      "file": "C:\\Users\\User\\Desktop\\Sakana-ai-research\\AI-Scientist-v2\\re_ideas\\services\\project-overview.json"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+classDiagram
+    class PODValidation {
+        +status
+        +validatedAt
+        +validatePOD(podId)
+
+    class InvoiceGenerator {
+        +generationDate
+        +generateInvoice(orderId)
+
+    class Invoice {
+        +invoiceId
+        +amount
+        +issueDate
+        +calculateTotal(lineItems)
+
+    class Order {
+        +orderId
+        +orderDate
+        +getTotalAmount()
+
+    class Customer {
+        +customerId
+        +name
+        +getBillingAddress()
+
+    PODValidation --> InvoiceGenerator : triggers
+    InvoiceGenerator --> Invoice : creates
+    Order --> Invoice : billed in
+    Customer --> Order : places

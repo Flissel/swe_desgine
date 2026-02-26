@@ -1,0 +1,54 @@
+sequenceDiagram
+    participant User
+    participant WebUI as Web Interface
+    participant Frontend
+    participant Validation as Validation Service
+    participant BankAPI as Bank Directory API
+    participant Security as Security Service
+    participant Token as Tokenization Service
+    participant Compliance as PCI DSS Compliance
+    participant Backend
+    participant DB as Bank Account DB
+
+    User->>WebUI: Enter bank_name, account_holder, iban, bic, account_type, currency
+    WebUI->>Frontend: Submit form data
+    activate Frontend
+    Frontend->>Validation: Validate IBAN format
+    activate Validation
+    Validation-->>Frontend: IBAN valid/invalid
+    deactivate Validation
+    Frontend->>BankAPI: Check BIC existence
+    activate BankAPI
+    BankAPI-->>Frontend: BIC exists/unknown
+    deactivate BankAPI
+    Frontend->>Backend: Check duplicate prevention (iban, bic, account_holder)
+    activate Backend
+    Backend->>DB: Query existing accounts
+    activate DB
+    DB-->>Backend: Match found/not found
+    deactivate DB
+    Backend-->>Frontend: Duplicate status
+    deactivate Backend
+    Frontend->>Security: End-to-end encryption
+    activate Security
+    Security-->>Frontend: Encrypted payload
+    deactivate Security
+    Frontend->>Token: Tokenize sensitive data
+    activate Token
+    Token-->>Frontend: Tokenized data
+    deactivate Token
+    Frontend->>Compliance: PCI DSS compliance check
+    activate Compliance
+    Compliance-->>Frontend: Compliant/Non-compliant
+    deactivate Compliance
+    Frontend->>Backend: Submit encrypted & tokenized data
+    activate Backend
+    Backend->>DB: Store bank account data
+    activate DB
+    DB-->>Backend: Stored
+    deactivate DB
+    Backend-->>Frontend: Success response
+    deactivate Backend
+    Frontend-->>WebUI: Confirmation
+    deactivate Frontend
+    WebUI-->>User: Setup successful

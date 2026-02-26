@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Input : start_setup
+    Input --> Validate : submit_form
+    Validate --> Invalid : validation_failed
+    Validate --> DuplicateCheck : validation_passed
+    Invalid --> Input : edit_fields
+    DuplicateCheck --> Error : duplicate_found
+    DuplicateCheck --> SecurityProcessing : no_duplicate
+    SecurityProcessing --> Error : security_failure
+    SecurityProcessing --> Stored : encrypt_tokenize_persist
+    Error --> Input : retry
+    Stored --> [*] : finish

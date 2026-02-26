@@ -1,0 +1,40 @@
+classDiagram
+    class InnovationEcosystem {
+        +ecosystemId
+        +name
+        +targetPartners
+        +establishStandard(standard:IndustryStandard)
+        +addPartnership(partnership:Partnership)
+
+    class IndustryStandard {
+        +standardId
+        +title
+        +version
+        +publish(date:String)
+        +update(version:String)
+
+    class Partnership {
+        +partnershipId
+        +startDate
+        +status
+        +activate(date:String)
+        +terminate(reason:String)
+
+    class TechnologyProvider {
+        +providerId
+        +companyName
+        +category
+        +offerTechnology(technology:String)
+        +signAgreement(agreement:String)
+
+    class GovernanceBody {
+        +bodyId
+        +name
+        +policyFramework
+        +definePolicy(policy:String)
+        +approveStandard(standard:IndustryStandard)
+
+    InnovationEcosystem "1" --> "many" IndustryStandard : establishes
+    InnovationEcosystem "1" --> "many" Partnership : manages
+    Partnership "1" --> "1" TechnologyProvider : with
+    InnovationEcosystem "1" --> "1" GovernanceBody : governedBy

@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> AggregateData : startCreation
+    AggregateData --> GenerateInvoice : dataAggregated
+    GenerateInvoice --> CalculateTax : invoiceGenerated
+    CalculateTax --> Validate : taxesCalculated
+    Validate --> SendInvoice : validationPassed
+    Validate --> Error : validationFailed
+    SendInvoice --> Completed : invoiceSent
+    Error --> [*] : abort
+    Completed --> [*] : done

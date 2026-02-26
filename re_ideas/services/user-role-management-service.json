@@ -1,0 +1,1899 @@
+{
+  "Name": "user-role-management-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Benutzer_Rollenverwaltung.md",
+    "requirement_count": 232,
+    "categories": {
+      "security": 70,
+      "functional": 146,
+      "performance": 16
+    },
+    "priorities": {
+      "should": 232
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-81f5fb-000",
+      "title": "The system must implement secure authentication for all system users",
+      "description": "The system must implement secure authentication for all system users",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-a",
+      "title": "The system must implement role-based access control (RBAC)",
+      "description": "The system must implement role-based access control (RBAC)",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-b",
+      "title": "The system must integrate with Supabase Auth for user management",
+      "description": "The system must integrate with Supabase Auth for user management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-c",
+      "title": "The system must support multi-factor authentication (2FA/MFA)",
+      "description": "The system must support multi-factor authentication (2FA/MFA)",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-d",
+      "title": "The system must support Single Sign-On (SSO) integration with external identity providers",
+      "description": "The system must support Single Sign-On (SSO) integration with external identity providers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-e",
+      "title": "The system must implement secure session management using JWT",
+      "description": "The system must implement secure session management using JWT",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-f",
+      "title": "The system must enforce strong password policies",
+      "description": "The system must enforce strong password policies",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-g",
+      "title": "The system must implement account lockout protection against brute-force attacks",
+      "description": "The system must implement account lockout protection against brute-force attacks",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-h",
+      "title": "The system must support hierarchical roles with permission inheritance",
+      "description": "The system must support hierarchical roles with permission inheritance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-i",
+      "title": "The system must support dynamic roles based on time and context",
+      "description": "The system must support dynamic roles based on time and context",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-j",
+      "title": "The system must provide predefined role templates for different user types",
+      "description": "The system must provide predefined role templates for different user types",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-k",
+      "title": "The system must support temporary role delegation",
+      "description": "The system must support temporary role delegation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-l",
+      "title": "The system must monitor and audit all role changes",
+      "description": "The system must monitor and audit all role changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-m",
+      "title": "The system must implement granular resource-based access control",
+      "description": "The system must implement granular resource-based access control",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-n",
+      "title": "The system must implement attribute-based access control for contextual decisions",
+      "description": "The system must implement attribute-based access control for contextual decisions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-o",
+      "title": "The system must implement row-level security at the database level",
+      "description": "The system must implement row-level security at the database level",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-p",
+      "title": "The system must enforce authorization checks on all API endpoints",
+      "description": "The system must enforce authorization checks on all API endpoints",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-q",
+      "title": "The system must implement field-level security for sensitive data",
+      "description": "The system must implement field-level security for sensitive data",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-r",
+      "title": "The system must provide user registration with validation",
+      "description": "The system must provide user registration with validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-s",
+      "title": "The system must provide secure user login with multiple authentication methods",
+      "description": "The system must provide secure user login with multiple authentication methods",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-t",
+      "title": "The system must provide a secure password reset process",
+      "description": "The system must provide a secure password reset process",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-u",
+      "title": "The system must support JWT token refresh",
+      "description": "The system must support JWT token refresh",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-v",
+      "title": "The system must provide secure logout and session invalidation",
+      "description": "The system must provide secure logout and session invalidation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-w",
+      "title": "The system must provide complete user CRUD operations",
+      "description": "The system must provide complete user CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-x",
+      "title": "The system must provide user profile management",
+      "description": "The system must provide user profile management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-y",
+      "title": "The system must support account status management (activation, deactivation, lockout)",
+      "description": "The system must support account status management (activation, deactivation, lockout)",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-z",
+      "title": "The system must provide advanced user search and filtering",
+      "description": "The system must provide advanced user search and filtering",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-27",
+      "title": "The system must support bulk user operations",
+      "description": "The system must support bulk user operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-28",
+      "title": "The system must provide role CRUD operations",
+      "description": "The system must provide role CRUD operations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-29",
+      "title": "The system must support permission assignment to roles",
+      "description": "The system must support permission assignment to roles",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-30",
+      "title": "The system must support role hierarchy management",
+      "description": "The system must support role hierarchy management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-31",
+      "title": "The system must provide role templates for common role combinations",
+      "description": "The system must provide role templates for common role combinations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-32",
+      "title": "The system must provide role usage analytics",
+      "description": "The system must provide role usage analytics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-33",
+      "title": "The system must provide permission checking functionality",
+      "description": "The system must provide permission checking functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-34",
+      "title": "The system must provide resource access control",
+      "description": "The system must provide resource access control",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-35",
+      "title": "The system must support bulk authorization checks",
+      "description": "The system must support bulk authorization checks",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-36",
+      "title": "The system must support context-based access decisions",
+      "description": "The system must support context-based access decisions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-37",
+      "title": "The system must provide delegation management functionality",
+      "description": "The system must provide delegation management functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-38",
+      "title": "The system must maintain a complete audit log of all actions",
+      "description": "The system must maintain a complete audit log of all actions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-39",
+      "title": "The system must track and report login history and statistics",
+      "description": "The system must track and report login history and statistics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-40",
+      "title": "The system must track all permission changes",
+      "description": "The system must track all permission changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-41",
+      "title": "The system must monitor security-relevant events",
+      "description": "The system must monitor security-relevant events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-42",
+      "title": "The system must generate compliance reports",
+      "description": "The system must generate compliance reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-43",
+      "title": "The system must support multi-tenant user management",
+      "description": "The system must support multi-tenant user management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-44",
+      "title": "The User entity must store basic user data including user ID, email, name, status, and creation date",
+      "description": "The User entity must store basic user data including user ID, email, name, status, and creation date",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-45",
+      "title": "The User entity must store authentication data including password hash, MFA settings, and login attempts",
+      "description": "The User entity must store authentication data including password hash, MFA settings, and login attempts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-46",
+      "title": "The User entity must store profile data including personal information, preferences, and avatar",
+      "description": "The User entity must store profile data including personal information, preferences, and avatar",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-47",
+      "title": "The User entity must store tenant assignment information",
+      "description": "The User entity must store tenant assignment information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-48",
+      "title": "The User entity must store metadata including last login, IP address, and user agent",
+      "description": "The User entity must store metadata including last login, IP address, and user agent",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-49",
+      "title": "The User entity must store security information including account status, lockouts, and security events",
+      "description": "The User entity must store security information including account status, lockouts, and security events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-50",
+      "title": "The Role entity must store basic role data including role ID, name, description, and type",
+      "description": "The Role entity must store basic role data including role ID, name, description, and type",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-51",
+      "title": "The Role entity must store hierarchy information including parent role, child roles, and inheritance rules",
+      "description": "The Role entity must store hierarchy information including parent role, child roles, and inheritance rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-52",
+      "title": "The Role entity must store validity information including time-based validity and activation conditions",
+      "description": "The Role entity must store validity information including time-based validity and activation conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-53",
+      "title": "The Role entity must store context information including scope and tenant assignment",
+      "description": "The Role entity must store context information including scope and tenant assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-000-54",
+      "title": "The Role entity must store metadata including creator, change history, and usage statistics",
+      "description": "The Role entity must store metadata including creator, change history, and usage statistics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001",
+      "title": "The system must implement FastAPI endpoints with Supabase Auth integration",
+      "description": "The system must implement FastAPI endpoints with Supabase Auth integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-a",
+      "title": "The system must support OAuth2/OpenID Connect integration for SSO",
+      "description": "The system must support OAuth2/OpenID Connect integration for SSO",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-b",
+      "title": "The system must implement advanced security features including rate limiting and anomaly detection",
+      "description": "The system must implement advanced security features including rate limiting and anomaly detection",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-c",
+      "title": "The User entity must store user identification data including User-ID, E-Mail, Name, Status, and creation date",
+      "description": "The User entity must store user identification data including User-ID, E-Mail, Name, Status, and creation date",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-d",
+      "title": "The User entity must store authentication data including password hash, MFA settings, and login attempts",
+      "description": "The User entity must store authentication data including password hash, MFA settings, and login attempts",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-e",
+      "title": "The User entity must store profile data including personal information, preferences, and avatar",
+      "description": "The User entity must store profile data including personal information, preferences, and avatar",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-f",
+      "title": "The User entity must maintain tenant assignment to organizational units",
+      "description": "The User entity must maintain tenant assignment to organizational units",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-g",
+      "title": "The User entity must store metadata including last login, IP address, and user agent",
+      "description": "The User entity must store metadata including last login, IP address, and user agent",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-h",
+      "title": "The User entity must maintain security information including account status, locks, and security events",
+      "description": "The User entity must maintain security information including account status, locks, and security events",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-i",
+      "title": "The Role entity must store basic data including Role-ID, Name, Description, and Type",
+      "description": "The Role entity must store basic data including Role-ID, Name, Description, and Type",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-j",
+      "title": "The Role entity must support hierarchical relationships including parent roles, child roles, and inheritance rules",
+      "description": "The Role entity must support hierarchical relationships including parent roles, child roles, and inheritance rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-k",
+      "title": "The Role entity must support time-based validity and activation conditions",
+      "description": "The Role entity must support time-based validity and activation conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-l",
+      "title": "The Role entity must maintain context information including scope and tenant assignment",
+      "description": "The Role entity must maintain context information including scope and tenant assignment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-m",
+      "title": "The Role entity must track metadata including creator, change history, and usage statistics",
+      "description": "The Role entity must track metadata including creator, change history, and usage statistics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-n",
+      "title": "The Permission entity must store basic data including Permission-ID, Name, Description, and Category",
+      "description": "The Permission entity must store basic data including Permission-ID, Name, Description, and Category",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-o",
+      "title": "The Permission entity must define target resource, action type, and scope",
+      "description": "The Permission entity must define target resource, action type, and scope",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-p",
+      "title": "The Permission entity must support contextual conditions and time restrictions",
+      "description": "The Permission entity must support contextual conditions and time restrictions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-q",
+      "title": "The Permission entity must include priority weighting for conflict resolution",
+      "description": "The Permission entity must include priority weighting for conflict resolution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-r",
+      "title": "The Permission entity must support inheritance rules and exceptions",
+      "description": "The Permission entity must support inheritance rules and exceptions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-s",
+      "title": "The system must maintain complete audit logs of all actions",
+      "description": "The system must maintain complete audit logs of all actions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-t",
+      "title": "The system must maintain login history with detailed information",
+      "description": "The system must maintain login history with detailed information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-u",
+      "title": "The system must track all permission changes",
+      "description": "The system must track all permission changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-v",
+      "title": "The system must record security-relevant events",
+      "description": "The system must record security-relevant events",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-w",
+      "title": "The system must maintain compliance-relevant records",
+      "description": "The system must maintain compliance-relevant records",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-x",
+      "title": "The system must implement Supabase RLS policies for multi-tenant security",
+      "description": "The system must implement Supabase RLS policies for multi-tenant security",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-y",
+      "title": "The system must implement optimized indexing for performance",
+      "description": "The system must implement optimized indexing for performance",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-z",
+      "title": "The system must implement GDPR-compliant data modeling",
+      "description": "The system must implement GDPR-compliant data modeling",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-27",
+      "title": "The system must provide a centralized Authentication Service",
+      "description": "The system must provide a centralized Authentication Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-28",
+      "title": "The system must provide an Authorization Engine for role-based access control",
+      "description": "The system must provide an Authorization Engine for role-based access control",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-29",
+      "title": "The system must provide User Management functionality",
+      "description": "The system must provide User Management functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-30",
+      "title": "The system must provide a Role Engine for role management and hierarchies",
+      "description": "The system must provide a Role Engine for role management and hierarchies",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-31",
+      "title": "The system must provide an Audit Service for logging and compliance",
+      "description": "The system must provide an Audit Service for logging and compliance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-32",
+      "title": "The system must implement JWT token generation and validation",
+      "description": "The system must implement JWT token generation and validation",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-33",
+      "title": "The system must implement secure password processing",
+      "description": "The system must implement secure password processing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-34",
+      "title": "The system must provide multi-factor authentication",
+      "description": "The system must provide multi-factor authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-35",
+      "title": "The system must manage sessions securely",
+      "description": "The system must manage sessions securely",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-36",
+      "title": "The system must implement rate limiting to prevent abuse",
+      "description": "The system must implement rate limiting to prevent abuse",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-37",
+      "title": "The system must integrate with Supabase Auth natively",
+      "description": "The system must integrate with Supabase Auth natively",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-38",
+      "title": "The system must support external identity providers including LDAP and Active Directory",
+      "description": "The system must support external identity providers including LDAP and Active Directory",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-39",
+      "title": "The system must support service-to-service authentication",
+      "description": "The system must support service-to-service authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-40",
+      "title": "The system must integrate with API Gateway for centralized authentication",
+      "description": "The system must integrate with API Gateway for centralized authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-41",
+      "title": "The system must provide security notifications through a Notification Service",
+      "description": "The system must provide security notifications through a Notification Service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-42",
+      "title": "The system must provide a User Repository for user data access",
+      "description": "The system must provide a User Repository for user data access",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-43",
+      "title": "The system must provide a Role Repository for role data access",
+      "description": "The system must provide a Role Repository for role data access",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-44",
+      "title": "The system must provide a Permission Repository for permission data access",
+      "description": "The system must provide a Permission Repository for permission data access",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-45",
+      "title": "The system must provide an Audit Repository for audit log data access",
+      "description": "The system must provide an Audit Repository for audit log data access",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-46",
+      "title": "The system must implement a cache layer for performance optimization",
+      "description": "The system must implement a cache layer for performance optimization",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-47",
+      "title": "The system must implement FastAPI dependency injection for authentication",
+      "description": "The system must implement FastAPI dependency injection for authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-48",
+      "title": "The system must implement middleware for automatic authorization",
+      "description": "The system must implement middleware for automatic authorization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-49",
+      "title": "The system must implement microservice security patterns",
+      "description": "The system must implement microservice security patterns",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-50",
+      "title": "The n8n workflow must validate email and data during user onboarding",
+      "description": "The n8n workflow must validate email and data during user onboarding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-51",
+      "title": "The n8n workflow must automatically assign roles during user onboarding",
+      "description": "The n8n workflow must automatically assign roles during user onboarding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-52",
+      "title": "The n8n workflow must send welcome email and setup guide during user onboarding",
+      "description": "The n8n workflow must send welcome email and setup guide during user onboarding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-53",
+      "title": "The n8n workflow must check compliance requirements during user onboarding",
+      "description": "The n8n workflow must check compliance requirements during user onboarding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-54",
+      "title": "The n8n workflow must detect suspicious activities for security monitoring",
+      "description": "The n8n workflow must detect suspicious activities for security monitoring",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-55",
+      "title": "The n8n workflow must generate automatic security alerts",
+      "description": "The n8n workflow must generate automatic security alerts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-56",
+      "title": "The n8n workflow must provide automated incident response for security events",
+      "description": "The n8n workflow must provide automated incident response for security events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-57",
+      "title": "The n8n workflow must generate security reports and dashboards",
+      "description": "The n8n workflow must generate security reports and dashboards",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-58",
+      "title": "The n8n workflow must perform periodic access reviews",
+      "description": "The n8n workflow must perform periodic access reviews",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-59",
+      "title": "The n8n workflow must audit all user permissions during access review",
+      "description": "The n8n workflow must audit all user permissions during access review",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-60",
+      "title": "The n8n workflow must validate role assignments during access review",
+      "description": "The n8n workflow must validate role assignments during access review",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-61",
+      "title": "The n8n workflow must remove unused permissions during access review",
+      "description": "The n8n workflow must remove unused permissions during access review",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-62",
+      "title": "The n8n workflow must generate compliance reports during access review",
+      "description": "The n8n workflow must generate compliance reports during access review",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-63",
+      "title": "The n8n workflow must check password policies for password policy enforcement",
+      "description": "The n8n workflow must check password policies for password policy enforcement",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-64",
+      "title": "The n8n workflow must handle expired passwords for password policy enforcement",
+      "description": "The n8n workflow must handle expired passwords for password policy enforcement",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-65",
+      "title": "The n8n workflow must provide automated password reset for password policy enforcement",
+      "description": "The n8n workflow must provide automated password reset for password policy enforcement",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-66",
+      "title": "The n8n workflow must notify users of password events for password policy enforcement",
+      "description": "The n8n workflow must notify users of password events for password policy enforcement",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-67",
+      "title": "The system must integrate SIEM systems",
+      "description": "The system must integrate SIEM systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-68",
+      "title": "The system must support automated compliance workflows",
+      "description": "The system must support automated compliance workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-69",
+      "title": "The system must implement advanced threat detection using machine learning",
+      "description": "The system must implement advanced threat detection using machine learning",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-70",
+      "title": "The system must authenticate and authorize all internal services",
+      "description": "The system must authenticate and authorize all internal services",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-71",
+      "title": "The Audit Service must provide centralized logging of all system actions",
+      "description": "The Audit Service must provide centralized logging of all system actions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-72",
+      "title": "The Notification Service must provide security notifications",
+      "description": "The Notification Service must provide security notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-73",
+      "title": "The Configuration Service must provide dynamic security configuration",
+      "description": "The Configuration Service must provide dynamic security configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-74",
+      "title": "The Monitoring Service must provide security metrics and dashboards",
+      "description": "The Monitoring Service must provide security metrics and dashboards",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-75",
+      "title": "The system must support Active Directory integration for enterprise organizations",
+      "description": "The system must support Active Directory integration for enterprise organizations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-001-76",
+      "title": "The system must support LDAP integration with existing directory services",
+      "description": "The system must support LDAP integration with existing directory services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002",
+      "title": "The system must authenticate users through Supabase Auth and issue JWT tokens",
+      "description": "The system must authenticate users through Supabase Auth and issue JWT tokens",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-a",
+      "title": "The system must validate JWT tokens through FastAPI middleware before processing requests",
+      "description": "The system must validate JWT tokens through FastAPI middleware before processing requests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-b",
+      "title": "The system must enforce authorization decisions based on user roles and permissions",
+      "description": "The system must enforce authorization decisions based on user roles and permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-c",
+      "title": "The system must log all access decisions to an audit log",
+      "description": "The system must log all access decisions to an audit log",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-d",
+      "title": "The system must invalidate permission caches when admin roles or permissions are updated",
+      "description": "The system must invalidate permission caches when admin roles or permissions are updated",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-e",
+      "title": "The system must monitor security events and generate alerts",
+      "description": "The system must monitor security events and generate alerts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-f",
+      "title": "The system must provide authentication and authorization for all internal services",
+      "description": "The system must provide authentication and authorization for all internal services",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-g",
+      "title": "The system must integrate with the Audit Service for centralized logging of all system actions",
+      "description": "The system must integrate with the Audit Service for centralized logging of all system actions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-h",
+      "title": "The system must integrate with the Notification Service to send security notifications",
+      "description": "The system must integrate with the Notification Service to send security notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-i",
+      "title": "The system must integrate with the Configuration Service for dynamic security configuration",
+      "description": "The system must integrate with the Configuration Service for dynamic security configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-j",
+      "title": "The system must integrate with the Monitoring Service to track security metrics and dashboards",
+      "description": "The system must integrate with the Monitoring Service to track security metrics and dashboards",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-k",
+      "title": "The system should support integration with Active Directory for enterprise authentication",
+      "description": "The system should support integration with Active Directory for enterprise authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-l",
+      "title": "The system should support integration with LDAP for directory service authentication",
+      "description": "The system should support integration with LDAP for directory service authentication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-m",
+      "title": "The system should support OAuth provider integration for single sign-on with Google, Microsoft, and GitHub",
+      "description": "The system should support OAuth provider integration for single sign-on with Google, Microsoft, and GitHub",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-n",
+      "title": "The system should support SAML provider integration for enterprise single sign-on",
+      "description": "The system should support SAML provider integration for enterprise single sign-on",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-o",
+      "title": "The system should support social login integration with Facebook and LinkedIn for customer portals",
+      "description": "The system should support social login integration with Facebook and LinkedIn for customer portals",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-p",
+      "title": "The system should integrate with SIEM systems for security information and event management",
+      "description": "The system should integrate with SIEM systems for security information and event management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-q",
+      "title": "The system should integrate with vulnerability scanners for automated security assessments",
+      "description": "The system should integrate with vulnerability scanners for automated security assessments",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-r",
+      "title": "The system should integrate with threat intelligence services for threat data integration",
+      "description": "The system should integrate with threat intelligence services for threat data integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-s",
+      "title": "The system should integrate with compliance tools for automated compliance checking",
+      "description": "The system should integrate with compliance tools for automated compliance checking",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-t",
+      "title": "The system should integrate with backup services for secure user data backup",
+      "description": "The system should integrate with backup services for secure user data backup",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-u",
+      "title": "The system must support multi-factor authentication using TOTP, SMS, and hardware tokens",
+      "description": "The system must support multi-factor authentication using TOTP, SMS, and hardware tokens",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-v",
+      "title": "The system should support adaptive authentication based on risk assessment",
+      "description": "The system should support adaptive authentication based on risk assessment",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-w",
+      "title": "The system should support biometric authentication including fingerprint and face recognition",
+      "description": "The system should support biometric authentication including fingerprint and face recognition",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-x",
+      "title": "The system should support certificate-based authentication using PKI",
+      "description": "The system should support certificate-based authentication using PKI",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-y",
+      "title": "The system should support device trust management for trusted device verification",
+      "description": "The system should support device trust management for trusted device verification",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-z",
+      "title": "The system must enforce the principle of least privilege for all user permissions",
+      "description": "The system must enforce the principle of least privilege for all user permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-27",
+      "title": "The system must enforce separation of duties for critical operations",
+      "description": "The system must enforce separation of duties for critical operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-28",
+      "title": "The system should support time-based access controls with expiring permissions",
+      "description": "The system should support time-based access controls with expiring permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-29",
+      "title": "The system should support location-based access controls for geographic restrictions",
+      "description": "The system should support location-based access controls for geographic restrictions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-30",
+      "title": "The system should support context-aware authorization decisions",
+      "description": "The system should support context-aware authorization decisions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-31",
+      "title": "The system must encrypt all data at rest",
+      "description": "The system must encrypt all data at rest",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-32",
+      "title": "The system must encrypt all data in transit using TLS/SSL",
+      "description": "The system must encrypt all data in transit using TLS/SSL",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-33",
+      "title": "The system must implement secure key management",
+      "description": "The system must implement secure key management",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-34",
+      "title": "The system should implement data masking for sensitive data in non-production environments",
+      "description": "The system should implement data masking for sensitive data in non-production environments",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-35",
+      "title": "The system should implement data loss prevention controls",
+      "description": "The system should implement data loss prevention controls",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-36",
+      "title": "The system must comply with GDPR requirements",
+      "description": "The system must comply with GDPR requirements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-37",
+      "title": "The system must comply with SOX (Sarbanes-Oxley) requirements",
+      "description": "The system must comply with SOX (Sarbanes-Oxley) requirements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-38",
+      "title": "The system must comply with ISO 27001 information security management standards",
+      "description": "The system must comply with ISO 27001 information security management standards",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-39",
+      "title": "The system must comply with PCI DSS (Payment Card Industry Data Security Standard)",
+      "description": "The system must comply with PCI DSS (Payment Card Industry Data Security Standard)",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-40",
+      "title": "The system should comply with HIPAA healthcare compliance requirements where applicable",
+      "description": "The system should comply with HIPAA healthcare compliance requirements where applicable",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-41",
+      "title": "The system must track and report authentication success rate metrics",
+      "description": "The system must track and report authentication success rate metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-42",
+      "title": "The system must monitor and track failed login attempts",
+      "description": "The system must monitor and track failed login attempts",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-43",
+      "title": "The system must track account lockout frequency",
+      "description": "The system must track account lockout frequency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-44",
+      "title": "The system must track password reset frequency",
+      "description": "The system must track password reset frequency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-45",
+      "title": "The system should track multi-factor authentication adoption rate",
+      "description": "The system should track multi-factor authentication adoption rate",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-46",
+      "title": "The system must track permission violation attempts",
+      "description": "The system must track permission violation attempts",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-47",
+      "title": "The system should analyze role effectiveness metrics",
+      "description": "The system should analyze role effectiveness metrics",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-48",
+      "title": "The system should analyze access patterns for anomaly detection",
+      "description": "The system should analyze access patterns for anomaly detection",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-49",
+      "title": "The system must monitor privilege escalation attempts",
+      "description": "The system must monitor privilege escalation attempts",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-50",
+      "title": "The system should identify and report orphaned permissions",
+      "description": "The system should identify and report orphaned permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-51",
+      "title": "The system must ensure audit log completeness",
+      "description": "The system must ensure audit log completeness",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-52",
+      "title": "The system should calculate and report overall compliance score",
+      "description": "The system should calculate and report overall compliance score",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-53",
+      "title": "The system must track and report policy violations",
+      "description": "The system must track and report policy violations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-54",
+      "title": "The system should track security certification status",
+      "description": "The system should track security certification status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-55",
+      "title": "The system should perform continuous risk assessment",
+      "description": "The system should perform continuous risk assessment",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-56",
+      "title": "The system must measure and report authentication latency",
+      "description": "The system must measure and report authentication latency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-57",
+      "title": "The system must measure and report authorization latency",
+      "description": "The system must measure and report authorization latency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-58",
+      "title": "The system must measure JWT token validation speed",
+      "description": "The system must measure JWT token validation speed",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-59",
+      "title": "The system should track permission cache hit rate",
+      "description": "The system should track permission cache hit rate",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-60",
+      "title": "The system must maintain high availability of the authentication system",
+      "description": "The system must maintain high availability of the authentication system",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-61",
+      "title": "The system must undergo regular penetration testing",
+      "description": "The system must undergo regular penetration testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-62",
+      "title": "The system must perform automated vulnerability assessments",
+      "description": "The system must perform automated vulnerability assessments",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-63",
+      "title": "The system must test all authentication methods",
+      "description": "The system must test all authentication methods",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-64",
+      "title": "The system must validate all authorization rules through testing",
+      "description": "The system must validate all authorization rules through testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-65",
+      "title": "The system must test session security",
+      "description": "The system must test session security",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-66",
+      "title": "The system must test all user management functions",
+      "description": "The system must test all user management functions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-67",
+      "title": "The system must test all role management functions",
+      "description": "The system must test all role management functions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-68",
+      "title": "The system must validate all permissions through testing",
+      "description": "The system must validate all permissions through testing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-69",
+      "title": "The system must test API security",
+      "description": "The system must test API security",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-70",
+      "title": "The system must test all system integrations",
+      "description": "The system must test all system integrations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-71",
+      "title": "The system must perform load testing to validate performance under high user load",
+      "description": "The system must perform load testing to validate performance under high user load",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-72",
+      "title": "The system must perform stress testing to validate behavior under system overload",
+      "description": "The system must perform stress testing to validate behavior under system overload",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-73",
+      "title": "The system must perform scalability testing",
+      "description": "The system must perform scalability testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-74",
+      "title": "The system must measure response latency through testing",
+      "description": "The system must measure response latency through testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-75",
+      "title": "The system must test concurrent user scenarios",
+      "description": "The system must test concurrent user scenarios",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-76",
+      "title": "The system must test GDPR compliance",
+      "description": "The system must test GDPR compliance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-77",
+      "title": "The system must validate audit trail functionality",
+      "description": "The system must validate audit trail functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-78",
+      "title": "The system must test data protection controls",
+      "description": "The system must test data protection controls",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-002-79",
+      "title": "The system must test data retention policy enforcement",
+      "description": "The system must test data retention policy enforcement",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003",
+      "title": "The system must undergo regular penetration testing",
+      "description": "The system must undergo regular penetration testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-a",
+      "title": "The system must perform automated vulnerability assessments",
+      "description": "The system must perform automated vulnerability assessments",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-b",
+      "title": "The system must test all authentication methods",
+      "description": "The system must test all authentication methods",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-c",
+      "title": "The system must validate all authorization rules",
+      "description": "The system must validate all authorization rules",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-d",
+      "title": "The system must test session security",
+      "description": "The system must test session security",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-e",
+      "title": "The system must test all user management functions",
+      "description": "The system must test all user management functions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-f",
+      "title": "The system must test role management functionality",
+      "description": "The system must test role management functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-g",
+      "title": "The system must validate all permissions",
+      "description": "The system must validate all permissions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-h",
+      "title": "The system must test API security",
+      "description": "The system must test API security",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-i",
+      "title": "The system must test all system integrations",
+      "description": "The system must test all system integrations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-j",
+      "title": "The system must perform load testing under high user load",
+      "description": "The system must perform load testing under high user load",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-k",
+      "title": "The system must perform stress testing under system overload conditions",
+      "description": "The system must perform stress testing under system overload conditions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-l",
+      "title": "The system must test scalability",
+      "description": "The system must test scalability",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-m",
+      "title": "The system must measure response latency",
+      "description": "The system must measure response latency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-n",
+      "title": "The system must test concurrent user scenarios",
+      "description": "The system must test concurrent user scenarios",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-o",
+      "title": "The system must test GDPR compliance",
+      "description": "The system must test GDPR compliance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-p",
+      "title": "The system must validate audit trail functionality",
+      "description": "The system must validate audit trail functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-q",
+      "title": "The system must test data protection measures",
+      "description": "The system must test data protection measures",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-r",
+      "title": "The system must test data retention policy enforcement",
+      "description": "The system must test data retention policy enforcement",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    },
+    {
+      "requirement_id": "REQ-81f5fb-003-s",
+      "title": "The system must test right to be forgotten functionality",
+      "description": "The system must test right to be forgotten functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "Benutzer_Rollenverwaltung.md"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+sequenceDiagram
+    participant DS as Data Sources
+    participant Ingest as Ingestion Service
+    participant DQ as Data Quality Service
+    participant DL as Data Lake
+    participant FS as Feature Store
+    participant Train as Model Training Pipeline
+    participant Reg as Model Registry
+    participant Deploy as Model Deployment
+    participant Mon as Monitoring & Drift Detection
+    participant FB as Feedback Collector
+
+    DS->>Ingest: Send raw data
+    activate Ingest
+    Ingest->>DQ: Run quality checks
+    activate DQ
+    DQ-->>Ingest: Quality report
+    deactivate DQ
+    Ingest->>DL: Store validated data
+    deactivate Ingest
+
+    DL->>FS: Generate and update features
+    activate FS
+    FS-->>DL: Feature metadata
+    deactivate FS
+
+    FS->>Train: Provide training features
+    activate Train
+    Train->>Reg: Register new model
+    activate Reg
+    Reg-->>Train: Model version ID
+    deactivate Reg
+    Train->>Deploy: Deploy best model
+    deactivate Train
+    activate Deploy
+    Deploy-->>Mon: Emit inference metrics
+    deactivate Deploy
+
+    Mon->>FB: Capture performance feedback
+    activate Mon
+    activate FB
+    FB-->>Mon: Feedback summary
+    deactivate FB
+    Mon->>Train: Trigger retraining on drift
+    deactivate Mon
+    activate Train
+    Train->>Reg: Update model version
+    Reg-->>Train: New model ID
+    deactivate Train

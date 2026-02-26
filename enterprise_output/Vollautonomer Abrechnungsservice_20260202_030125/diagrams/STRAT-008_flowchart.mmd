@@ -1,0 +1,18 @@
+flowchart TD
+    Start([Start]) --> A[Bedarf für Branchenstandards analysieren]
+    A --> B[Stakeholder und Technologieanbieter identifizieren]
+    B --> C{Partnerschaftsstrategie definiert?}
+    C -- Nein --> D[Strategie ausarbeiten]
+    D --> C
+    C -- Ja --> E[Standards-Entwurf erstellen]
+    E --> F[Mit Partnern abstimmen]
+    F --> G{Konsens erreicht?}
+    G -- Nein --> H[Entwurf anpassen]
+    H --> F
+    G -- Ja --> I[Partnerschaften verhandeln]
+    I --> J[Onboarding von Technologieanbietern]
+    J --> K{50+ Anbieter erreicht?}
+    K -- Nein --> L[Weitere Anbieter akquirieren]
+    L --> J
+    K -- Ja --> M[Standards veröffentlichen]
+    M --> End([End])

@@ -1,0 +1,24 @@
+classDiagram
+    class Company {
+        +id
+        +name
+        +applySettings(settings)
+
+    class EnterpriseSettings {
+        +timezone
+        +currency
+        +language
+        +validate()
+
+    class SettingsService {
+        +updateCompanySettings(companyId, settings)
+        +getCompanySettings(companyId)
+
+    class SettingsRepository {
+        +save(settings)
+        +findByCompanyId(companyId)
+
+    Company "1" --> "1" EnterpriseSettings : has
+    SettingsService --> SettingsRepository : uses
+    SettingsService --> Company : updates
+    SettingsService --> EnterpriseSettings : validates

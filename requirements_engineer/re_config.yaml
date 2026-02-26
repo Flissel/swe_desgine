@@ -1,0 +1,644 @@
+# Requirements Engineering System Configuration
+# Based on AI-Scientist-v2 bfts_config.yaml
+
+# Path to the input requirement projects
+data_dir: "re_ideas"
+log_dir: "re_logs"
+workspace_dir: "enterprise_output"
+
+# Whether to copy the data to the workspace directory
+copy_data: true
+
+exp_name: run  # A random experiment name will be generated if not provided
+
+# Stage configuration
+stages:
+  stage1_max_iters: 10   # Discovery
+  stage2_max_iters: 8    # Analysis
+  stage3_max_iters: 12   # Specification
+  stage4_max_iters: 6    # Validation
+  stage5_max_iters: 5    # Presentation (NEW)
+
+# Stage goals
+stage_goals:
+  1: |
+    - Elicit requirements from provided context (user stories, domain docs)
+    - Identify key stakeholders and their needs
+    - Extract functional and non-functional requirements
+    - Generate initial requirements list with priorities
+    - Flag ambiguities and missing information for clarification
+  2: |
+    - Decompose complex requirements into atomic units
+    - Identify dependencies and conflicts between requirements
+    - Classify requirements (functional, non_functional, constraint)
+    - Prioritize using MoSCoW framework
+    - Generate traceability matrix
+  3: |
+    - Formalize each requirement with acceptance criteria
+    - Generate Mermaid diagrams (flowcharts, sequence, class, ER, state, C4)
+    - Create work breakdown structure per Feature/Service/Application
+    - Document technical constraints and assumptions
+    - Produce requirement specification document
+  4: |
+    - Validate requirements for completeness and consistency
+    - Check feasibility against technical constraints
+    - Perform impact analysis for changes
+    - Generate validation report with coverage metrics
+    - Prepare stakeholder review package
+  5: |
+    - Analyze all generated artifacts from previous stages
+    - Identify redundant or duplicate content
+    - Consolidate related items into coherent sections
+    - Generate human-readable HTML pages with navigation
+    - Create executive summary for stakeholders
+    - Ensure all diagrams are properly embedded
+    - Validate internal links and cross-references
+    - Iterate until readability score >= 0.8
+
+# Agent hyperparameters
+agent:
+  type: parallel
+  num_workers: 4
+  steps: 5  # Default iterations per stage
+
+  # LLM settings for requirement generation
+  code:
+    model: openai/gpt-5.2-codex
+    temp: 0.7
+    max_tokens: 30000
+
+  # LLM settings for evaluation/validation
+  feedback:
+    model: google/gemini-3-flash-preview
+    temp: 0.3
+    max_tokens: 16000
+
+  # LLM settings for summarization
+  summary:
+    model: google/gemini-3-flash-preview
+    temp: 0.3
+    max_tokens: 16000
+
+  # Search parameters
+  search:
+    max_debug_depth: 3
+    debug_prob: 0.5
+    num_drafts: 3
+
+# Diagram settings
+diagrams:
+  types:
+    - flowchart
+    - sequenceDiagram
+    - classDiagram
+    - erDiagram
+    - stateDiagram
+    - C4Context
+  output_format: "mmd"  # Mermaid markdown
+  output_dir: "diagrams"
+
+  # Smart selection: LLM decides which diagram types are relevant per requirement
+  # When enabled, reduces diagram count from 6 per requirement to 2-3 relevant ones
+  smart_selection: true
+
+  # Validation settings
+  validation:
+    enabled: true           # Enable syntax validation
+    method: "pattern"       # Validation method: pattern, kroki, mmdc
+    retry_on_error: true    # Retry generation if validation fails
+    max_retries: 2          # Maximum retry attempts
+    skip_invalid: false     # If true, skip invalid diagrams; if false, save anyway
+
+# Kilo Agent settings (for diagram generation)
+kilo_agent:
+  enabled: true
+  model: "openai/gpt-5.2-codex"  # Valid OpenRouter model
+  base_url: "https://openrouter.ai/api/v1"
+  timeout: 300  # Seconds
+  # API key loaded from OPENROUTER_API_KEY environment variable
+
+# Work breakdown settings
+work_breakdown:
+  default_mode: "per_feature"  # per_feature, per_service, per_application
+  supported_modes:
+    - per_feature
+    - per_service
+    - per_application
+
+# Validation thresholds (0.0 - 1.0)
+validation:
+  min_completeness: 0.8
+  min_consistency: 0.9
+  min_testability: 0.75
+  min_clarity: 0.8
+  min_feasibility: 0.75
+  min_traceability: 0.8
+
+# Metric weights for aggregate score
+metric_weights:
+  completeness: 0.20
+  consistency: 0.20
+  testability: 0.15
+  clarity: 0.15
+  feasibility: 0.15
+  traceability: 0.15
+
+# Export settings
+export:
+  format: "markdown"  # markdown, asciidoc, confluence
+  include_diagrams: true
+  generate_traceability: true
+  output_dir: "output"
+
+# Presentation Stage settings (Stage 5)
+presentation:
+  enabled: true
+  output_dir: "presentation"
+  formats:
+    - html
+    - markdown
+  max_pages: 50
+  consolidation:
+    merge_similar_requirements: true
+    group_by_epic: true
+    simplify_diagrams: true
+  quality_thresholds:
+    readability: 0.8
+    completeness: 0.9
+    navigation_depth: 3
+
+  # Project Scaffold Configuration (Phase 2 of Stage 5)
+  scaffold:
+    enabled: true
+    output_dir: "project_scaffold"
+
+    # Structure strategy: auto (LLM decides), feature_based, layer_based, domain_based
+    structure_strategy: "auto"
+
+    # Orchestrator settings (Magentic-One Two-Loop)
+    orchestrator:
+      max_iterations: 4
+      stagnation_threshold: 2
+      max_replans: 2
+      target_quality: 0.85
+
+    # Agent configurations
+    agents:
+      project_scaffold:
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.4
+        max_tokens: 16000
+      scaffold_reviewer:
+        model: "google/gemini-3-flash-preview"
+        temperature: 0.3
+        max_tokens: 8000
+      scaffold_improver:
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.5
+        max_tokens: 12000
+
+    # Quality targets per dimension
+    quality_targets:
+      epic_coverage: 0.95
+      doc_placement: 0.90
+      structure_sanity: 0.85
+      config_completeness: 0.80
+      naming_consistency: 0.90
+
+    # What to generate
+    generate:
+      readme_files: true
+      placeholder_configs: true
+      ci_templates: true
+      adr_templates: true
+
+    # Document placement rules
+    doc_placement:
+      diagrams_to: "docs/diagrams"
+      api_specs_to: "api/"
+      user_stories_to: "docs/epics/{epic_id}/"
+      test_specs_to: "tests/"
+      requirements_to: "docs/requirements/"
+
+  # Screen Design Configuration (Phase 3 of Stage 5)
+  screen_design:
+    enabled: true
+    max_screens: 20                # Gap #10: Increased from 8
+
+    # Orchestrator settings (Magentic-One Two-Loop)
+    orchestrator:
+      max_iterations: 3
+      stagnation_threshold: 2
+      max_replans: 2
+      target_quality: 0.80
+
+    # Agent configurations
+    agents:
+      screen_generator:
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.5
+        max_tokens: 8000
+      screen_reviewer:
+        model: "google/gemini-3-flash-preview"
+        temperature: 0.3
+        max_tokens: 4000
+      screen_improver:
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.4
+        max_tokens: 8000
+
+    # Quality targets per dimension
+    quality_targets:
+      wireframe_quality: 0.80
+      component_coverage: 0.90
+      story_coverage: 0.85
+      layout_coherence: 0.80
+      data_completeness: 0.75
+
+  # Multi-Agent System Configuration (Magentic-One Pattern)
+  multi_agent:
+    enabled: true
+
+    # Orchestrator settings
+    orchestrator:
+      max_iterations: 5          # Maximum improvement iterations
+      stagnation_threshold: 2    # Iterations without improvement before replan
+      max_replans: 3             # Maximum replan attempts
+      target_quality: 0.8        # Target quality score to achieve
+
+    # Agent configurations
+    agents:
+      content_analyzer:
+        enabled: true
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.3
+        description: "Analyzes artifacts from Stages 1-4"
+
+      html_generator:
+        enabled: true
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.5
+        description: "Generates HTML pages from analyzed content"
+
+      html_reviewer:
+        enabled: true
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.3
+        description: "Reviews quality and provides structured feedback"
+        quality_aspects:
+          - structure
+          - content
+          - styling
+          - navigation
+          - accessibility
+
+      html_improver:
+        enabled: true
+        model: "anthropic/claude-opus-4.6"
+        temperature: 0.5
+        description: "Applies improvements based on reviewer feedback"
+        improvement_types:
+          - add_section
+          - enhance_content
+          - fix_structure
+          - add_styling
+          - improve_navigation
+
+      kilo_integration:
+        enabled: true
+        mode: "code"              # architect, code, ask, review
+        timeout: 300              # Seconds
+        description: "Uses Kilo CLI for complex diagram/code generation"
+        use_for:
+          - diagram_generation
+          - code_snippets
+          - complex_transformations
+
+    # LLM settings for all agents (can be overridden per agent)
+    llm:
+      model: "anthropic/claude-3.5-sonnet"
+      base_url: "https://openrouter.ai/api/v1"
+      max_tokens: 16000
+      # API key loaded from OPENROUTER_API_KEY environment variable
+
+    # Quality targets per aspect (used by reviewer)
+    quality_targets:
+      structure: 0.8
+      content: 0.8
+      styling: 0.7
+      navigation: 0.8
+      accessibility: 0.7
+      overall: 0.75
+
+    # Improvement handling
+    improvements:
+      max_per_iteration: 5       # Max improvements to apply per iteration
+      batch_mode: true           # Apply multiple improvements at once
+      validate_after_each: true  # Validate quality after each improvement
+
+# Requirement ID format
+requirement_id:
+  prefix: "REQ"
+  separator: "-"
+  padding: 3  # REQ-001, REQ-002, etc.
+
+# Priority framework
+priority:
+  framework: "moscow"  # moscow, high_medium_low, numeric
+  values:
+    - must
+    - should
+    - could
+    - wont
+
+# Requirement types
+requirement_types:
+  - functional
+  - non_functional
+  - constraint
+  - assumption
+  - dependency
+
+# ============================================================================
+# GENERATOR CONFIGURATIONS
+# All generators use these settings instead of hardcoded defaults
+# ============================================================================
+generators:
+  # User Story Generator (generators/user_story_generator.py)
+  user_story:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.7
+    max_tokens: 8000
+
+  # API Spec Generator (generators/api_spec_generator.py)
+  api_spec:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.5
+    max_tokens: 8000
+    include_error_schemas: true    # Gap #1: ErrorResponse schema
+    include_pagination: true       # Gap #16: PaginationMeta wrapper
+
+  # Data Dictionary Generator (generators/data_dictionary_generator.py)
+  data_dictionary:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.5
+    max_tokens: 8000
+    enforce_audit_fields: true     # Gap #17: created_at/updated_at
+    enforce_snake_case: true       # Gap #19: snake_case naming
+    generate_junction_tables: true # Gap #3: N:M pivot tables
+
+  # Test Case Generator (generators/test_case_generator.py)
+  test_case:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.5
+    max_tokens: 8000
+
+  # UX Design Generator (generators/ux_design_generator.py)
+  ux_design:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.6
+    max_tokens: 8000
+
+  # UI Design Generator (generators/ui_design_generator.py)
+  ui_design:
+    model: "openai/gpt-5.2-codex"
+    screen_model: "anthropic/claude-opus-4.6"  # Opus 4.6 für Screen-Generierung mit ASCII Wireframes
+    temperature: 0.6
+    max_tokens: 8000
+    max_screens: 20                # Gap #10: Increased from 8
+    diversify_screens: true        # Gap #10: Category-based story diversification
+    include_navigation: true       # Gap #12: Global navigation map
+    include_state_bindings: true   # Gap #11: State-to-component bindings
+
+  # Tech Stack Generator (generators/tech_stack_generator.py)
+  tech_stack:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.5
+    max_tokens: 4000
+    pin_versions: true             # Gap #14: Specific version numbers
+
+  # Realtime Spec Generator (generators/realtime_spec_generator.py)
+  realtime_spec:
+    enabled: true                  # Gap #13: AsyncAPI 2.6 for WebSocket
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.5
+    max_tokens: 6000
+
+  # Task Generator (generators/task_generator.py)
+  task:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.5
+    max_tokens: 8000
+
+  # Architecture Generator (generators/architecture_generator.py)
+  architecture:
+    enabled: true
+    model: "anthropic/claude-sonnet-4"
+    temperature: 0.5
+    max_tokens: 8000
+    max_services: 15
+
+  # State Machine Generator (generators/state_machine_generator.py)
+  state_machine:
+    enabled: true
+    model: "anthropic/claude-sonnet-4"
+    temperature: 0.4
+    max_tokens: 6000
+
+  # Component Composition Generator (generators/component_composition_generator.py)
+  component_composition:
+    enabled: true
+    model: "anthropic/claude-sonnet-4"
+    temperature: 0.5
+    max_tokens: 6000
+
+  # Config & Environment Generator (generators/config_generator.py)
+  config_env:
+    enabled: true           # Programmatic, no LLM needed
+
+  # Test Data Factory Generator (generators/test_factory_generator.py)
+  test_factory:
+    enabled: true           # Programmatic, no LLM needed
+
+  # Layout Orchestrator (generators/layout_orchestrator.py)
+  layout:
+    model: "anthropic/claude-sonnet-4"
+    temperature: 0.5
+    max_tokens: 16000
+
+# ============================================================================
+# CORE COMPONENT CONFIGURATIONS
+# ============================================================================
+core:
+  # Draft Engine (core/re_draft_engine.py)
+  draft_engine:
+    model: "openai/gpt-5.2-codex"
+    temperature: 0.7
+    max_tokens: 8000
+
+  # Improver (core/re_improver.py)
+  improver:
+    model: "google/gemini-3-flash-preview"
+    temperature: 0.3
+    max_tokens: 8000
+
+# Self-Critique (critique/self_critique.py)
+critique:
+  model: "google/gemini-3-flash-preview"
+  temperature: 0.3
+  max_tokens: 8000
+
+# Propagation/Analysis (propagation/llm_analyzer.py)
+propagation:
+  llm_analyzer:
+    model: "anthropic/claude-haiku-4.5"
+    temperature: 0.3
+    max_tokens: 4000
+
+# Diagram Generation (diagrams/kilo_diagram_generator.py)
+# Note: Also uses kilo_agent settings above for Kilo CLI
+diagram_generator:
+  model: "openai/gpt-5.2-codex"
+  temperature: 0.5
+  max_tokens: 4000
+
+# Dashboard Server (dashboard/server.py)
+dashboard:
+  model: "anthropic/claude-haiku-4.5"
+  temperature: 0.3
+  max_tokens: 4000
+
+# Importers (importers/arch_team_importer.py)
+importers:
+  arch_team:
+    model: "anthropic/claude-haiku-4.5"
+    temperature: 0.3
+    max_tokens: 4000
+
+# ============================================================================
+# WIZARD AGENT CONFIGURATION
+# AutoGen SocietyOfMind teams for auto-generating wizard metadata
+# ============================================================================
+wizard:
+  agents:
+    enabled: true
+    stakeholder_team:
+      model: "google/gemini-3-flash-preview"
+      temperature: 0.5
+    context_enricher:
+      model: "google/gemini-3-flash-preview"
+      temperature: 0.4
+    requirement_gap_team:
+      model: "anthropic/claude-opus-4.6"
+      temperature: 0.4
+    constraint_team:
+      model: "google/gemini-3-flash-preview"
+      temperature: 0.3
+  thresholds:
+    auto_apply: 0.85
+    user_review: 0.50
+  queue:
+    max_pending: 50
+  max_iterations:
+    stakeholder_team: 6
+    requirement_gap_team: 8
+    constraint_team: 6
+
+# ============================================================================
+# COST TRACKING CONFIGURATION
+# Tracks all LLM calls and calculates costs
+# ============================================================================
+cost_tracking:
+  enabled: true
+  log_file: "llm_costs.jsonl"
+  log_every_call: true
+  summary_at_end: true
+
+  # Prices per 1M tokens [input_price, output_price] in USD
+  pricing:
+    "openai/gpt-5.2-codex": [2.50, 10.00]
+    "openai/gpt-4o": [2.50, 10.00]
+    "openai/gpt-4o-mini": [0.15, 0.60]
+    "anthropic/claude-opus-4.6": [5.00, 25.00]
+    "anthropic/claude-sonnet-4": [3.00, 15.00]
+    "anthropic/claude-3.5-sonnet": [3.00, 15.00]
+    "anthropic/claude-haiku-4.5": [0.25, 1.25]
+    "google/gemini-3-flash-preview": [0.10, 0.40]
+    "google/gemini-2.0-flash": [0.10, 0.40]
+
+# ============================================================================
+# ERROR HANDLING CONFIGURATION
+# ============================================================================
+error_handling:
+  max_retries: 3
+  retry_delay_seconds: 2
+  fallback_model: "openai/gpt-4o-mini"
+
+# ============================================================================
+# PERFORMANCE CONFIGURATION
+# ============================================================================
+performance:
+  max_concurrent_agents: 3
+  stage_timeout_seconds: 600
+  llm_timeout_seconds: 120
+
+# ============================================================================
+# INPUT VALIDATION CONFIGURATION
+# ============================================================================
+input_validation:
+  max_description_length: 10000
+  required_fields:
+    - "Name"
+    - "Description"
+  min_features: 1
+
+# ============================================================================
+# QUALITY GATES PER STAGE
+# Central thresholds used by all stages and evaluators
+# ============================================================================
+quality_gates:
+  stage_1_min_requirements: 3
+  stage_2_min_classified: 0.8
+  stage_3_min_acceptance_criteria: 1
+  stage_4_min_quality_score: 0.7
+  stage_5_min_pages: 2
+
+# ============================================================================
+# ITERATIVE TRACE REFINEMENT (Tree Search)
+# Applies AI-Scientist BFTS approach to documentation pipeline.
+# Walks each epic's trace tree (Epic → Req → Story → Test) depth-first,
+# evaluating and refining each node relative to its parent.
+# ============================================================================
+treesearch:
+  enabled: true    # Iterative trace refinement at step 8.5 (BFTS approach)
+  quality_threshold: 0.80
+  debug_threshold: 0.40
+  max_iterations_per_node: 3
+  max_total_llm_calls: 50
+
+  requirement:
+    quality_threshold: 0.85
+    max_iterations: 3
+  user_story:
+    quality_threshold: 0.80
+    max_iterations: 3
+  test_case:
+    quality_threshold: 0.75
+    max_iterations: 2
+
+  eval_weights:
+    requirement:
+      scope_coverage: 0.30
+      clarity: 0.20
+      feasibility: 0.20
+      acceptance_quality: 0.30
+    user_story:
+      criteria_coverage: 0.35
+      persona_fit: 0.15
+      action_completeness: 0.20
+      testability: 0.30
+    test_case:
+      criteria_verification: 0.35
+      step_completeness: 0.25
+      boundary_coverage: 0.20
+      negative_paths: 0.20

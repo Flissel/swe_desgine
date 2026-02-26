@@ -1,0 +1,72 @@
+erDiagram
+    DATA_SOURCE ||--o{ DATASET : provides
+    DATASET ||--o{ DATA_INGESTION : ingested_by
+    DATASET ||--o{ DATA_QUALITY_CHECK : checked_by
+    DATA_QUALITY_CHECK ||--o{ QUALITY_ISSUE : detects
+    MODEL ||--o{ MODEL_VERSION : has
+    MODEL_VERSION ||--o{ TRAINING_RUN : trained_by
+    TRAINING_RUN ||--o{ MODEL_METRIC : produces
+    OPTIMIZATION_CYCLE ||--o{ TRAINING_RUN : includes
+    OPTIMIZATION_CYCLE ||--o{ DATA_QUALITY_CHECK : triggers
+
+    DATA_SOURCE {
+        string source_id PK
+        string name
+        string type
+        string owner
+
+    DATASET {
+        string dataset_id PK
+        string source_id FK
+        string name
+        string schema_version
+
+    DATA_INGESTION {
+        string ingestion_id PK
+        string dataset_id FK
+        string ingestion_time
+        string status
+
+    DATA_QUALITY_CHECK {
+        string check_id PK
+        string dataset_id FK
+        string check_type
+        string executed_at
+        string status
+
+    QUALITY_ISSUE {
+        string issue_id PK
+        string check_id FK
+        string severity
+        string description
+        string detected_at
+
+    MODEL {
+        string model_id PK
+        string name
+        string purpose
+
+    MODEL_VERSION {
+        string version_id PK
+        string model_id FK
+        string version_label
+        string created_at
+
+    TRAINING_RUN {
+        string run_id PK
+        string version_id FK
+        string dataset_id FK
+        string started_at
+        string status
+
+    MODEL_METRIC {
+        string metric_id PK
+        string run_id FK
+        string name
+        string value
+
+    OPTIMIZATION_CYCLE {
+        string cycle_id PK
+        string goal
+        string started_at
+        string status

@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant Bank as Bank
+    participant Agent as Zahlungsreconciliation-Agent
+    participant Parser as BankTransactionParser
+    participant Matcher as PaymentMatcher
+    participant Accounting as AccountingSystemConnector
+    participant InvoiceSystem as Invoice System
+
+    Bank->>Agent: Incoming payment data
+    activate Agent
+    Agent->>Parser: Parse bank transactions
+    activate Parser
+    Parser-->>Agent: Parsed transactions
+    deactivate Parser
+    Agent->>Matcher: Match transactions to invoices
+    activate Matcher
+    Matcher->>InvoiceSystem: Query open invoices
+    activate InvoiceSystem
+    InvoiceSystem-->>Matcher: Open invoices
+    deactivate InvoiceSystem
+    Matcher-->>Agent: Matched invoice/payment pairs
+    deactivate Matcher
+    Agent->>Accounting: Propose accounting entry
+    activate Accounting
+    Accounting-->>Agent: Entry proposal result
+    deactivate Accounting
+    Agent->>InvoiceSystem: Update invoice status
+    activate InvoiceSystem
+    InvoiceSystem-->>Agent: Status updated
+    deactivate InvoiceSystem
+    deactivate Agent

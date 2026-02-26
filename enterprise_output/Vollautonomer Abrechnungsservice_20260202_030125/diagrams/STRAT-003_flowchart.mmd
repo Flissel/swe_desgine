@@ -1,0 +1,22 @@
+flowchart TD
+    Start([Start]) --> A[Event-Quelle registriert Ereignis]
+    A --> B[Event-Bus empfängt Event]
+    B --> C{Validierung & Schema-Check erfolgreich?}
+    C -- Nein --> D[Fehlerbehandlung & Alerting]
+    D --> E{Retry möglich?}
+    E -- Ja --> B
+    E -- Nein --> End([End])
+    C -- Ja --> F[Persistenz im Event Store]
+    F --> G[Publish an Streaming-Plattform]
+    G --> H[Autonome Entscheidungs-Engine konsumiert Event]
+    H --> I{Entscheidung erforderlich?}
+    I -- Nein --> J[No-Op / Monitoring-Update]
+    J --> K[Audit-Log schreiben]
+    K --> End([End])
+    I -- Ja --> L[Entscheidung berechnen]
+    L --> M{Sicherheits- & Policy-Checks bestanden?}
+    M -- Nein --> N[Entscheidung verwerfen & Alerting]
+    N --> K
+    M -- Ja --> O[Aktion ausführen]
+    O --> P[Resultat-Event erzeugen]
+    P --> B

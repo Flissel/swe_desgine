@@ -1,0 +1,19 @@
+flowchart TD
+    Start([Start: Automatische Rechnungsstellung nach POD-Validierung])
+    S1[System empfängt Abschluss der POD-Validierung für einen Auftrag]
+    Start --> S1
+    S2{System prüft, ob alle abrechnungsrelevanten Pflichtdaten vorhanden sind}
+    S1 --> S2
+    E2[/Fehlende Pflichtdaten werden erkannt/]
+    S2 -.-> E2
+    S3{System prüft, ob bereits eine Rechnung für den Auftrag existiert}
+    S2 --> S3
+    E3[/Rechnung existiert bereits/]
+    S3 -.-> E3
+    S4[System erzeugt automatisch eine Rechnung]
+    S3 --> S4
+    E4[/Erzeugung schlägt fehl (Systemfehler)/]
+    S4 -.-> E4
+    S5[System protokolliert die erfolgreiche Erstellung und stellt Rechnung im Auftragskontext bereit]
+    S4 --> S5
+    S5 --> End([End])

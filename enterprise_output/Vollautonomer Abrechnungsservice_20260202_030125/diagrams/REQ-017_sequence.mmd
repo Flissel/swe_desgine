@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant User
+    participant UI as WebApp
+    participant API as Settings API
+    participant DB as Database
+
+    User->>UI: Open company settings
+    activate UI
+    UI->>API: GET /company/settings
+    activate API
+    API->>DB: Query current settings
+    activate DB
+    DB-->>API: Settings data
+    deactivate DB
+    API-->>UI: 200 OK + settings
+    deactivate API
+    UI-->>User: Display settings form
+    deactivate UI
+
+    User->>UI: Update settings and submit
+    activate UI
+    UI->>API: PUT /company/settings (updated data)
+    activate API
+    API->>DB: Validate & persist settings
+    activate DB
+    DB-->>API: Save success
+    deactivate DB
+    API-->>UI: 200 OK
+    deactivate API
+    UI-->>User: Show success confirmation
+    deactivate UI

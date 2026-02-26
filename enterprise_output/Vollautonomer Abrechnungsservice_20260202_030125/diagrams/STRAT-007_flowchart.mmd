@@ -1,0 +1,20 @@
+flowchart TD
+    Start([Start]) --> S1[Datenerfassung]
+    S1 --> S2[Datenvorverarbeitung]
+    S2 --> S3[Automatisierte Datenqualitätsprüfung]
+    S3 --> D1{Qualität OK?}
+    D1 -- Nein --> S4[Fehleranalyse & Bereinigung]
+    S4 --> S3
+    D1 -- Ja --> S5[Feature Engineering]
+    S5 --> S6[Modelltraining]
+    S6 --> S7[Modellvalidierung]
+    S7 --> D2{Leistungsziele erreicht?}
+    D2 -- Nein --> S8[Hyperparameter-Optimierung]
+    S8 --> S6
+    D2 -- Ja --> S9[Deployment]
+    S9 --> S10[Monitoring von Daten & Modellleistung]
+    S10 --> D3{Daten-Drift oder Performance-Abfall?}
+    D3 -- Ja --> S1
+    D3 -- Nein --> S11[Kontinuierliches Lernen fortsetzen]
+    S11 --> S10
+    S10 --> End([End])

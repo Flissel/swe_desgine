@@ -1,0 +1,58 @@
+sequenceDiagram
+    actor Operator as Operator
+    participant Vehicle as Autonomes System
+    participant Gateway as Zero-Trust Gateway
+    participant IAM as Identity & Access Service
+    participant Policy as Policy Engine
+    participant AI as KI-Bedrohungserkennung
+    participant SIEM as Security Orchestration/Response
+    participant Repo as Threat Intelligence
+
+    Operator->>Vehicle: Missionsauftrag senden
+    activate Vehicle
+    Vehicle->>Gateway: Zugriff anfordern (mTLS, Device Attestation)
+    activate Gateway
+    Gateway->>IAM: Identität prüfen (Zertifikat, Token)
+    activate IAM
+    IAM-->>Gateway: Identität bestätigt
+    deactivate IAM
+    Gateway->>Policy: Kontext anfordern (Rolle, Risiko, Standort)
+    activate Policy
+    Policy->>AI: Risikoanalyse anfordern
+    activate AI
+    AI->>Repo: Threat Intelligence abrufen
+    activate Repo
+    Repo-->>AI: Aktuelle Bedrohungen
+    deactivate Repo
+    AI-->>Policy: Risikowert & Empfehlung
+    deactivate AI
+    Policy-->>Gateway: Policy-Entscheidung (Allow/Step-up/Deny)
+    deactivate Policy
+
+    alt Erlaubt
+        Gateway-->>Vehicle: Zugriff gewähren (Session Token)
+        deactivate Gateway
+        Vehicle->>AI: Telemetrie & Ereignisse streamen
+        activate AI
+        AI->>SIEM: Anomalie erkannt (Alert)
+        activate SIEM
+        SIEM->>Gateway: Reaktion anstoßen (Isolation/Revocation)
+        activate Gateway
+        Gateway-->>Vehicle: Zugriff entziehen / Quarantäne
+        deactivate Gateway
+        SIEM-->>Operator: Sicherheitsvorfall melden
+        deactivate SIEM
+        deactivate AI
+    else Step-up erforderlich
+        Gateway-->>Vehicle: Zusätzliche Authentifizierung anfordern
+        deactivate Gateway
+        Vehicle-->>Gateway: MFA/Attestation nachreichen
+        activate Gateway
+        Gateway-->>Vehicle: Zugriff gewähren
+        deactivate Gateway
+    else Verweigert
+        Gateway-->>Vehicle: Zugriff verweigern
+        deactivate Gateway
+    end
+
+    deactivate Vehicle

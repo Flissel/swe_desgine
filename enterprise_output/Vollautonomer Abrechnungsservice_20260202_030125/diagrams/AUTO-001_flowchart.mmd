@@ -1,0 +1,14 @@
+flowchart TD
+    Start([Start]) --> Trigger[Automatischer Trigger: Auftrag abgeschlossen]
+    Trigger --> DataAgent[Agent: Kundendaten & Leistungsdaten sammeln]
+    DataAgent --> Validate{Daten vollständig?}
+    Validate -- Nein --> RequestAgent[Agent: Fehlende Daten anfordern]
+    RequestAgent --> DataAgent
+    Validate -- Ja --> CalcAgent[Agent: Beträge & Steuern berechnen]
+    CalcAgent --> InvoiceAgent[Agent: Rechnung erstellen]
+    InvoiceAgent --> Compliance{Prüfung: Richtlinien & Formate ok?}
+    Compliance -- Nein --> FixAgent[Agent: Korrekturen anwenden]
+    FixAgent --> InvoiceAgent
+    Compliance -- Ja --> SendAgent[Agent: Rechnung versenden]
+    SendAgent --> Archive[Agent: Rechnung archivieren & protokollieren]
+    Archive --> End([End])

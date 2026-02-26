@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> AwaitingPOD
+    AwaitingPOD --> PODValidated : POD validiert
+    PODValidated --> InvoiceGenerating : automatische Fakturierung starten
+    InvoiceGenerating --> InvoiceGenerated : Rechnung erstellt
+    InvoiceGenerating --> InvoiceFailed : Fehler bei Generierung
+    InvoiceFailed --> InvoiceGenerating : Wiederholen
+    InvoiceGenerated --> [*]

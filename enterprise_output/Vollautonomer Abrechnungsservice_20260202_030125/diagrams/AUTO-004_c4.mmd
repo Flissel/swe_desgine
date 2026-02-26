@@ -1,0 +1,21 @@
+C4Context
+    title System Context - AUTO-004 Monitoring-Dashboard
+    Person(manager, "Manager", "Überwacht KPIs und Workflows in Echtzeit")
+    Person(analyst, "Analyst", "Analysiert Leistung und Trends")
+    Person(admin, "Administrator", "Verwaltet Zugriffe und Konfiguration")
+
+    System(dashboard, "Monitoring-Dashboard", "Echtzeit-Überwachung von Workflows, KPIs und Agenten-Leistung")
+
+    System_Ext(workflow, "Workflow Engine", "Liefert Workflow-Status und Ereignisse")
+    System_Ext(kpi, "KPI Data Source", "Stellt KPI-Metriken bereit")
+    System_Ext(agentperf, "Agent Performance Service", "Stellt Agenten-Leistungsdaten bereit")
+    System_Ext(auth, "Identity Provider", "Authentifizierung und Autorisierung")
+
+    Rel(manager, dashboard, "Nutzt zur Überwachung")
+    Rel(analyst, dashboard, "Nutzt zur Analyse")
+    Rel(admin, dashboard, "Verwaltet")
+
+    Rel(dashboard, workflow, "Bezieht Workflow-Daten aus")
+    Rel(dashboard, kpi, "Bezieht KPI-Daten aus")
+    Rel(dashboard, agentperf, "Bezieht Leistungsdaten aus")
+    Rel(dashboard, auth, "Authentifiziert Benutzer über")

@@ -1,0 +1,9 @@
+flowchart TD
+    Start([Start]) --> OpenSettings[Öffne Unternehmenseinstellungen]
+    OpenSettings --> EditSettings[Ändere Einstellungen]
+    EditSettings --> Validate{Eingaben gültig?}
+    Validate -->|Nein| ShowError[Fehler anzeigen & Korrektur anfordern]
+    ShowError --> EditSettings
+    Validate -->|Ja| SaveSettings[Einstellungen speichern]
+    SaveSettings --> ConfirmUpdate[Aktualisierung bestätigen]
+    ConfirmUpdate --> End([End])

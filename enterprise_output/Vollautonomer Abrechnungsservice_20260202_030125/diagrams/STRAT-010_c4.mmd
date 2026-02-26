@@ -1,0 +1,17 @@
+C4Context
+    title STRAT-010: Quantum-Readiness für zukünftige Skalierung
+    Person(cto, "CTO", "Strategische Ausrichtung und Governance")
+    Person(security, "Security Officer", "Geopolitische Risikoabsicherung")
+    Person(architect, "Systemarchitekt", "Zielarchitektur und Skalierung")
+    System(main, "Quantum-Ready Plattform", "Architektur für Quantum-Computing-Anwendungen und Risikoabsicherung")
+    System_Ext(qcloud, "Quantum Cloud Provider", "Externe Quantum-Computing-APIs")
+    System_Ext(riskintel, "Geo-Political Risk Intelligence API", "Risiko- und Sanktionsdaten")
+    System_Ext(crypto, "Post-Quantum Krypto Service", "Schlüsselmanagement und PQC-Algorithmen")
+    System_Ext(registry, "Compliance Registry", "Regulatorische Vorgaben und Standards")
+    Rel(cto, main, "Steuert und überwacht")
+    Rel(security, main, "Bewertet Risiken")
+    Rel(architect, main, "Definiert Architektur")
+    Rel(main, qcloud, "Nutzt", "API")
+    Rel(main, riskintel, "Bezieht Daten", "API")
+    Rel(main, crypto, "Integriert", "API")
+    Rel(main, registry, "Prüft Compliance", "API")

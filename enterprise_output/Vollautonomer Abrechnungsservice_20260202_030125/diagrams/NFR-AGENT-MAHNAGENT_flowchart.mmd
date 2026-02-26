@@ -1,0 +1,17 @@
+flowchart TD
+    Start([Start]) --> A[Überfällige Rechnung erkennen]
+    A --> B{Rechnung überfällig?}
+    B -- Nein --> End([End])
+    B -- Ja --> C[Mahnstufe bestimmen
+(DunningLevelCalculator)]
+    C --> D[Mahnschreiben erstellen
+(DunningLetterGenerator)]
+    D --> E[Kosten berechnen
+(CostCalculator)]
+    E --> F[Mahnschreiben versenden]
+    F --> G{Zahlung nach Versand?}
+    G -- Ja --> End([End])
+    G -- Nein --> H{Letzte Mahnstufe erreicht?}
+    H -- Nein --> C
+    H -- Ja --> I[Inkassovorbereitung]
+    I --> End([End])

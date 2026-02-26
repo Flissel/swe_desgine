@@ -1,0 +1,20 @@
+flowchart TD
+    Start([Start]) --> Assess[Assess Quantum-Readiness Goals]
+    Assess --> DefineScope[Define Target Use Cases & Scale Horizon]
+    DefineScope --> GeoRisk[Evaluate Geopolitical Risks]
+    GeoRisk --> DecisionRisk{Risks Acceptable?}
+    DecisionRisk -->|No| Mitigation[Design Risk Mitigation Strategy]
+    Mitigation --> UpdateScope[Update Architecture Constraints]
+    UpdateScope --> QuantumArch[Design Quantum-Ready Architecture]
+    DecisionRisk -->|Yes| QuantumArch[Design Quantum-Ready Architecture]
+    QuantumArch --> Integration[Plan Hybrid Integration & Interoperability]
+    Integration --> DecisionStandards{Standards & Compliance Met?}
+    DecisionStandards -->|No| Align[Align with Standards & Policies]
+    Align --> Integration
+    DecisionStandards -->|Yes| Roadmap[Create Scaling & Migration Roadmap]
+    Roadmap --> DecisionFeasible{Feasible & Funded?}
+    DecisionFeasible -->|No| Revise[Revise Roadmap & Business Case]
+    Revise --> Roadmap
+    DecisionFeasible -->|Yes| Implement[Implement Phased Quantum-Ready Capabilities]
+    Implement --> Monitor[Monitor Tech Maturity & Geopolitical Signals]
+    Monitor --> End([End])

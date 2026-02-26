@@ -1,0 +1,87 @@
+erDiagram
+    Invoice {
+uuid invoice_id
+string status
+date generated_at
+    }
+    PODValidation {
+uuid pod_validation_id
+boolean validated
+date validated_at
+    }
+    Agent {
+uuid agent_id
+string agent_type
+string specialization
+    }
+    Workflow {
+uuid workflow_id
+string workflow_type
+string complexity
+    }
+    CompliancePolicy {
+uuid policy_id
+string regulation
+boolean active
+    }
+    Company {
+uuid company_id
+string company_name
+string tax_id
+string vat_number
+string address
+string contact_details
+    }
+    CompanySettings {
+uuid settings_id
+string default_payment_terms
+boolean multi_entity_support
+boolean international_address_formats
+boolean automated_tax_validation
+    }
+    BankAccount {
+uuid bank_account_id
+string bank_name
+string account_holder
+string iban
+string bic
+string account_type
+string currency
+    }
+    Customer {
+uuid customer_id
+string name
+string email
+    }
+    UserProfile {
+uuid user_id
+string user_role
+string notification_preferences
+string dashboard_customization
+string language_settings
+string security_settings
+    }
+    Payment {
+uuid payment_id
+uuid invoice_id
+date payment_date
+decimal amount
+string status
+    }
+    DunningCase {
+uuid dunning_case_id
+uuid invoice_id
+integer dunning_level
+decimal fees
+string status
+    }
+    PODValidation ||--o{ Invoice : "triggers"
+    Workflow ||--o{ Agent : "assigned_to"
+    Workflow ||--o{ Invoice : "produces"
+    CompliancePolicy ||--o{ Workflow : "governs"
+    Company ||--|| CompanySettings : "has"
+    Company ||--o{ BankAccount : "owns"
+    Company ||--o{ Customer : "manages"
+    Customer ||--o{ Invoice : "billed_for"
+    Invoice ||--o{ Payment : "settled_by"
+    Invoice ||--o{ DunningCase : "dunning_for"

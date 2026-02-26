@@ -1,0 +1,14 @@
+C4Context
+    title Frontend: Database Design - System Context
+    Person(designer, "Database Designer", "Creates and edits database models")
+    Person(admin, "Administrator", "Manages access and configuration")
+    System(system, "Frontend: Database Design", "Frontend component for database design")
+    System_Ext(backend, "Backend API", "Provides data persistence and business logic")
+    System_Ext(auth, "Authentication Service", "Handles user authentication and authorization")
+    System_Ext(db, "Database", "Stores design artifacts and metadata")
+
+    Rel(designer, system, "Designs databases")
+    Rel(admin, system, "Administers and configures")
+    Rel(system, backend, "Reads/Writes design data")
+    Rel(system, auth, "Authenticates users")
+    Rel(backend, db, "Persists data")

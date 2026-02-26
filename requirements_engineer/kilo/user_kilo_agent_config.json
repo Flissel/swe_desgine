@@ -1,0 +1,46 @@
+{
+  "description": "Konfigurationsdatei für User Kilo Agent",
+  "version": "1.0",
+  "model": {
+    "name": "z-ai/glm-4.7:free",
+    "api_key": null,
+    "base_url": "https://openrouter.ai/api/v1",
+    "timeout": 300
+  },
+  "workspace": {
+    "directory": "./kilo_workspace",
+    "save_results": true,
+    "result_format": "json"
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "description": "Kilo-Hilfe anzeigen",
+      "task": "Zeige mir die Hilfe für Kilo",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "description": "Kilo-Version prüfen",
+      "task": "Zeige mir die Version von Kilo",
+      "priority": "high"
+    },
+    {
+      "id": 3,
+      "description": "Kilo-Funktionalität erkunden",
+      "task": "Was kann Kilo tun und welche Parameter werden unterstützt?",
+      "priority": "medium"
+    }
+  ],
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "file": "kilo_agent.log"
+  },
+  "advanced": {
+    "max_retries": 3,
+    "retry_delay": 5,
+    "parallel_execution": false,
+    "error_handling": "continue"
+  }
+}

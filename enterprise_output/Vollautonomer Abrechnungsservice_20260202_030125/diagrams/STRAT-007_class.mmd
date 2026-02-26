@@ -1,0 +1,50 @@
+classDiagram
+    class DataPipeline {
+        +id: String
+        +status: String
+        +ingestData(source: String): void
+        +processData(batchId: String): void
+
+    class DataQualityManager {
+        +rulesetId: String
+        +qualityScore: float
+        +validateData(batchId: String): boolean
+        +generateReport(batchId: String): String
+
+    class ModelTrainer {
+        +modelId: String
+        +version: String
+        +trainModel(datasetId: String): void
+        +evaluateModel(datasetId: String): float
+
+    class MonitoringService {
+        +metricId: String
+        +alertThreshold: float
+        +trackMetrics(modelId: String): void
+        +raiseAlert(metricName: String): void
+
+    class DataStore {
+        +storeId: String
+        +location: String
+        +saveDataset(datasetId: String): void
+        +loadDataset(datasetId: String): String
+
+    class ModelRegistry {
+        +registryId: String
+        +activeModel: String
+        +registerModel(modelId: String): void
+        +promoteModel(modelId: String): void
+
+    class FeedbackLoop {
+        +feedbackId: String
+        +signalStrength: float
+        +collectFeedback(source: String): void
+        +updateRules(rulesetId: String): void
+
+    DataPipeline --> DataStore : stores
+    DataPipeline --> DataQualityManager : validates
+    DataQualityManager --> FeedbackLoop : informs
+    DataStore --> ModelTrainer : provides
+    ModelTrainer --> ModelRegistry : registers
+    ModelRegistry --> MonitoringService : monitors
+    MonitoringService --> FeedbackLoop : triggers

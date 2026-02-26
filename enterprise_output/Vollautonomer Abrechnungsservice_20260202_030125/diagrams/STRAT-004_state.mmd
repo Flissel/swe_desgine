@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> DataCollection : init
+    DataCollection --> ModelDecision : data_ready
+    ModelDecision --> BiasDetection : decision_made
+    BiasDetection --> EthicsReview : bias_checked
+    BiasDetection --> Mitigation : bias_detected
+    Mitigation --> BiasDetection : mitigation_applied
+    EthicsReview --> TransparencyReport : ethics_passed
+    EthicsReview --> Mitigation : ethics_failed
+    TransparencyReport --> DecisionApproved : report_published
+    DecisionApproved --> [*] : complete

@@ -1,0 +1,50 @@
+erDiagram
+    ORGANIZATION ||--o{ EMPLOYEE : employs
+    ORGANIZATION ||--o{ CULTURE_CHANGE : drives
+    CULTURE_CHANGE ||--o{ ROLE_PROFILE : defines
+    EMPLOYEE }o--|| ROLE_PROFILE : assigned
+    ROLE_PROFILE ||--o{ TRAINING : requires
+    AI_MODEL ||--o{ DECISION : supports
+    EMPLOYEE ||--o{ DECISION : makes
+    TRAINING }o--|| EMPLOYEE : completed_by
+
+    ORGANIZATION {
+        string organization_id PK
+        string name
+
+    EMPLOYEE {
+        string employee_id PK
+        string organization_id FK
+        string role_profile_id FK
+        string full_name
+
+    CULTURE_CHANGE {
+        string culture_change_id PK
+        string organization_id FK
+        string initiative_name
+        string start_date
+
+    ROLE_PROFILE {
+        string role_profile_id PK
+        string culture_change_id FK
+        string title
+        string ai_responsibilities
+
+    TRAINING {
+        string training_id PK
+        string role_profile_id FK
+        string employee_id FK
+        string topic
+        string completion_date
+
+    AI_MODEL {
+        string ai_model_id PK
+        string model_name
+        string purpose
+
+    DECISION {
+        string decision_id PK
+        string employee_id FK
+        string ai_model_id FK
+        string decision_type
+        string decision_date

@@ -1,0 +1,21 @@
+stateDiagram-v2
+    [*] --> CompanySettingsOverview
+
+    CompanySettingsOverview --> SelectEntity : select_entity
+    SelectEntity --> CompanySettingsOverview : entity_selected
+
+    CompanySettingsOverview --> ViewCompanyData : open_company_settings
+    ViewCompanyData --> EditCompanyData : edit_fields
+    EditCompanyData --> ValidateTaxData : submit_changes
+    ValidateTaxData --> SaveSettings : tax_valid
+    ValidateTaxData --> ValidationError : tax_invalid
+    ValidationError --> EditCompanyData : correct_data
+
+    EditCompanyData --> EnterInternationalAddress : change_country
+    EnterInternationalAddress --> EditCompanyData : address_saved
+
+    SaveSettings --> CompanySettingsOverview : save_success
+    SaveSettings --> SaveError : save_failed
+    SaveError --> EditCompanyData : retry_save
+
+    CompanySettingsOverview --> [*] : exit

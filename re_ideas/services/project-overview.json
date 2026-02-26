@@ -1,0 +1,555 @@
+{
+  "Name": "project-overview",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "README.md",
+    "requirement_count": 64,
+    "categories": {
+      "functional": 55,
+      "security": 7,
+      "performance": 2
+    },
+    "priorities": {
+      "should": 64
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-8108ac-000",
+      "title": "The system must provide a modular freight forwarding solution with FastAPI backend, React frontend, and n8n workflows",
+      "description": "The system must provide a modular freight forwarding solution with FastAPI backend, React frontend, and n8n workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-a",
+      "title": "The system must support the complete business process flow from business partners through orders, disposition, transport, to billing",
+      "description": "The system must support the complete business process flow from business partners through orders, disposition, transport, to billing",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-b",
+      "title": "The frontend must be built using React with TypeScript",
+      "description": "The frontend must be built using React with TypeScript",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-c",
+      "title": "The backend must be implemented using FastAPI with SQLAlchemy and Pydantic",
+      "description": "The backend must be implemented using FastAPI with SQLAlchemy and Pydantic",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-d",
+      "title": "The system must use n8n for external integrations and workflow automation",
+      "description": "The system must use n8n for external integrations and workflow automation",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-e",
+      "title": "The system must use Supabase as the database platform with PostgreSQL, authentication, and storage",
+      "description": "The system must use Supabase as the database platform with PostgreSQL, authentication, and storage",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-f",
+      "title": "The system must integrate with Spedion API, DATEV, and Email/FTP services",
+      "description": "The system must integrate with Spedion API, DATEV, and Email/FTP services",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-g",
+      "title": "The system must use GitLab CI/CD for continuous integration and deployment",
+      "description": "The system must use GitLab CI/CD for continuous integration and deployment",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-h",
+      "title": "The application must be containerized using Docker-Compose",
+      "description": "The application must be containerized using Docker-Compose",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-i",
+      "title": "The system must use nginx as a reverse proxy for HTTPS",
+      "description": "The system must use nginx as a reverse proxy for HTTPS",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-j",
+      "title": "The system must provide automated build and deployment processes through a Makefile",
+      "description": "The system must provide automated build and deployment processes through a Makefile",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-k",
+      "title": "The Business Partner Service must manage customer and supplier master data",
+      "description": "The Business Partner Service must manage customer and supplier master data",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-l",
+      "title": "The Business Partner Service must provide address management and validation",
+      "description": "The Business Partner Service must provide address management and validation",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-m",
+      "title": "The Business Partner Service must manage documents including contracts and certificates",
+      "description": "The Business Partner Service must manage documents including contracts and certificates",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-n",
+      "title": "The Order Management Service must support order capture from multiple channels including web, email, CSV, and API",
+      "description": "The Order Management Service must support order capture from multiple channels including web, email, CSV, and API",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-o",
+      "title": "The Order Management Service must manage order status throughout the order lifecycle",
+      "description": "The Order Management Service must manage order status throughout the order lifecycle",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-p",
+      "title": "The Order Management Service must perform price calculation and quote generation",
+      "description": "The Order Management Service must perform price calculation and quote generation",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-q",
+      "title": "The Order Management Service must validate and process orders",
+      "description": "The Order Management Service must validate and process orders",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-r",
+      "title": "The Disposition Service must perform tour planning and optimization",
+      "description": "The Disposition Service must perform tour planning and optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-s",
+      "title": "The Disposition Service must assign vehicles and drivers to tours",
+      "description": "The Disposition Service must assign vehicles and drivers to tours",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-t",
+      "title": "The Disposition Service must perform capacity planning",
+      "description": "The Disposition Service must perform capacity planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-u",
+      "title": "The Disposition Service must optimize routes using Python-based algorithms",
+      "description": "The Disposition Service must optimize routes using Python-based algorithms",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-v",
+      "title": "The Transport & Tracking Service must provide shipment tracking and GPS tracking capabilities",
+      "description": "The Transport & Tracking Service must provide shipment tracking and GPS tracking capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-w",
+      "title": "The Transport & Tracking Service must manage Proof of Delivery (POD) documents",
+      "description": "The Transport & Tracking Service must manage Proof of Delivery (POD) documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-x",
+      "title": "The Transport & Tracking Service must calculate and update estimated time of arrival (ETA)",
+      "description": "The Transport & Tracking Service must calculate and update estimated time of arrival (ETA)",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-y",
+      "title": "The Transport & Tracking Service must provide geofencing and notification capabilities",
+      "description": "The Transport & Tracking Service must provide geofencing and notification capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-z",
+      "title": "The Billing & Invoicing Service must generate and manage invoices",
+      "description": "The Billing & Invoicing Service must generate and manage invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-27",
+      "title": "The Billing & Invoicing Service must generate invoices in PDF format",
+      "description": "The Billing & Invoicing Service must generate invoices in PDF format",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-28",
+      "title": "The Billing & Invoicing Service must export data to DATEV for accounting",
+      "description": "The Billing & Invoicing Service must export data to DATEV for accounting",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-29",
+      "title": "The Billing & Invoicing Service must track payments",
+      "description": "The Billing & Invoicing Service must track payments",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-30",
+      "title": "The User Management Service must authenticate and authorize users",
+      "description": "The User Management Service must authenticate and authorize users",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-31",
+      "title": "The User Management Service must manage user roles and permissions",
+      "description": "The User Management Service must manage user roles and permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-32",
+      "title": "The User Management Service must support multi-tenant management",
+      "description": "The User Management Service must support multi-tenant management",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-000-33",
+      "title": "The User Management Service must manage user sessions",
+      "description": "The User Management Service must manage user sessions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001",
+      "title": "The system must support capacity planning functionality",
+      "description": "The system must support capacity planning functionality",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-a",
+      "title": "The system must implement route optimization using Python-based algorithms",
+      "description": "The system must implement route optimization using Python-based algorithms",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-b",
+      "title": "The system must provide shipment tracking and GPS tracking capabilities",
+      "description": "The system must provide shipment tracking and GPS tracking capabilities",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-c",
+      "title": "The system must manage Proof of Delivery (POD) documents",
+      "description": "The system must manage Proof of Delivery (POD) documents",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-d",
+      "title": "The system must calculate and update estimated time of arrival (ETA)",
+      "description": "The system must calculate and update estimated time of arrival (ETA)",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-e",
+      "title": "The system must implement geofencing and send notifications",
+      "description": "The system must implement geofencing and send notifications",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-f",
+      "title": "The system must generate invoices and manage invoice data",
+      "description": "The system must generate invoices and manage invoice data",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-g",
+      "title": "The system must generate PDF documents for invoices",
+      "description": "The system must generate PDF documents for invoices",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-h",
+      "title": "The system must export invoice data to DATEV format for accounting",
+      "description": "The system must export invoice data to DATEV format for accounting",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-i",
+      "title": "The system must track payment status and history",
+      "description": "The system must track payment status and history",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-j",
+      "title": "The system must authenticate users",
+      "description": "The system must authenticate users",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-k",
+      "title": "The system must authorize users based on roles and permissions",
+      "description": "The system must authorize users based on roles and permissions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-l",
+      "title": "The system must manage user roles and permissions",
+      "description": "The system must manage user roles and permissions",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-m",
+      "title": "The system must support multi-tenant management",
+      "description": "The system must support multi-tenant management",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-n",
+      "title": "The system must manage user sessions",
+      "description": "The system must manage user sessions",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-o",
+      "title": "FastAPI must implement route optimization algorithms for optimal tour planning",
+      "description": "FastAPI must implement route optimization algorithms for optimal tour planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-p",
+      "title": "FastAPI must perform price calculations and cost estimations",
+      "description": "FastAPI must perform price calculations and cost estimations",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-q",
+      "title": "FastAPI must validate complex business rules and data",
+      "description": "FastAPI must validate complex business rules and data",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-r",
+      "title": "FastAPI must perform performance-critical calculations and data processing operations",
+      "description": "FastAPI must perform performance-critical calculations and data processing operations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-s",
+      "title": "FastAPI must execute CRUD operations directly on the database using SQLAlchemy",
+      "description": "FastAPI must execute CRUD operations directly on the database using SQLAlchemy",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-t",
+      "title": "n8n must handle external API calls to DATEV, Spedion, GPS services, and banking APIs",
+      "description": "n8n must handle external API calls to DATEV, Spedion, GPS services, and banking APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-u",
+      "title": "n8n must send email and SMS notifications and communications",
+      "description": "n8n must send email and SMS notifications and communications",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-v",
+      "title": "n8n must process documents including PDF generation and email parsing",
+      "description": "n8n must process documents including PDF generation and email parsing",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-w",
+      "title": "n8n must execute scheduled workflows including cron jobs and regular synchronization",
+      "description": "n8n must execute scheduled workflows including cron jobs and regular synchronization",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-x",
+      "title": "n8n must trigger event-based automation on status changes",
+      "description": "n8n must trigger event-based automation on status changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-y",
+      "title": "The development process must follow API-First approach with OpenAPI specifications before implementation",
+      "description": "The development process must follow API-First approach with OpenAPI specifications before implementation",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-z",
+      "title": "The system must include unit tests for business logic",
+      "description": "The system must include unit tests for business logic",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-27",
+      "title": "The codebase must maintain code quality using Black and ESLint with automatic formatting",
+      "description": "The codebase must maintain code quality using Black and ESLint with automatic formatting",
+      "type": "functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-28",
+      "title": "The system must not store secrets in code and must use environment variables",
+      "description": "The system must not store secrets in code and must use environment variables",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    },
+    {
+      "requirement_id": "REQ-8108ac-001-29",
+      "title": "The system must use async/await and optimized database queries for performance",
+      "description": "The system must use async/await and optimized database queries for performance",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "README.md"
+    }
+  ]
+}

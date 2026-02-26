@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Validating : submitUpdate
+    Validating --> Updating : validationPassed
+    Validating --> Error : validationFailed
+    Updating --> Success : updateSucceeded
+    Updating --> Error : updateFailed
+    Error --> Idle : retry
+    Success --> [*]

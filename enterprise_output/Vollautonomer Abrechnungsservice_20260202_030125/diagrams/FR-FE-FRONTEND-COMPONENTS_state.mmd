@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> Initializing
+    Initializing --> Loading : init
+    Loading --> Ready : componentsLoaded
+    Loading --> Error : loadFailed
+    Error --> Loading : retry
+    Ready --> Terminated : shutdown
+    Terminated --> [*]

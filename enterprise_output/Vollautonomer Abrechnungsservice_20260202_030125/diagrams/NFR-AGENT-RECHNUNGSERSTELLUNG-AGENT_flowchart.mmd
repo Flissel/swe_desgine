@@ -1,0 +1,9 @@
+flowchart TD
+    Start([Start]) --> Aggregation[Data Aggregation]
+    Aggregation --> Generation[Invoice Generation]
+    Generation --> Tax[Tax Calculation]
+    Tax --> Validation{Validation Passed?}
+    Validation -- Yes --> Send[Send Invoice via EmailSender]
+    Validation -- No --> Fix[Review and Correct Data]
+    Fix --> Generation
+    Send --> End([End])

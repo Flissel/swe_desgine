@@ -1,0 +1,21 @@
+flowchart TD
+    Start([Start]) --> A[Systemanfrage/Transaktion empfangen]
+    A --> B[Regelwerk laden (DSGVO, FATCA, Steuergesetze)]
+    B --> C{Regulatorische Relevanz vorhanden?}
+    C -->|Nein| D[Transaktion freigeben]
+    D --> End([End])
+    C -->|Ja| E[Anforderungen pro Regelwerk ableiten]
+    E --> F{DSGVO erfüllt?}
+    F -->|Nein| G[DSGVO-Remediation/Maskierung]
+    G --> H[Erneute DSGVO-Prüfung]
+    H --> F
+    F -->|Ja| I{FATCA erfüllt?}
+    I -->|Nein| J[FATCA-Datenvalidierung]
+    J --> I
+    I -->|Ja| K{Steuergesetze erfüllt?}
+    K -->|Nein| L[Steuerprüfung/Korrektur]
+    L --> K
+    K -->|Ja| M[Compliance-Entscheidung dokumentieren]
+    M --> N[Audit-Log & Reporting]
+    N --> O[Transaktion freigeben]
+    O --> End([End])

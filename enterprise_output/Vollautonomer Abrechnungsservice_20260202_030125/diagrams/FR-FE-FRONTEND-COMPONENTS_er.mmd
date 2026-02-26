@@ -1,0 +1,32 @@
+erDiagram
+    FRONTEND_COMPONENT ||--o{ COMPONENT_PROPERTY : has
+    FRONTEND_COMPONENT ||--o{ COMPONENT_DEPENDENCY : depends_on
+    COMPONENT_TYPE ||--o{ FRONTEND_COMPONENT : categorizes
+    FRONTEND_COMPONENT ||--o{ COMPONENT_VERSION : versioned_by
+
+    FRONTEND_COMPONENT {
+        string id PK
+        string name
+        string description
+        string type_id FK
+
+    COMPONENT_TYPE {
+        string id PK
+        string name
+
+    COMPONENT_PROPERTY {
+        string id PK
+        string component_id FK
+        string key
+        string value
+
+    COMPONENT_DEPENDENCY {
+        string id PK
+        string component_id FK
+        string depends_on_component_id FK
+
+    COMPONENT_VERSION {
+        string id PK
+        string component_id FK
+        string version
+        string release_notes

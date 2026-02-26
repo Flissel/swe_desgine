@@ -1,0 +1,2267 @@
+{
+  "Name": "api-gateway-service",
+  "Domain": "freight-forwarding",
+  "Context": {
+    "source_file": "Integration_API_Gateway.md",
+    "requirement_count": 278,
+    "categories": {
+      "functional": 228,
+      "performance": 24,
+      "security": 26
+    },
+    "priorities": {
+      "should": 278
+    }
+  },
+  "Stakeholders": [
+    {
+      "name": "Dispatcher",
+      "role": "primary_user"
+    },
+    {
+      "name": "Transport Manager",
+      "role": "stakeholder"
+    },
+    {
+      "name": "System Admin",
+      "role": "admin"
+    }
+  ],
+  "Constraints": {
+    "technical": [
+      "FastAPI backend",
+      "React frontend",
+      "PostgreSQL database"
+    ],
+    "business": [
+      "German freight forwarding regulations",
+      "GDPR compliance"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "requirement_id": "REQ-fe92b6-000",
+      "title": "The Integration & API Gateway Service must act as the central communication layer between all microservices and external systems",
+      "description": "The Integration & API Gateway Service must act as the central communication layer between all microservices and external systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-a",
+      "title": "The system must provide unified API management across the entire logistics solution",
+      "description": "The system must provide unified API management across the entire logistics solution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-b",
+      "title": "The API Gateway must intelligently route API requests to appropriate services",
+      "description": "The API Gateway must intelligently route API requests to appropriate services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-c",
+      "title": "The system must distribute load across available service instances",
+      "description": "The system must distribute load across available service instances",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-d",
+      "title": "The system must implement rate limiting to protect against API abuse and overload",
+      "description": "The system must implement rate limiting to protect against API abuse and overload",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-e",
+      "title": "The system must support multiple API versions",
+      "description": "The system must support multiple API versions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-f",
+      "title": "The system must optimize performance through response caching",
+      "description": "The system must optimize performance through response caching",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-g",
+      "title": "The system must automatically discover available services",
+      "description": "The system must automatically discover available services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-h",
+      "title": "The system must monitor the health status of all services",
+      "description": "The system must monitor the health status of all services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-i",
+      "title": "The system must implement circuit breaker pattern to prevent cascading failures",
+      "description": "The system must implement circuit breaker pattern to prevent cascading failures",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-j",
+      "title": "The system must intelligently retry failed requests",
+      "description": "The system must intelligently retry failed requests",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-k",
+      "title": "The system must manage request timeouts",
+      "description": "The system must manage request timeouts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-l",
+      "title": "The system must integrate with external REST APIs",
+      "description": "The system must integrate with external REST APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-m",
+      "title": "The system must support legacy system integration via SOAP",
+      "description": "The system must support legacy system integration via SOAP",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-n",
+      "title": "The system must support file-based integration using CSV, XML, and EDI formats",
+      "description": "The system must support file-based integration using CSV, XML, and EDI formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-o",
+      "title": "The system must support real-time integration using WebSocket and Server-Sent Events",
+      "description": "The system must support real-time integration using WebSocket and Server-Sent Events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-p",
+      "title": "The system must process large data volumes in batch mode",
+      "description": "The system must process large data volumes in batch mode",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-q",
+      "title": "The system must convert data between JSON, XML, CSV, and EDI formats",
+      "description": "The system must convert data between JSON, XML, CSV, and EDI formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-r",
+      "title": "The system must map data between different data models",
+      "description": "The system must map data between different data models",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-s",
+      "title": "The system must validate incoming and outgoing data",
+      "description": "The system must validate incoming and outgoing data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-t",
+      "title": "The system must enrich data from multiple sources",
+      "description": "The system must enrich data from multiple sources",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-u",
+      "title": "The system must cleanse and normalize data",
+      "description": "The system must cleanse and normalize data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-v",
+      "title": "The system must support configuration of API routes",
+      "description": "The system must support configuration of API routes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-w",
+      "title": "The system must support registration of new services",
+      "description": "The system must support registration of new services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-x",
+      "title": "The system must perform health checks on all services",
+      "description": "The system must perform health checks on all services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-y",
+      "title": "The system must collect performance metrics",
+      "description": "The system must collect performance metrics",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-z",
+      "title": "The system must support dynamic configuration changes",
+      "description": "The system must support dynamic configuration changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-27",
+      "title": "The system must manage webhook endpoints",
+      "description": "The system must manage webhook endpoints",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-28",
+      "title": "The system must publish system events",
+      "description": "The system must publish system events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-29",
+      "title": "The system must support event subscription",
+      "description": "The system must support event subscription",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-30",
+      "title": "The system must provide asynchronous message queue processing",
+      "description": "The system must provide asynchronous message queue processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-31",
+      "title": "The system must manage batch job execution",
+      "description": "The system must manage batch job execution",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-32",
+      "title": "The system must provide a proxy for DATEV API calls",
+      "description": "The system must provide a proxy for DATEV API calls",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-33",
+      "title": "The system must provide a proxy for Spedion API calls",
+      "description": "The system must provide a proxy for Spedion API calls",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-34",
+      "title": "The system must provide a proxy for map service APIs",
+      "description": "The system must provide a proxy for map service APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-35",
+      "title": "The system must provide a proxy for weather service APIs",
+      "description": "The system must provide a proxy for weather service APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-36",
+      "title": "The system must provide a proxy for banking APIs",
+      "description": "The system must provide a proxy for banking APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-37",
+      "title": "The system must provide detailed API usage statistics",
+      "description": "The system must provide detailed API usage statistics",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-38",
+      "title": "The system must track and analyze errors",
+      "description": "The system must track and analyze errors",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-39",
+      "title": "The system must generate usage reports",
+      "description": "The system must generate usage reports",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-40",
+      "title": "The system must monitor Service Level Agreements",
+      "description": "The system must monitor Service Level Agreements",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-41",
+      "title": "The API Route entity must store route ID, path, HTTP methods, and target service",
+      "description": "The API Route entity must store route ID, path, HTTP methods, and target service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-42",
+      "title": "The API Route entity must store timeout, retry policy, and rate limit configurations",
+      "description": "The API Route entity must store timeout, retry policy, and rate limit configurations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-43",
+      "title": "The API Route entity must store authentication, authorization, and CORS settings",
+      "description": "The API Route entity must store authentication, authorization, and CORS settings",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-44",
+      "title": "The API Route entity must store request and response transformation rules",
+      "description": "The API Route entity must store request and response transformation rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-45",
+      "title": "The API Route entity must store metrics, logging, and alerting configuration",
+      "description": "The API Route entity must store metrics, logging, and alerting configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-46",
+      "title": "The API Route entity must store API version and deprecation status",
+      "description": "The API Route entity must store API version and deprecation status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-47",
+      "title": "The Service Registry entity must store service name, version, description, and tags",
+      "description": "The Service Registry entity must store service name, version, description, and tags",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-48",
+      "title": "The Service Registry entity must store available endpoints and methods",
+      "description": "The Service Registry entity must store available endpoints and methods",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-49",
+      "title": "The Service Registry entity must store current health status",
+      "description": "The Service Registry entity must store current health status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-50",
+      "title": "The Service Registry entity must store load balancing weights and availability information",
+      "description": "The Service Registry entity must store load balancing weights and availability information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-51",
+      "title": "The Service Registry entity must store dependencies to other services",
+      "description": "The Service Registry entity must store dependencies to other services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-52",
+      "title": "The Service Registry entity must store additional service metadata",
+      "description": "The Service Registry entity must store additional service metadata",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-53",
+      "title": "The Integration Configuration must store external system name, type, and connection details",
+      "description": "The Integration Configuration must store external system name, type, and connection details",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-000-54",
+      "title": "The Integration Configuration must store authentication credentials including API keys, OAuth tokens, and certificates",
+      "description": "The Integration Configuration must store authentication credentials including API keys, OAuth tokens, and certificates",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001",
+      "title": "The system must provide usage reports for API consumption",
+      "description": "The system must provide usage reports for API consumption",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-a",
+      "title": "The system must monitor Service Level Agreements (SLA)",
+      "description": "The system must monitor Service Level Agreements (SLA)",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-b",
+      "title": "The API Route entity must store route identification and path information",
+      "description": "The API Route entity must store route identification and path information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-c",
+      "title": "The API Route entity must support HTTP method configuration",
+      "description": "The API Route entity must support HTTP method configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-d",
+      "title": "The API Route entity must store target service information",
+      "description": "The API Route entity must store target service information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-e",
+      "title": "The API Route entity must support timeout configuration",
+      "description": "The API Route entity must support timeout configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-f",
+      "title": "The API Route entity must support retry policy configuration",
+      "description": "The API Route entity must support retry policy configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-g",
+      "title": "The API Route entity must support rate limit configuration",
+      "description": "The API Route entity must support rate limit configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-h",
+      "title": "The API Route entity must support authentication configuration",
+      "description": "The API Route entity must support authentication configuration",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-i",
+      "title": "The API Route entity must support authorization configuration",
+      "description": "The API Route entity must support authorization configuration",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-j",
+      "title": "The API Route entity must support CORS configuration",
+      "description": "The API Route entity must support CORS configuration",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-k",
+      "title": "The API Route entity must support request transformation configuration",
+      "description": "The API Route entity must support request transformation configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-l",
+      "title": "The API Route entity must support response transformation configuration",
+      "description": "The API Route entity must support response transformation configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-m",
+      "title": "The API Route entity must store metrics for monitoring",
+      "description": "The API Route entity must store metrics for monitoring",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-n",
+      "title": "The API Route entity must support logging configuration",
+      "description": "The API Route entity must support logging configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-o",
+      "title": "The API Route entity must support alerting configuration",
+      "description": "The API Route entity must support alerting configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-p",
+      "title": "The API Route entity must store API version information",
+      "description": "The API Route entity must store API version information",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-q",
+      "title": "The API Route entity must track deprecation status",
+      "description": "The API Route entity must track deprecation status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-r",
+      "title": "The Service Registry entity must store service name and version",
+      "description": "The Service Registry entity must store service name and version",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-s",
+      "title": "The Service Registry entity must store service description",
+      "description": "The Service Registry entity must store service description",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-t",
+      "title": "The Service Registry entity must support service tagging",
+      "description": "The Service Registry entity must support service tagging",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-u",
+      "title": "The Service Registry entity must store available endpoints and methods",
+      "description": "The Service Registry entity must store available endpoints and methods",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-v",
+      "title": "The Service Registry entity must track current health status",
+      "description": "The Service Registry entity must track current health status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-w",
+      "title": "The Service Registry entity must support load balancing weight configuration",
+      "description": "The Service Registry entity must support load balancing weight configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-x",
+      "title": "The Service Registry entity must track service availability",
+      "description": "The Service Registry entity must track service availability",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-y",
+      "title": "The Service Registry entity must store service dependencies",
+      "description": "The Service Registry entity must store service dependencies",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-z",
+      "title": "The Service Registry entity must store additional service metadata",
+      "description": "The Service Registry entity must store additional service metadata",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-27",
+      "title": "The Integration Configuration entity must store external system name and type",
+      "description": "The Integration Configuration entity must store external system name and type",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-28",
+      "title": "The Integration Configuration entity must store connection details",
+      "description": "The Integration Configuration entity must store connection details",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-29",
+      "title": "The Integration Configuration entity must support API key authentication",
+      "description": "The Integration Configuration entity must support API key authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-30",
+      "title": "The Integration Configuration entity must support OAuth token authentication",
+      "description": "The Integration Configuration entity must support OAuth token authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-31",
+      "title": "The Integration Configuration entity must support certificate-based authentication",
+      "description": "The Integration Configuration entity must support certificate-based authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-32",
+      "title": "The Integration Configuration entity must support schema mapping and transformation",
+      "description": "The Integration Configuration entity must support schema mapping and transformation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-33",
+      "title": "The Integration Configuration entity must support retry strategies",
+      "description": "The Integration Configuration entity must support retry strategies",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-34",
+      "title": "The Integration Configuration entity must support fallback mechanisms",
+      "description": "The Integration Configuration entity must support fallback mechanisms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-35",
+      "title": "The Integration Configuration entity must store SLA definitions",
+      "description": "The Integration Configuration entity must store SLA definitions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-36",
+      "title": "The Integration Configuration entity must support alert configuration",
+      "description": "The Integration Configuration entity must support alert configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-37",
+      "title": "The Integration Configuration entity must support batch job scheduling",
+      "description": "The Integration Configuration entity must support batch job scheduling",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-38",
+      "title": "The Integration Configuration entity must support job trigger configuration",
+      "description": "The Integration Configuration entity must support job trigger configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-39",
+      "title": "The Event Schema entity must store event type and schema definition",
+      "description": "The Event Schema entity must store event type and schema definition",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-40",
+      "title": "The Event Schema entity must support event schema versioning",
+      "description": "The Event Schema entity must support event schema versioning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-41",
+      "title": "The Event Schema entity must track publishing services",
+      "description": "The Event Schema entity must track publishing services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-42",
+      "title": "The Event Schema entity must track subscribing services",
+      "description": "The Event Schema entity must track subscribing services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-43",
+      "title": "The Event Schema entity must store event routing rules",
+      "description": "The Event Schema entity must store event routing rules",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-44",
+      "title": "The Event Schema entity must support event store configuration",
+      "description": "The Event Schema entity must support event store configuration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-45",
+      "title": "The Event Schema entity must support event replay mechanisms",
+      "description": "The Event Schema entity must support event replay mechanisms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-46",
+      "title": "The system must implement intelligent request routing",
+      "description": "The system must implement intelligent request routing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-47",
+      "title": "The system must implement load balancing across service instances",
+      "description": "The system must implement load balancing across service instances",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-48",
+      "title": "The system must implement centralized authentication",
+      "description": "The system must implement centralized authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-49",
+      "title": "The system must implement API rate limiting",
+      "description": "The system must implement API rate limiting",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-50",
+      "title": "The system must aggregate responses from multiple services",
+      "description": "The system must aggregate responses from multiple services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-51",
+      "title": "The system must support asynchronous message processing",
+      "description": "The system must support asynchronous message processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-52",
+      "title": "The system must support event-driven communication",
+      "description": "The system must support event-driven communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-53",
+      "title": "The system must support data transformation and mapping",
+      "description": "The system must support data transformation and mapping",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-54",
+      "title": "The system must support orchestration of complex integrations",
+      "description": "The system must support orchestration of complex integrations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-55",
+      "title": "The system must provide standardized external system adapters",
+      "description": "The system must provide standardized external system adapters",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-56",
+      "title": "The system must collect performance metrics",
+      "description": "The system must collect performance metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-57",
+      "title": "The system must support distributed request tracing",
+      "description": "The system must support distributed request tracing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-58",
+      "title": "The system must aggregate logs from all components",
+      "description": "The system must aggregate logs from all components",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-59",
+      "title": "The system must continuously monitor service health",
+      "description": "The system must continuously monitor service health",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-60",
+      "title": "The system must provide intelligent alerting",
+      "description": "The system must provide intelligent alerting",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-61",
+      "title": "The system must protect against API attacks",
+      "description": "The system must protect against API attacks",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-62",
+      "title": "The system must encrypt sensitive data",
+      "description": "The system must encrypt sensitive data",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-63",
+      "title": "The system must implement granular access control",
+      "description": "The system must implement granular access control",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-64",
+      "title": "The system must maintain complete audit trails",
+      "description": "The system must maintain complete audit trails",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-65",
+      "title": "The system must detect security threats",
+      "description": "The system must detect security threats",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-66",
+      "title": "The n8n workflow must handle incoming API requests as triggers",
+      "description": "The n8n workflow must handle incoming API requests as triggers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-67",
+      "title": "The n8n workflow must discover available services",
+      "description": "The n8n workflow must discover available services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-68",
+      "title": "The n8n workflow must route requests to appropriate services",
+      "description": "The n8n workflow must route requests to appropriate services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-69",
+      "title": "The n8n workflow must aggregate responses from multiple services",
+      "description": "The n8n workflow must aggregate responses from multiple services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-70",
+      "title": "The n8n workflow must handle service errors",
+      "description": "The n8n workflow must handle service errors",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-71",
+      "title": "The n8n workflow must support time-based triggers for external system sync",
+      "description": "The n8n workflow must support time-based triggers for external system sync",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-72",
+      "title": "The n8n workflow must support event-based triggers for external system sync",
+      "description": "The n8n workflow must support event-based triggers for external system sync",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-73",
+      "title": "The n8n workflow must extract data from external systems",
+      "description": "The n8n workflow must extract data from external systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-74",
+      "title": "The n8n workflow must transform data into internal formats",
+      "description": "The n8n workflow must transform data into internal formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-75",
+      "title": "The n8n workflow must validate transformed data",
+      "description": "The n8n workflow must validate transformed data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-76",
+      "title": "The n8n workflow must import data into appropriate services",
+      "description": "The n8n workflow must import data into appropriate services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-77",
+      "title": "The n8n workflow must ingest system events",
+      "description": "The n8n workflow must ingest system events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-78",
+      "title": "The n8n workflow must filter relevant events",
+      "description": "The n8n workflow must filter relevant events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-79",
+      "title": "The n8n workflow must transform events to target formats",
+      "description": "The n8n workflow must transform events to target formats",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-80",
+      "title": "The n8n workflow must route events to subscribers",
+      "description": "The n8n workflow must route events to subscribers",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-81",
+      "title": "The n8n workflow must persist events for audit and replay",
+      "description": "The n8n workflow must persist events for audit and replay",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-82",
+      "title": "The n8n workflow must perform regular service health checks",
+      "description": "The n8n workflow must perform regular service health checks",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-83",
+      "title": "The n8n workflow must collect performance metrics",
+      "description": "The n8n workflow must collect performance metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-84",
+      "title": "The n8n workflow must monitor critical thresholds",
+      "description": "The n8n workflow must monitor critical thresholds",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-85",
+      "title": "The n8n workflow must generate alerts when thresholds are exceeded",
+      "description": "The n8n workflow must generate alerts when thresholds are exceeded",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-86",
+      "title": "The n8n workflow must attempt automatic recovery",
+      "description": "The n8n workflow must attempt automatic recovery",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-87",
+      "title": "The n8n workflow must detect data changes",
+      "description": "The n8n workflow must detect data changes",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-88",
+      "title": "The n8n workflow must resolve data conflicts",
+      "description": "The n8n workflow must resolve data conflicts",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-89",
+      "title": "The n8n workflow must process large data batches",
+      "description": "The n8n workflow must process large data batches",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-90",
+      "title": "The n8n workflow must support real-time data synchronization",
+      "description": "The n8n workflow must support real-time data synchronization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-91",
+      "title": "The n8n workflow must handle rollback of failed synchronizations",
+      "description": "The n8n workflow must handle rollback of failed synchronizations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-92",
+      "title": "The system must integrate with the Business Partner Service for master data synchronization",
+      "description": "The system must integrate with the Business Partner Service for master data synchronization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-001-93",
+      "title": "The system must integrate with the Order Management Service for order processing",
+      "description": "The system must integrate with the Order Management Service for order processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002",
+      "title": "The system must support rollback handling for failed synchronizations",
+      "description": "The system must support rollback handling for failed synchronizations",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-a",
+      "title": "The API Gateway must authenticate all client requests",
+      "description": "The API Gateway must authenticate all client requests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-b",
+      "title": "The API Gateway must implement rate limiting on incoming requests",
+      "description": "The API Gateway must implement rate limiting on incoming requests",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-c",
+      "title": "The system must route requests to appropriate backend services",
+      "description": "The system must route requests to appropriate backend services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-d",
+      "title": "The system must aggregate responses from multiple services",
+      "description": "The system must aggregate responses from multiple services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-e",
+      "title": "The system must transform responses before returning to client",
+      "description": "The system must transform responses before returning to client",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-f",
+      "title": "The system must support integration with Business Partner Service for master data synchronization",
+      "description": "The system must support integration with Business Partner Service for master data synchronization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-g",
+      "title": "The system must support integration with Order Management Service for order processing",
+      "description": "The system must support integration with Order Management Service for order processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-h",
+      "title": "The system must support integration with Disposition Service for route planning and optimization",
+      "description": "The system must support integration with Disposition Service for route planning and optimization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-i",
+      "title": "The system must support integration with Transport Service for transport tracking and management",
+      "description": "The system must support integration with Transport Service for transport tracking and management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-j",
+      "title": "The system must support integration with POD Service for delivery proofs and documentation",
+      "description": "The system must support integration with POD Service for delivery proofs and documentation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-k",
+      "title": "The system must support integration with Billing Service for billing processing",
+      "description": "The system must support integration with Billing Service for billing processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-l",
+      "title": "The system must support integration with User Management for authentication and authorization",
+      "description": "The system must support integration with User Management for authentication and authorization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-m",
+      "title": "The system must support integration with DATEV for accounting data export and synchronization",
+      "description": "The system must support integration with DATEV for accounting data export and synchronization",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-n",
+      "title": "The system must support integration with Spedion for transport management",
+      "description": "The system must support integration with Spedion for transport management",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-o",
+      "title": "The system must support integration with Banking APIs for payment processing and reconciliation",
+      "description": "The system must support integration with Banking APIs for payment processing and reconciliation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-p",
+      "title": "The system must support integration with Maps Services for route calculation and geocoding",
+      "description": "The system must support integration with Maps Services for route calculation and geocoding",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-q",
+      "title": "The system must support integration with Weather Services for transport planning data",
+      "description": "The system must support integration with Weather Services for transport planning data",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-r",
+      "title": "The system must support integration with Telematics for vehicle data and GPS tracking",
+      "description": "The system must support integration with Telematics for vehicle data and GPS tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-s",
+      "title": "The system must support integration with E-Commerce Platforms for online shop integration",
+      "description": "The system must support integration with E-Commerce Platforms for online shop integration",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-t",
+      "title": "The system must support integration with ERP Systems for enterprise resource planning",
+      "description": "The system must support integration with ERP Systems for enterprise resource planning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-u",
+      "title": "The system must support REST APIs for standard HTTP-based communication",
+      "description": "The system must support REST APIs for standard HTTP-based communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-v",
+      "title": "The system must support GraphQL for flexible data queries",
+      "description": "The system must support GraphQL for flexible data queries",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-w",
+      "title": "The system must support WebSockets for real-time bidirectional communication",
+      "description": "The system must support WebSockets for real-time bidirectional communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-x",
+      "title": "The system must support message queues for asynchronous message processing",
+      "description": "The system must support message queues for asynchronous message processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-y",
+      "title": "The system must support event streaming for continuous event processing",
+      "description": "The system must support event streaming for continuous event processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-z",
+      "title": "The system must support file transfer via FTP, SFTP, and HTTP protocols",
+      "description": "The system must support file transfer via FTP, SFTP, and HTTP protocols",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-27",
+      "title": "The system must support email integration via SMTP and IMAP protocols",
+      "description": "The system must support email integration via SMTP and IMAP protocols",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-28",
+      "title": "The system must use OpenAPI-based API specification for API design",
+      "description": "The system must use OpenAPI-based API specification for API design",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-29",
+      "title": "The system must support automated API deployment",
+      "description": "The system must support automated API deployment",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-30",
+      "title": "The system must support API versioning with backward compatibility",
+      "description": "The system must support API versioning with backward compatibility",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-31",
+      "title": "The system must support controlled API deprecation",
+      "description": "The system must support controlled API deprecation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-32",
+      "title": "The system must securely manage API keys",
+      "description": "The system must securely manage API keys",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-33",
+      "title": "The system must support OAuth 2.0 for standardized authorization",
+      "description": "The system must support OAuth 2.0 for standardized authorization",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-34",
+      "title": "The system must support JWT tokens for secure token-based authentication",
+      "description": "The system must support JWT tokens for secure token-based authentication",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-35",
+      "title": "The system must implement API throttling to prevent abuse",
+      "description": "The system must implement API throttling to prevent abuse",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-36",
+      "title": "The system must support IP whitelisting for access restriction",
+      "description": "The system must support IP whitelisting for access restriction",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-37",
+      "title": "The system must provide interactive API documentation via Swagger/OpenAPI UI",
+      "description": "The system must provide interactive API documentation via Swagger/OpenAPI UI",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-38",
+      "title": "The system must provide code examples in multiple programming languages",
+      "description": "The system must provide code examples in multiple programming languages",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-39",
+      "title": "The system must support automatic SDK generation for API clients",
+      "description": "The system must support automatic SDK generation for API clients",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-40",
+      "title": "The system must provide pre-configured Postman collections for API testing",
+      "description": "The system must provide pre-configured Postman collections for API testing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-41",
+      "title": "The system must provide a centralized developer portal for API documentation",
+      "description": "The system must provide a centralized developer portal for API documentation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-42",
+      "title": "The system must track detailed API usage metrics",
+      "description": "The system must track detailed API usage metrics",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-43",
+      "title": "The system must monitor API performance including latency and throughput",
+      "description": "The system must monitor API performance including latency and throughput",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-44",
+      "title": "The system must analyze API errors and error trends",
+      "description": "The system must analyze API errors and error trends",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-45",
+      "title": "The system must analyze developer behavior and usage patterns",
+      "description": "The system must analyze developer behavior and usage patterns",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-46",
+      "title": "The system must provide business intelligence insights based on API usage",
+      "description": "The system must provide business intelligence insights based on API usage",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-47",
+      "title": "The system must support domain events for business logic-relevant occurrences",
+      "description": "The system must support domain events for business logic-relevant occurrences",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-48",
+      "title": "The system must support integration events for cross-service communication",
+      "description": "The system must support integration events for cross-service communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-49",
+      "title": "The system must support system events for technical system occurrences",
+      "description": "The system must support system events for technical system occurrences",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-50",
+      "title": "The system must support user events for user interaction tracking",
+      "description": "The system must support user events for user interaction tracking",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-51",
+      "title": "The system must support external events from external systems",
+      "description": "The system must support external events from external systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-52",
+      "title": "The system must implement event sourcing to store all changes as events",
+      "description": "The system must implement event sourcing to store all changes as events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-53",
+      "title": "The system must support CQRS (Command Query Responsibility Segregation) pattern",
+      "description": "The system must support CQRS (Command Query Responsibility Segregation) pattern",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-54",
+      "title": "The system must implement the Saga pattern for distributed transactions across services",
+      "description": "The system must implement the Saga pattern for distributed transactions across services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-55",
+      "title": "The system must support event streaming for continuous event processing",
+      "description": "The system must support event streaming for continuous event processing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-56",
+      "title": "The system must support event replay to repeat historical events",
+      "description": "The system must support event replay to repeat historical events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-57",
+      "title": "The system must implement publish-subscribe pattern for decoupled communication",
+      "description": "The system must implement publish-subscribe pattern for decoupled communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-58",
+      "title": "The system must support request-reply pattern for synchronous message-based communication",
+      "description": "The system must support request-reply pattern for synchronous message-based communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-59",
+      "title": "The system must implement intelligent message routing",
+      "description": "The system must implement intelligent message routing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-60",
+      "title": "The system must support message transformation for format conversion",
+      "description": "The system must support message transformation for format conversion",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-61",
+      "title": "The system must implement dead letter queue for handling unprocessable messages",
+      "description": "The system must implement dead letter queue for handling unprocessable messages",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-62",
+      "title": "The system must persistently store all events in the event store",
+      "description": "The system must persistently store all events in the event store",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-63",
+      "title": "The system must support event schema versioning",
+      "description": "The system must support event schema versioning",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-64",
+      "title": "The system must implement event indexing for efficient event search",
+      "description": "The system must implement event indexing for efficient event search",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-65",
+      "title": "The system must support event archiving for long-term storage of old events",
+      "description": "The system must support event archiving for long-term storage of old events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-66",
+      "title": "The system must support event analytics for analyzing event patterns",
+      "description": "The system must support event analytics for analyzing event patterns",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-67",
+      "title": "The API Gateway must measure request throughput in requests per second",
+      "description": "The API Gateway must measure request throughput in requests per second",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-68",
+      "title": "The system must monitor average response latency of the API Gateway",
+      "description": "The system must monitor average response latency of the API Gateway",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-69",
+      "title": "The system must track the error rate as a percentage of failed requests",
+      "description": "The system must track the error rate as a percentage of failed requests",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-70",
+      "title": "The API Gateway must maintain availability of the gateway service",
+      "description": "The API Gateway must maintain availability of the gateway service",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-71",
+      "title": "The system must monitor the number of concurrent connections",
+      "description": "The system must monitor the number of concurrent connections",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-72",
+      "title": "The system must monitor individual service uptime",
+      "description": "The system must monitor individual service uptime",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-73",
+      "title": "The system must track health check success rate for services",
+      "description": "The system must track health check success rate for services",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-74",
+      "title": "The system must monitor response time of backend services",
+      "description": "The system must monitor response time of backend services",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-75",
+      "title": "The system must monitor circuit breaker status",
+      "description": "The system must monitor circuit breaker status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-002-76",
+      "title": "The system must track retry success rate for failed requests",
+      "description": "The system must track retry success rate for failed requests",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003",
+      "title": "The system must convert messages during transformation",
+      "description": "The system must convert messages during transformation",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-a",
+      "title": "The system must handle non-processable messages in a Dead Letter Queue",
+      "description": "The system must handle non-processable messages in a Dead Letter Queue",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-b",
+      "title": "The system must persistently store all events",
+      "description": "The system must persistently store all events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-c",
+      "title": "The system must support versioning of event schemas",
+      "description": "The system must support versioning of event schemas",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-d",
+      "title": "The system must enable efficient event search through indexing",
+      "description": "The system must enable efficient event search through indexing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-e",
+      "title": "The system must support long-term archiving of old events",
+      "description": "The system must support long-term archiving of old events",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-f",
+      "title": "The system must analyze event patterns",
+      "description": "The system must analyze event patterns",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-g",
+      "title": "The gateway must measure request throughput in requests per second",
+      "description": "The gateway must measure request throughput in requests per second",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-h",
+      "title": "The gateway must measure average response latency",
+      "description": "The gateway must measure average response latency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-i",
+      "title": "The gateway must track the error rate as a percentage of failed requests",
+      "description": "The gateway must track the error rate as a percentage of failed requests",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-j",
+      "title": "The gateway must maintain availability metrics",
+      "description": "The gateway must maintain availability metrics",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-k",
+      "title": "The gateway must track the number of concurrent connections",
+      "description": "The gateway must track the number of concurrent connections",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-l",
+      "title": "The system must measure individual service uptime",
+      "description": "The system must measure individual service uptime",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-m",
+      "title": "The system must track health check success rate",
+      "description": "The system must track health check success rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-n",
+      "title": "The system must measure backend service response times",
+      "description": "The system must measure backend service response times",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-o",
+      "title": "The system must monitor circuit breaker status",
+      "description": "The system must monitor circuit breaker status",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-p",
+      "title": "The system must track retry success rate",
+      "description": "The system must track retry success rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-q",
+      "title": "The system must measure external API call success rate",
+      "description": "The system must measure external API call success rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-r",
+      "title": "The system must measure data transformation accuracy",
+      "description": "The system must measure data transformation accuracy",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-s",
+      "title": "The system must measure event processing latency",
+      "description": "The system must measure event processing latency",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-t",
+      "title": "The system must track message queue depth",
+      "description": "The system must track message queue depth",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-u",
+      "title": "The system must measure batch job success rate",
+      "description": "The system must measure batch job success rate",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-v",
+      "title": "The system must track authentication success rate",
+      "description": "The system must track authentication success rate",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-w",
+      "title": "The system must track authorization violations",
+      "description": "The system must track authorization violations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-x",
+      "title": "The system must track rate limit violations",
+      "description": "The system must track rate limit violations",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-y",
+      "title": "The system must track security incidents",
+      "description": "The system must track security incidents",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-z",
+      "title": "The system must detect API abuse",
+      "description": "The system must detect API abuse",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-27",
+      "title": "The system must measure API adoption rate across different APIs",
+      "description": "The system must measure API adoption rate across different APIs",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-28",
+      "title": "The system must measure partner integration success",
+      "description": "The system must measure partner integration success",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-29",
+      "title": "The system must calculate data quality score",
+      "description": "The system must calculate data quality score",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-30",
+      "title": "The system must measure SLA compliance",
+      "description": "The system must measure SLA compliance",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-31",
+      "title": "The system must calculate cost per transaction",
+      "description": "The system must calculate cost per transaction",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-32",
+      "title": "The system must validate API contracts through contract testing",
+      "description": "The system must validate API contracts through contract testing",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-33",
+      "title": "The system must perform load testing to validate performance under high load",
+      "description": "The system must perform load testing to validate performance under high load",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-34",
+      "title": "The system must undergo security testing for all APIs",
+      "description": "The system must undergo security testing for all APIs",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-35",
+      "title": "The system must test API compatibility",
+      "description": "The system must test API compatibility",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-36",
+      "title": "The system must perform end-to-end testing of complete workflows",
+      "description": "The system must perform end-to-end testing of complete workflows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-37",
+      "title": "The system must test service-to-service communication",
+      "description": "The system must test service-to-service communication",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-38",
+      "title": "The system must test integration with external systems",
+      "description": "The system must test integration with external systems",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-39",
+      "title": "The system must validate data flows",
+      "description": "The system must validate data flows",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-40",
+      "title": "The system must test error handling mechanisms",
+      "description": "The system must test error handling mechanisms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-41",
+      "title": "The system must test timeout scenarios",
+      "description": "The system must test timeout scenarios",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-42",
+      "title": "The system must test maximum throughput",
+      "description": "The system must test maximum throughput",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-43",
+      "title": "The system must measure response latency during performance testing",
+      "description": "The system must measure response latency during performance testing",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-44",
+      "title": "The system must test scalability",
+      "description": "The system must test scalability",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-45",
+      "title": "The system must test performance under system overload conditions",
+      "description": "The system must test performance under system overload conditions",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-46",
+      "title": "The system must test long-term performance stability",
+      "description": "The system must test long-term performance stability",
+      "type": "non_functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-47",
+      "title": "The system must simulate service failures during chaos engineering",
+      "description": "The system must simulate service failures during chaos engineering",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-48",
+      "title": "The system must test behavior during network partition scenarios",
+      "description": "The system must test behavior during network partition scenarios",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-49",
+      "title": "The system must test behavior under resource exhaustion conditions",
+      "description": "The system must test behavior under resource exhaustion conditions",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-50",
+      "title": "The system must test behavior when dependencies fail",
+      "description": "The system must test behavior when dependencies fail",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    },
+    {
+      "requirement_id": "REQ-fe92b6-003-51",
+      "title": "The system must test recovery mechanisms",
+      "description": "The system must test recovery mechanisms",
+      "type": "functional",
+      "priority": "should",
+      "source": "Integration_API_Gateway.md"
+    }
+  ]
+}

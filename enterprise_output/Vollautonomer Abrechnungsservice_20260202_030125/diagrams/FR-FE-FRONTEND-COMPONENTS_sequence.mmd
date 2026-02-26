@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor User
+    participant Browser as Frontend App
+    participant Components as Frontend Components
+    participant Backend as Backend API
+
+    User->>Browser: Öffnet Anwendung
+    activate Browser
+    Browser->>Components: Lade und initialisiere Komponenten
+    activate Components
+    Components-->>Browser: Komponenten gerendert
+    deactivate Components
+    Browser->>Backend: API-Anfrage für Daten
+    activate Backend
+    Backend-->>Browser: Datenantwort
+    deactivate Backend
+    Browser->>Components: Übergabe von Daten / State-Update
+    activate Components
+    Components-->>Browser: UI aktualisiert
+    deactivate Components
+    Browser-->>User: UI anzeigen
+    deactivate Browser

@@ -1,0 +1,50 @@
+classDiagram
+    class AIFirstStrategy {
+        +name: String
+        +objective: String
+        +defineRoadmap(vision: String): void
+        +alignStakeholders(stakeholderGroup: String): void
+
+    class OrganizationalChange {
+        +changeId: String
+        +phase: String
+        +planChange(timeline: String): void
+        +measureAdoption(metric: String): void
+
+    class CultureTransformation {
+        +currentCulture: String
+        +targetCulture: String
+        +assessReadiness(survey: String): void
+        +reinforceBehaviors(behavior: String): void
+
+    class DecisionProcess {
+        +decisionType: String
+        +dataSources: String
+        +enableAIDecisions(model: String): void
+        +auditDecision(traceId: String): void
+
+    class RoleProfile {
+        +roleName: String
+        +skills: String
+        +defineRole(responsibility: String): void
+        +updateSkills(skill: String): void
+
+    class TrainingProgram {
+        +programName: String
+        +targetAudience: String
+        +deliverTraining(module: String): void
+        +evaluateImpact(kpi: String): void
+
+    class AIGovernance {
+        +policyName: String
+        +riskLevel: String
+        +setPolicy(policy: String): void
+        +monitorCompliance(check: String): void
+
+    AIFirstStrategy "1" --> "1..*" OrganizationalChange : drives
+    OrganizationalChange "1" --> "1" CultureTransformation : includes
+    OrganizationalChange "1" --> "1..*" RoleProfile : introduces
+    CultureTransformation "1" --> "1" DecisionProcess : shapes
+    DecisionProcess "1" --> "1" AIGovernance : governedBy
+    TrainingProgram "1" --> "1..*" RoleProfile : upskills
+    AIFirstStrategy "1" --> "1..*" TrainingProgram : enables

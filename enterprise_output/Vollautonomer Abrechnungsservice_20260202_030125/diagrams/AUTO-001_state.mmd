@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> AuftragEingegangen
+    AuftragEingegangen --> DatenSammlung : Auftrag_erhalten
+    DatenSammlung --> Validierung : Daten_gesammelt
+    Validierung --> Fehlerbehandlung : Validierung_fehler
+    Validierung --> Agentenauswahl : Validierung_ok
+    Fehlerbehandlung --> DatenSammlung : Korrektur_veranlasst
+    Agentenauswahl --> Rechnungsentwurf : Agent_zugewiesen
+    Rechnungsentwurf --> Berechnung : Entwurf_erzeugt
+    Berechnung --> SteuerBerechnung : Berechnung_start
+    SteuerBerechnung --> Rechnungsaufbau : Steuern_berechnet
+    Rechnungsaufbau --> PDFGenerierung : Rechnung_komponiert
+    PDFGenerierung --> Prüfung : PDF_erstellt
+    Prüfung --> Ablehnung : Prüfung_fehler
+    Prüfung --> Freigabe : Prüfung_ok
+    Ablehnung --> Rechnungsentwurf : Nacharbeit
+    Freigabe --> Versand : Freigabe_erteilt
+    Versand --> Archivierung : Rechnung_versendet
+    Archivierung --> [*] : Archiviert

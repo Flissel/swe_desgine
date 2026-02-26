@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant Vorstand
+    participant HR
+    participant AI_Governance
+    participant AI_Plattform
+    participant Mitarbeitende
+
+    Vorstand->>HR: Zielbild "AI-First" definieren
+    activate Vorstand
+    activate HR
+    HR->>AI_Governance: Rollenprofile & Richtlinien anfordern
+    activate AI_Governance
+    AI_Governance->>HR: Rollenprofile, Policies, Schulungsplan liefern
+    deactivate AI_Governance
+    HR->>Mitarbeitende: Rollenänderungen & Trainings kommunizieren
+    activate Mitarbeitende
+    HR->>AI_Plattform: Zugänge & Tools bereitstellen
+    activate AI_Plattform
+    AI_Plattform-->>Mitarbeitende: AI-Tools & Datenzugriff
+    deactivate AI_Plattform
+    Mitarbeitende->>AI_Plattform: AI-gestützte Entscheidungen nutzen
+    AI_Plattform-->>Mitarbeitende: Empfehlungen & Insights
+    Mitarbeitende->>AI_Governance: Feedback & Compliance-Fragen
+    activate AI_Governance
+    AI_Governance-->>Mitarbeitende: Guidance & Freigaben
+    deactivate AI_Governance
+    Mitarbeitende-->>HR: Trainingsabschluss & Rollenadoption melden
+    deactivate Mitarbeitende
+    HR-->>Vorstand: Fortschrittsbericht & Kulturmetriken
+    deactivate HR
+    deactivate Vorstand

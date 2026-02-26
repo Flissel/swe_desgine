@@ -1,0 +1,803 @@
+/* ============================================
+   Edit Modal Styles
+   ============================================ */
+
+/* Form Layout */
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 8px 0;
+}
+
+.edit-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.15);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group-code textarea {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 300px;
+    background: var(--bg-primary);
+}
+
+/* Code Editor */
+.code-editor {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    tab-size: 4;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* ============================================
+   Kilo Agent Section
+   ============================================ */
+
+.kilo-agent-section {
+    background: linear-gradient(135deg, rgba(29, 155, 240, 0.05), rgba(120, 86, 255, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.kilo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.kilo-icon {
+    font-size: 20px;
+}
+
+.kilo-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.kilo-status {
+    margin-left: auto;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.kilo-status.processing {
+    background: rgba(29, 155, 240, 0.15);
+    color: var(--accent-blue);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.kilo-status.success {
+    background: rgba(0, 186, 124, 0.15);
+    color: var(--accent-green);
+}
+
+.kilo-status.error {
+    background: rgba(244, 33, 46, 0.15);
+    color: var(--accent-red);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.kilo-input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.kilo-prompt-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+    resize: none;
+    min-height: 44px;
+}
+
+.kilo-prompt-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.kilo-prompt-input::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-kilo-submit {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--accent-blue), #7856ff);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+}
+
+.btn-kilo-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(29, 155, 240, 0.3);
+}
+
+.btn-kilo-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Kilo Response */
+.kilo-response {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.kilo-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.kilo-result {
+    color: var(--text-primary);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.kilo-error {
+    color: var(--accent-red);
+}
+
+/* ============================================
+   Affected Nodes Section
+   ============================================ */
+
+.affected-nodes-section {
+    background: rgba(255, 212, 0, 0.05);
+    border: 1px solid rgba(255, 212, 0, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.affected-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.affected-count {
+    background: var(--accent-yellow);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.affected-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.affected-node-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.affected-node-id {
+    font-family: 'SF Mono', monospace;
+    color: var(--text-primary);
+}
+
+.affected-node-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    background: rgba(29, 155, 240, 0.15);
+    color: var(--accent-blue);
+    border-radius: 4px;
+}
+
+/* ============================================
+   Form Actions
+   ============================================ */
+
+.edit-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.edit-form-actions .btn-secondary {
+    padding: 10px 20px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-form-actions .btn-secondary:hover {
+    background: var(--bg-hover);
+}
+
+.edit-form-actions .btn-primary {
+    padding: 10px 24px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-form-actions .btn-primary:hover {
+    background: #1a8cd8;
+}
+
+/* ============================================
+   Change Request Notifications
+   ============================================ */
+
+.change-request-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 360px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideInRight 0.3s ease;
+    z-index: 1100;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.crn-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(255, 212, 0, 0.1), rgba(255, 212, 0, 0.05));
+    border-bottom: 1px solid var(--border-color);
+}
+
+.crn-icon {
+    font-size: 18px;
+}
+
+.crn-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.crn-confidence {
+    margin-left: auto;
+    font-size: 12px;
+    padding: 2px 8px;
+    background: var(--accent-yellow);
+    color: #000;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.crn-body {
+    padding: 16px;
+}
+
+.crn-body p {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.crn-reasoning {
+    color: var(--text-secondary) !important;
+    font-size: 13px !important;
+    line-height: 1.4;
+}
+
+.crn-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+}
+
+.crn-actions button {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.crn-actions .btn-view {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.crn-actions .btn-view:hover {
+    background: var(--bg-hover);
+}
+
+.crn-actions .btn-approve {
+    background: var(--accent-green);
+    color: white;
+}
+
+.crn-actions .btn-approve:hover {
+    background: #00a86b;
+}
+
+.crn-actions .btn-reject {
+    background: var(--bg-secondary);
+    color: var(--accent-red);
+    border: 1px solid var(--accent-red);
+}
+
+.crn-actions .btn-reject:hover {
+    background: rgba(244, 33, 46, 0.1);
+}
+
+/* Notification Stack */
+.change-request-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 12px;
+    z-index: 1100;
+}
+
+.change-request-container .change-request-notification {
+    position: relative;
+    bottom: auto;
+    right: auto;
+}
+
+/* ============================================
+   Node Edit Button
+   ============================================ */
+
+.node-edit-btn {
+    position: absolute;
+    top: 4px;
+    right: 36px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    opacity: 0;
+    z-index: 10;
+}
+
+.canvas-node:hover .node-edit-btn {
+    opacity: 1;
+}
+
+.node-edit-btn:hover {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.node-edit-btn .edit-icon {
+    font-size: 12px;
+    line-height: 1;
+}
+
+/* Adjust chat button position to make room for edit button */
+.kilo-chat-btn {
+    right: 8px !important;
+}
+
+/* ============================================
+   Diagram KiloAgent Cascade Panel
+   ============================================ */
+
+.btn-kilo-diagram {
+    font-size: 13px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-kilo-diagram:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(29, 155, 240, 0.3);
+}
+
+.kilo-diagram-cascade-panel {
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(29, 155, 240, 0.05), rgba(120, 86, 255, 0.05));
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 8px 8px;
+}
+
+.kilo-diagram-cascade-panel .kilo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.kilo-diagram-cascade-panel .kilo-icon {
+    font-size: 18px;
+}
+
+.kilo-diagram-cascade-panel .kilo-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.kilo-diagram-cascade-panel .kilo-status {
+    margin-left: auto;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.kilo-diagram-cascade-panel .kilo-status.processing {
+    color: var(--accent-blue);
+    background: rgba(29, 155, 240, 0.15);
+}
+
+.kilo-diagram-cascade-panel .kilo-status.success {
+    color: var(--accent-green);
+    background: rgba(0, 186, 124, 0.15);
+}
+
+.kilo-diagram-cascade-panel .kilo-status.error {
+    color: var(--accent-red);
+    background: rgba(244, 33, 46, 0.15);
+}
+
+/* Cascade Preview Tree */
+.cascade-preview {
+    margin: 12px 0;
+    padding: 8px 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.cascade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.cascade-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-hover);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.cascade-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 4px 0;
+}
+
+.cascade-root-item,
+.cascade-node-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.cascade-root-item {
+    background: rgba(29, 155, 240, 0.08);
+    margin-bottom: 2px;
+}
+
+.cascade-node-item:hover {
+    background: var(--bg-hover);
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.status-indicator.pending {
+    background: var(--text-muted);
+}
+
+.status-indicator.processing {
+    background: var(--accent-blue);
+    animation: pulse-cascade 1.5s infinite;
+}
+
+.status-indicator.done {
+    background: var(--accent-green);
+}
+
+.status-indicator.error {
+    background: var(--accent-red);
+}
+
+@keyframes pulse-cascade {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.cascade-node-icon {
+    flex-shrink: 0;
+}
+
+.cascade-node-label {
+    color: var(--text-primary);
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.cascade-node-type {
+    color: var(--text-muted);
+    font-size: 10px;
+    margin-left: auto;
+}
+
+/* Progress Bar */
+.cascade-progress {
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cascade-progress .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.cascade-progress .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.cascade-progress .progress-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Result Cards */
+.cascade-result-card {
+    margin-top: 8px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.cascade-result-card.error {
+    border-color: rgba(244, 33, 46, 0.3);
+}
+
+.result-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.result-node-id {
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.result-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.result-status.success {
+    color: var(--accent-green);
+    background: rgba(0, 186, 124, 0.15);
+}
+
+.result-status.error {
+    color: var(--accent-red);
+    background: rgba(244, 33, 46, 0.15);
+}
+
+.result-mermaid-preview {
+    margin: 8px 0;
+}
+
+.result-mermaid-preview pre {
+    font-size: 11px;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    max-height: 120px;
+    overflow: auto;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.result-reasoning {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.result-error {
+    font-size: 12px;
+    color: var(--accent-red);
+    padding: 4px 0;
+}
+
+.result-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.result-actions .btn-approve {
+    padding: 4px 12px;
+    font-size: 12px;
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.result-actions .btn-approve:hover {
+    opacity: 0.85;
+}
+
+.result-actions .btn-reject {
+    padding: 4px 12px;
+    font-size: 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.result-actions .btn-reject:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.result-applied {
+    font-size: 12px;
+    color: var(--accent-green);
+    font-weight: 500;
+}
+
+.result-rejected {
+    font-size: 12px;
+    color: var(--text-muted);
+}

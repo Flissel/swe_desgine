@@ -1,0 +1,75 @@
+erDiagram
+    AGENT ||--o{ CAPABILITY : has
+    AGENT ||--o{ TOOL : uses
+    AGENT ||--o{ BANK_TRANSACTION : processes
+    AGENT ||--o{ PAYMENT_ALLOCATION : creates
+    AGENT ||--o{ STATUS_UPDATE : performs
+    AGENT ||--o{ BOOKING_SUGGESTION : generates
+
+    BANK_TRANSACTION ||--o{ PAYMENT_ALLOCATION : matched_in
+    INVOICE ||--o{ PAYMENT_ALLOCATION : allocated_to
+    INVOICE ||--o{ STATUS_UPDATE : updates
+    ACCOUNTING_SYSTEM ||--o{ BOOKING_SUGGESTION : posts_to
+
+    AGENT {
+        string agent_id PK
+        string name
+        string description
+
+    CAPABILITY {
+        string capability_id PK
+        string name
+        string description
+        string agent_id FK
+
+    TOOL {
+        string tool_id PK
+        string name
+        string type
+        string agent_id FK
+
+    BANK_TRANSACTION {
+        string transaction_id PK
+        string bank_reference
+        string account_number
+        float amount
+        date transaction_date
+        string currency
+        string agent_id FK
+
+    INVOICE {
+        string invoice_id PK
+        string invoice_number
+        float total_amount
+        date issue_date
+        date due_date
+        string status
+
+    PAYMENT_ALLOCATION {
+        string allocation_id PK
+        string transaction_id FK
+        string invoice_id FK
+        float allocated_amount
+        date allocation_date
+        string agent_id FK
+
+    STATUS_UPDATE {
+        string status_update_id PK
+        string invoice_id FK
+        string old_status
+        string new_status
+        date update_date
+        string agent_id FK
+
+    BOOKING_SUGGESTION {
+        string booking_id PK
+        string transaction_id FK
+        float amount
+        date booking_date
+        string accounting_system_id FK
+        string agent_id FK
+
+    ACCOUNTING_SYSTEM {
+        string accounting_system_id PK
+        string name
+        string connector_type

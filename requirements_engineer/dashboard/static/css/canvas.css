@@ -1,0 +1,399 @@
+/* ============================================
+   RE System - Canvas Styles
+   Canvas container, zoom, pan, connections
+   ============================================ */
+
+/* ============================================
+   Canvas Container
+   ============================================ */
+
+#canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-primary);
+    cursor: grab;
+}
+
+#canvas-container:active {
+    cursor: grabbing;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+    contain: layout style;
+}
+
+/* ============================================
+   Connection Lines (SVG Layer)
+   ============================================ */
+
+.connections-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+    will-change: contents;
+    contain: layout style;
+}
+
+/* ============================================
+   PERFORMANCE: Global Drag State
+   Body class 'is-dragging' disables expensive effects
+   ============================================ */
+
+body.is-dragging .connections-layer {
+    /* Disable all connection rendering during drag */
+    visibility: hidden;
+}
+
+body.is-dragging .connections-layer .connection-path {
+    /* Keep visibility but disable transitions */
+    transition: none !important;
+}
+
+body.is-dragging #canvas-container {
+    /* Isolate canvas during drag */
+    contain: strict;
+}
+
+body.is-dragging .canvas-node:not(.dragging) {
+    /* Freeze other nodes during drag */
+    pointer-events: none;
+}
+
+.connection-line {
+    fill: none;
+    stroke: var(--border-light);
+    stroke-width: 2;
+    transition: stroke 0.2s ease;
+}
+
+.connection-line:hover {
+    stroke: var(--accent-blue);
+    stroke-width: 3;
+}
+
+.connection-line.highlighted {
+    stroke: var(--accent-blue);
+    stroke-width: 3;
+    filter: drop-shadow(0 0 4px var(--accent-blue));
+}
+
+/* Connection Type Colors */
+.connection-line.type-epic-story { stroke: #7856ff; }
+.connection-line.type-req-story { stroke: #1d9bf0; }
+.connection-line.type-story-test { stroke: #00ba7c; }
+.connection-line.type-req-diagram { stroke: #ffd400; }
+
+/* Stacked Connections */
+.connection-stacked {
+    filter: drop-shadow(0 0 3px rgba(29, 155, 240, 0.5));
+    transition: stroke-width 0.2s ease;
+}
+
+.connection-stacked:hover {
+    stroke-opacity: 1 !important;
+    filter: drop-shadow(0 0 6px rgba(29, 155, 240, 0.8));
+}
+
+.stack-badge-group {
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.stack-badge-group:hover rect {
+    filter: brightness(1.2);
+}
+
+.stack-badge-group text {
+    user-select: none;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Diagram Stack */
+.connection-diagram-stacked {
+    filter: drop-shadow(0 0 4px rgba(255, 212, 0, 0.6));
+    transition: all 0.2s ease;
+}
+
+.connection-diagram-stacked:hover {
+    stroke-opacity: 1 !important;
+    filter: drop-shadow(0 0 8px rgba(255, 212, 0, 0.9));
+}
+
+.diagram-stack-badge-group {
+    cursor: pointer;
+    pointer-events: all;
+    transition: transform 0.2s ease;
+}
+
+.diagram-stack-badge-group:hover {
+    transform: scale(1.15);
+}
+
+.diagram-stack-badge-group:hover rect {
+    filter: brightness(1.2);
+}
+
+.diagram-stack-badge-group:active {
+    transform: scale(1.05);
+}
+
+/* Spoke/Hub Connections */
+.spoke-connection {
+    stroke: rgba(120, 86, 255, 0.3);
+    stroke-dasharray: 4 4;
+    transition: stroke 0.2s ease;
+}
+
+.spoke-connection:hover {
+    stroke: rgba(120, 86, 255, 0.6);
+}
+
+.hub-connection {
+    stroke: rgba(255, 212, 0, 0.4);
+    stroke-width: 3;
+    transition: all 0.2s ease;
+}
+
+.hub-connection:hover {
+    stroke: rgba(255, 212, 0, 0.8);
+    stroke-width: 4;
+}
+
+/* ============================================
+   Connection Legend
+   ============================================ */
+
+.connection-legend {
+    position: fixed;
+    bottom: 450px;
+    right: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.connection-legend h4 {
+    margin: 0 0 8px 0;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.legend-line {
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.legend-line.epic-story { background: #7856ff; }
+.legend-line.epic-req { background: #9333ea; }
+.legend-line.req-story { background: #1d9bf0; }
+.legend-line.story-test { background: #00ba7c; }
+.legend-line.req-diagram { background: #ffd400; }
+.legend-line.persona-story { background: #f97316; }
+.legend-line.persona-screen { background: #f97316; }
+.legend-line.flow-screen { background: #ec4899; }
+.legend-line.screen-component { background: #84cc16; }
+.legend-line.story-screen { background: #8b5cf6; }
+.legend-line.feature-task { background: #f59e0b; }
+.legend-line.feature-story { background: #10b981; }
+.legend-line.req-api { background: #ff7a00; }
+.legend-line.api-screen { background: #8b5cf6; }
+.legend-line.comp-api { background: #ff7a00; }
+.legend-line.test-api { background: #f4212e; }
+.legend-line.api-entity { background: #6366f1; }
+.legend-line.entity-api { background: #6366f1; }
+.legend-line.req-entity { background: #6366f1; }
+.legend-line.screen-entity { background: #84cc16; }
+.legend-line.diagram-entity { background: #ffd400; }
+.legend-line.tech-comp { background: #06b6d4; }
+.legend-line.default { background: #536471; }
+
+/* ============================================
+   Cluster Layout Mode
+   ============================================ */
+
+.canvas-node.in-cluster {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.canvas-node.cluster-root {
+    border-width: 2px;
+    border-style: solid;
+}
+
+.canvas-node.cluster-root.epic { border-color: #7856ff; }
+.canvas-node.cluster-root.requirement { border-color: #1d9bf0; }
+
+.connections-layer .cluster-bg {
+    transition: opacity 0.2s ease;
+}
+
+.connections-layer .cluster-bg:hover {
+    fill-opacity: 0.4;
+}
+
+/* ============================================
+   Hub-and-Spoke Layout
+   ============================================ */
+
+.link-layout-structure {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.hub-zone {
+    position: absolute;
+    border: 2px dashed rgba(120, 86, 255, 0.3);
+    background: radial-gradient(circle, rgba(120, 86, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.hub-zone:hover {
+    border-color: rgba(120, 86, 255, 0.5);
+    background: radial-gradient(circle, rgba(120, 86, 255, 0.1) 0%, transparent 70%);
+}
+
+.hub-label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-purple);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.hub-icon {
+    font-size: 16px;
+    color: var(--accent-yellow);
+}
+
+.hub-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hub-degree {
+    font-size: 10px;
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    background: var(--bg-active);
+    border-radius: 10px;
+}
+
+.orphan-zone {
+    position: absolute;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(244, 33, 46, 0.1) 0%, var(--bg-tertiary) 100%);
+    border: 1px dashed rgba(244, 33, 46, 0.3);
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.orphan-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-red);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Flow Layout Zones */
+.flow-layout-zones {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.flow-zone {
+    position: absolute;
+    border-radius: 12px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.flow-zone-label {
+    text-align: center;
+    padding: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.orphan-zone-label {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ============================================
+   Package Backgrounds
+   ============================================ */
+
+.package-bg {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    transition: all 0.3s ease;
+}
+
+.package-bg:hover {
+    filter: brightness(1.1);
+}
+
+.package-label {
+    position: absolute;
+    top: 16px;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.package-label span:first-child {
+    font-size: 20px;
+}
+
+.package-label span:last-child {
+    opacity: 0.6;
+    font-weight: 400;
+    font-size: 13px;
+}

@@ -1,0 +1,79 @@
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant AuthService
+    participant ProfileService
+    participant RBACService
+    participant NotificationService
+    participant DashboardService
+    participant LocalizationService
+    participant SecurityService
+    participant SessionService
+    participant AuditService
+
+    User->>Frontend: Open Profile Settings
+    Frontend->>AuthService: Validate session/token
+    activate AuthService
+    AuthService-->>Frontend: Session valid
+    deactivate AuthService
+
+    Frontend->>ProfileService: Get current settings
+    activate ProfileService
+    ProfileService->>RBACService: Get user_role
+    activate RBACService
+    RBACService-->>ProfileService: role data
+    deactivate RBACService
+    ProfileService->>NotificationService: Get notification_preferences
+    activate NotificationService
+    NotificationService-->>ProfileService: preferences
+    deactivate NotificationService
+    ProfileService->>DashboardService: Get dashboard_customization
+    activate DashboardService
+    DashboardService-->>ProfileService: customization
+    deactivate DashboardService
+    ProfileService->>LocalizationService: Get language_settings
+    activate LocalizationService
+    LocalizationService-->>ProfileService: language settings
+    deactivate LocalizationService
+    ProfileService->>SecurityService: Get security_settings
+    activate SecurityService
+    SecurityService-->>ProfileService: security settings
+    deactivate SecurityService
+    ProfileService-->>Frontend: Aggregated settings
+    deactivate ProfileService
+
+    Frontend-->>User: Render settings form
+
+    User->>Frontend: Update settings
+    Frontend->>RBACService: Update user_role (if authorized)
+    activate RBACService
+    RBACService-->>Frontend: Role update result
+    deactivate RBACService
+    Frontend->>NotificationService: Update notification_preferences
+    activate NotificationService
+    NotificationService-->>Frontend: Update result
+    deactivate NotificationService
+    Frontend->>DashboardService: Update dashboard_customization
+    activate DashboardService
+    DashboardService-->>Frontend: Update result
+    deactivate DashboardService
+    Frontend->>LocalizationService: Update language_settings
+    activate LocalizationService
+    LocalizationService-->>Frontend: Update result
+    deactivate LocalizationService
+    Frontend->>SecurityService: Update security_settings
+    activate SecurityService
+    SecurityService-->>Frontend: Update result
+    deactivate SecurityService
+
+    Frontend->>SessionService: Refresh session if needed
+    activate SessionService
+    SessionService-->>Frontend: Session updated
+    deactivate SessionService
+
+    Frontend->>AuditService: Record audit_trail event
+    activate AuditService
+    AuditService-->>Frontend: Audit logged
+    deactivate AuditService
+
+    Frontend-->>User: Show success confirmation

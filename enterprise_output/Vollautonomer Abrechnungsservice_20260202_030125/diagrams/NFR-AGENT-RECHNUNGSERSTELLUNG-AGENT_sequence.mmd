@@ -1,0 +1,38 @@
+sequenceDiagram
+    participant User
+    participant InvoiceCreationAgent as Rechnungserstellung-Agent
+    participant DataSources as Datenquellen
+    participant InvoiceTemplateEngine
+    participant TaxCalculator
+    participant Validator as Validierung
+    participant EmailSender
+
+    User->>InvoiceCreationAgent: Rechnung anfordern
+    activate InvoiceCreationAgent
+    InvoiceCreationAgent->>DataSources: Daten aggregieren
+    activate DataSources
+    DataSources-->>InvoiceCreationAgent: Aggregierte Daten
+    deactivate DataSources
+
+    InvoiceCreationAgent->>TaxCalculator: Steuer berechnen
+    activate TaxCalculator
+    TaxCalculator-->>InvoiceCreationAgent: Steuerdetails
+    deactivate TaxCalculator
+
+    InvoiceCreationAgent->>InvoiceTemplateEngine: Rechnung generieren
+    activate InvoiceTemplateEngine
+    InvoiceTemplateEngine-->>InvoiceCreationAgent: Rechnungsentwurf
+    deactivate InvoiceTemplateEngine
+
+    InvoiceCreationAgent->>Validator: Rechnung validieren
+    activate Validator
+    Validator-->>InvoiceCreationAgent: Validierungsergebnis
+    deactivate Validator
+
+    InvoiceCreationAgent->>EmailSender: Rechnung versenden
+    activate EmailSender
+    EmailSender-->>InvoiceCreationAgent: Versandbestätigung
+    deactivate EmailSender
+
+    InvoiceCreationAgent-->>User: Rechnung bereitgestellt
+    deactivate InvoiceCreationAgent

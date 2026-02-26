@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> SystemInit
+    SystemInit --> ZeroTrustEnforced : initComplete
+    ZeroTrustEnforced --> IdentityVerification : accessRequest
+    IdentityVerification --> AccessGranted : authSuccess
+    IdentityVerification --> AccessDenied : authFailure
+    AccessGranted --> ContinuousMonitoring : sessionStart
+    AccessDenied --> ContinuousMonitoring : logAttempt
+    ContinuousMonitoring --> ThreatDetected : aiAlert
+    ContinuousMonitoring --> NormalOperation : noThreat
+    NormalOperation --> ContinuousMonitoring : periodicCheck
+    ThreatDetected --> ThreatAnalysis : classifyThreat
+    ThreatAnalysis --> ThreatMitigated : mitigationSuccess
+    ThreatAnalysis --> IncidentEscalated : mitigationFailure
+    ThreatMitigated --> ContinuousMonitoring : resumeMonitoring
+    IncidentEscalated --> SystemRecovery : isolateSystems
+    SystemRecovery --> ContinuousMonitoring : recoveryComplete
+    ContinuousMonitoring --> [*] : shutdown

@@ -1,0 +1,39 @@
+erDiagram
+    COMPANY ||--o{ ADDRESS : has
+    COMPANY ||--o{ CONTACT_DETAIL : has
+    COMPANY ||--o{ TAX_VALIDATION : has
+    COMPANY ||--|| PAYMENT_TERMS : defaults
+
+    COMPANY {
+        string company_id PK
+        string company_name
+        string tax_id
+        string vat_number
+
+    ADDRESS {
+        string address_id PK
+        string company_id FK
+        string street
+        string city
+        string state
+        string postal_code
+        string country
+        string format_code
+
+    CONTACT_DETAIL {
+        string contact_id PK
+        string company_id FK
+        string email
+        string phone
+
+    PAYMENT_TERMS {
+        string payment_terms_id PK
+        string terms_name
+        int net_days
+
+    TAX_VALIDATION {
+        string validation_id PK
+        string company_id FK
+        string validation_provider
+        string status
+        string validated_at

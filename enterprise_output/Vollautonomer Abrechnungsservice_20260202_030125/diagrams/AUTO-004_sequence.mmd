@@ -1,0 +1,63 @@
+sequenceDiagram
+    participant Manager as Manager/User
+    participant UI as Dashboard UI
+    participant Auth as Auth Service
+    participant Monitor as Monitoring Service
+    participant Engine as Workflow Engine
+    participant KPI as KPI Store
+    participant Agent as Agent Manager
+    participant Alerts as Alert Service
+
+    Manager->>UI: Open Monitoring Dashboard
+    activate UI
+    UI->>Auth: Authenticate/Authorize
+    activate Auth
+    Auth-->>UI: Access token
+    deactivate Auth
+
+    UI->>Monitor: Subscribe to real-time updates (WebSocket)
+    activate Monitor
+    Monitor-->>UI: Subscription confirmed
+
+    UI->>Monitor: Request initial snapshot
+    Monitor->>Engine: Get workflow status
+    activate Engine
+    Engine-->>Monitor: Workflow status
+    deactivate Engine
+
+    Monitor->>KPI: Get KPI metrics
+    activate KPI
+    KPI-->>Monitor: KPI snapshot
+    deactivate KPI
+
+    Monitor->>Agent: Get agent performance
+    activate Agent
+    Agent-->>Monitor: Agent metrics
+    deactivate Agent
+
+    Monitor-->>UI: Initial dashboard data
+    UI-->>Manager: Render dashboards
+    deactivate UI
+
+    loop Real-time updates
+        Engine-->>Monitor: Workflow event
+        Monitor-->>UI: Push workflow update
+        KPI-->>Monitor: KPI update
+        Monitor-->>UI: Push KPI update
+        Agent-->>Monitor: Agent performance update
+        Monitor-->>UI: Push agent update
+    end
+
+    opt Alert condition met
+        Monitor->>Alerts: Trigger alert
+        activate Alerts
+        Alerts-->>Manager: Notify via UI/Email/SMS
+        deactivate Alerts
+    end
+
+    Manager->>UI: Filter/Drill-down
+    activate UI
+    UI->>Monitor: Query filtered data
+    Monitor-->>UI: Filtered results
+    UI-->>Manager: Update view
+    deactivate UI

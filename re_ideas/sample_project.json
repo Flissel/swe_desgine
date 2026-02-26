@@ -1,0 +1,93 @@
+{
+    "Name": "ecommerce_platform",
+    "Title": "E-Commerce Platform",
+    "Domain": "e-commerce",
+    "Context": {
+        "summary": "A modern e-commerce platform that allows users to browse products, manage their shopping cart, and complete purchases securely.",
+        "business": "Online retail with physical product sales, targeting B2C market in DACH region",
+        "domain": "Retail, Logistics, Payment Processing, Customer Management",
+        "technical": "Cloud-native architecture with microservices, REST APIs, event-driven communication",
+        "user": "B2C customers (10k+ daily active users), internal admin staff (~20 users)"
+    },
+    "Stakeholders": [
+        {
+            "role": "Product Owner",
+            "name": "Maria Schmidt",
+            "concerns": ["ROI", "time-to-market", "competitive features", "customer satisfaction"],
+            "availability": "weekly sync, daily async",
+            "decision_authority": "feature prioritization, release scope"
+        },
+        {
+            "role": "End User (Customer)",
+            "persona": "Online Shopper",
+            "concerns": ["usability", "performance", "security", "mobile experience"],
+            "pain_points": ["complex checkout process", "slow search", "confusing navigation"],
+            "goals": ["quick product discovery", "easy checkout", "order tracking"]
+        },
+        {
+            "role": "End User (Admin)",
+            "persona": "Shop Manager",
+            "concerns": ["inventory management", "order processing", "reporting", "efficiency"],
+            "pain_points": ["manual data entry", "lack of real-time updates"],
+            "goals": ["streamlined operations", "clear analytics", "bulk operations"]
+        },
+        {
+            "role": "Developer",
+            "concerns": ["maintainability", "scalability", "clear specifications", "testability"],
+            "pain_points": ["unclear requirements", "changing scope"],
+            "goals": ["clean architecture", "comprehensive documentation"]
+        },
+        {
+            "role": "Operations/DevOps",
+            "concerns": ["monitoring", "deployment", "reliability", "security"],
+            "pain_points": ["manual deployments", "alert fatigue"],
+            "goals": ["automated pipelines", "proactive monitoring"]
+        }
+    ],
+    "Initial Requirements": [
+        "Users should be able to register and login with email/password",
+        "Users should be able to browse products by category",
+        "Users should be able to search for products with filters",
+        "Users should be able to add products to a shopping cart",
+        "Users should be able to checkout and pay with credit card or PayPal",
+        "Users should receive order confirmation via email",
+        "Users should be able to track their order status",
+        "Users should be able to view order history",
+        "Users should be able to manage their profile and addresses",
+        "Admins should be able to manage product inventory",
+        "Admins should be able to process and fulfill orders",
+        "Admins should be able to view sales reports and analytics",
+        "System should support 10,000 concurrent users",
+        "Page load time should be under 2 seconds",
+        "All sensitive data must be encrypted",
+        "System should be available 99.9% of the time"
+    ],
+    "Constraints": {
+        "technical": [
+            "PostgreSQL for database",
+            "Cloud deployment (AWS preferred)",
+            "REST API architecture with OpenAPI 3.0 documentation",
+            "React frontend with TypeScript",
+            "Docker containers for deployment",
+            "CI/CD with GitHub Actions"
+        ],
+        "regulatory": [
+            "GDPR compliance (data privacy, right to deletion)",
+            "PCI-DSS for payment processing",
+            "Accessibility WCAG 2.1 AA"
+        ],
+        "budget": "200k EUR",
+        "timeline": "4 months",
+        "team_size": "5 developers, 1 QA, 1 DevOps"
+    },
+    "Work Division": "per_feature",
+    "Enterprise Options": {
+        "generate_user_stories": true,
+        "generate_api_spec": true,
+        "generate_data_dictionary": true,
+        "generate_gherkin": true,
+        "enable_self_critique": true,
+        "max_passes": 5,
+        "output_format": "markdown"
+    }
+}

@@ -1,0 +1,12 @@
+erDiagram
+    FRONTEND_COMPONENT ||--o{ API_ENDPOINT : exposes
+    FRONTEND_COMPONENT {
+        string component_id PK
+        string name
+        string description
+
+    API_ENDPOINT {
+        string endpoint_id PK
+        string component_id FK
+        string path
+        string method

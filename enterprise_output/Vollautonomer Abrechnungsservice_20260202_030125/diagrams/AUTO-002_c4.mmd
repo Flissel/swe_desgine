@@ -1,0 +1,14 @@
+C4Context
+    title AUTO-002 Workflow-Routing - System Context
+    Person(billingAgent, "Abrechnungsagent", "Bearbeitet zugewiesene Abrechnungsaufgaben")
+    Person(teamLead, "Teamleitung", "Überwacht Zuweisungen und Auslastung")
+    System(auto002, "AUTO-002 Workflow-Routing", "Intelligentes Routing von Abrechnungsaufgaben nach Typ und Komplexität")
+    System_Ext(billingSystem, "Abrechnungssystem", "Erzeugt Abrechnungsaufgaben")
+    System_Ext(agentDirectory, "Agentenverzeichnis", "Verfügbare Agenten und Fähigkeiten")
+    System_Ext(analytics, "Analytics/Monitoring", "Metriken zu Routing und Leistung")
+
+    Rel(billingSystem, auto002, "Übermittelt Abrechnungsaufgaben")
+    Rel(auto002, agentDirectory, "Fragt Fähigkeiten und Verfügbarkeit ab")
+    Rel(auto002, billingAgent, "Weist Abrechnungsaufgaben zu")
+    Rel(teamLead, auto002, "Konfiguriert Routing-Regeln")
+    Rel(auto002, analytics, "Sendet Routing-Metriken")

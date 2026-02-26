@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> Assessment
+    Assessment --> ArchitectureDesign : define_requirements
+    ArchitectureDesign --> QuantumIntegration : design_complete
+    QuantumIntegration --> RiskMitigation : integrate_quantum
+    RiskMitigation --> Validation : apply_geopolitical_controls
+    Validation --> ScalabilityPlanning : validate_readiness
+    ScalabilityPlanning --> Deployment : plan_scale
+    Deployment --> Monitoring : deploy_architecture
+    Monitoring --> Optimization : monitor_performance
+    Optimization --> Monitoring : refine_optimization
+    Monitoring --> EndState : retire_architecture
+    EndState --> [*]
+
+    state EndState as EndState

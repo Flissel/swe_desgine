@@ -1,0 +1,48 @@
+erDiagram
+    METRIC_CATEGORY ||--o{ METRIC : categorizes
+    METRIC ||--o{ AUTONOMY_MEASUREMENT : has
+    METRIC ||--o{ AI_PERFORMANCE_INDICATOR : has
+    METRIC ||--o{ BUSINESS_IMPACT_METRIC : has
+    MODEL ||--o{ AI_PERFORMANCE_INDICATOR : evaluated_by
+    BUSINESS_UNIT ||--o{ BUSINESS_IMPACT_METRIC : impacts
+
+    METRIC_CATEGORY {
+        string category_id PK
+        string name
+        string description
+
+    METRIC {
+        string metric_id PK
+        string category_id FK
+        string name
+        string description
+        string unit
+
+    AUTONOMY_MEASUREMENT {
+        string autonomy_id PK
+        string metric_id FK
+        string level
+        string measured_at
+
+    AI_PERFORMANCE_INDICATOR {
+        string ai_perf_id PK
+        string metric_id FK
+        string model_id FK
+        string value
+        string measured_at
+
+    BUSINESS_IMPACT_METRIC {
+        string impact_id PK
+        string metric_id FK
+        string business_unit_id FK
+        string value
+        string measured_at
+
+    MODEL {
+        string model_id PK
+        string name
+        string version
+
+    BUSINESS_UNIT {
+        string business_unit_id PK
+        string name

@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> ExceptionDetected : exception_occurs
+    ExceptionDetected --> AnalyzeException : capture_context
+    AnalyzeException --> RecommendSolution : analysis_complete
+    RecommendSolution --> Resolve : solution_applied
+    RecommendSolution --> Escalate : no_viable_solution
+    Escalate --> Resolve : escalation_resolved
+    Resolve --> Learn : resolution_logged
+    Learn --> Idle : learning_complete
+    Resolve --> [*] : case_closed
+    Escalate --> [*] : escalation_failed

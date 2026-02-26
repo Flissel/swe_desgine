@@ -1,0 +1,13 @@
+C4Context
+    title AUTO-003: Exception-Handling - System Context
+    Person(devops, "DevOps Engineer", "Monitors and responds to exceptions")
+    Person(operator, "System Operator", "Oversees automated exception handling")
+    System(exceptionSystem, "Exception Handling System", "Automatically detects and resolves exceptions using LLMs and specialized agents")
+    System_Ext(llmProvider, "LLM Provider", "Provides large language model capabilities")
+    System_Ext(monitoringSystem, "Monitoring/Logging System", "Supplies logs and alerts for exception detection")
+    System_Ext(agentFramework, "Specialized Agent Framework", "Executes targeted remediation actions")
+    Rel(devops, exceptionSystem, "Uses")
+    Rel(operator, exceptionSystem, "Uses")
+    Rel(exceptionSystem, llmProvider, "Queries for analysis and remediation suggestions")
+    Rel(exceptionSystem, monitoringSystem, "Ingests logs and alerts from")
+    Rel(exceptionSystem, agentFramework, "Invokes for automated remediation")

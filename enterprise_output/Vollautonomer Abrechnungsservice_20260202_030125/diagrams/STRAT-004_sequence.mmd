@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant User
+    participant AISystem as AI System
+    participant BiasDetector as Bias Detection Service
+    participant EthicsFramework as Ethics Framework
+    participant AuditLog as Audit Log
+    participant GovernanceBoard as Governance Board
+
+    User->>AISystem: Submit request
+    activate AISystem
+    AISystem->>EthicsFramework: Load ethical rules
+    activate EthicsFramework
+    EthicsFramework-->>AISystem: Provide constraints
+    deactivate EthicsFramework
+
+    AISystem->>AISystem: Generate preliminary decision
+    AISystem->>BiasDetector: Analyze decision for bias
+    activate BiasDetector
+    BiasDetector-->>AISystem: Bias assessment report
+    deactivate BiasDetector
+
+    AISystem->>AISystem: Apply constraints and mitigate bias
+    AISystem->>AuditLog: Record decision rationale and bias report
+    activate AuditLog
+    AuditLog-->>AISystem: Logged
+    deactivate AuditLog
+
+    AISystem-->>User: Provide transparent decision + explanation
+    AISystem->>GovernanceBoard: Submit governance report
+    activate GovernanceBoard
+    GovernanceBoard-->>AISystem: Acknowledge
+    deactivate GovernanceBoard
+    deactivate AISystem

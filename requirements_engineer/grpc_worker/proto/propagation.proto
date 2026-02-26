@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package propagation;
+
+// Main service for change propagation and Kilo Agent integration
+service PropagationService {
+    // Process a change and find affected nodes
+    rpc ProcessChange(ChangeRequest) returns (ChangeResponse);
+
+    // Evaluate impact on linked nodes without applying
+    rpc EvaluateImpact(ImpactRequest) returns (ImpactResponse);
+
+    // Stream AI-generated suggestions for affected nodes
+    rpc GetSuggestions(SuggestionRequest) returns (stream SuggestionResponse);
+
+    // Apply an approved suggestion
+    rpc ApplySuggestion(ApplyRequest) returns (ApplyResponse);
+
+    // Reject a suggestion
+    rpc RejectSuggestion(RejectRequest) returns (RejectResponse);
+
+    // Health check
+    rpc HealthCheck(HealthRequest) returns (HealthResponse);
+}
+
+// ============================================
+// Change Processing Messages
+// ============================================
+
+message ChangeRequest {
+    string project_id = 1;
+    string node_id = 2;
+    string node_type = 3;           // epic, requirement, user_story, task, diagram, test
+    string change_type = 4;         // content_edit, structure_change, diagram_update
+    string old_content = 5;
+    string new_content = 6;
+    string kilo_prompt = 7;         // User's Kilo Agent instruction (optional)
+    int32 max_propagation_depth = 8; // Default: 2
+    string session_id = 9;          // For conversation tracking
+}
+
+message ChangeResponse {
+    string change_id = 1;
+    bool success = 2;
+    string error = 3;
+    repeated string affected_node_ids = 4;
+    int32 suggestion_count = 5;
+    string kilo_response = 6;       // Direct Kilo Agent response if prompt provided
+}
+
+// ============================================
+// Impact Evaluation Messages
+// ============================================
+
+message ImpactRequest {
+    string project_id = 1;
+    string node_id = 2;
+    int32 depth = 3;                // Default: 2
+    repeated string include_types = 4; // Filter by node types
+}
+
+message ImpactResponse {
+    repeated AffectedNode affected_nodes = 1;
+    int32 total_count = 2;
+    string graph_visualization = 3; // Mermaid diagram of impact
+}
+
+message AffectedNode {
+    string node_id = 1;
+    string node_type = 2;
+    string title = 3;
+    string link_type = 4;           // epic_story, requirement_diagram, etc.
+    int32 distance = 5;             // Hops from changed node
+    string current_content = 6;
+}
+
+// ============================================
+// Suggestion Messages
+// ============================================
+
+message SuggestionRequest {
+    string change_id = 1;
+    string target_node_id = 2;      // Optional: get suggestion for specific node
+}
+
+message SuggestionResponse {
+    string suggestion_id = 1;
+    string source_node_id = 2;
+    string target_node_id = 3;
+    string target_node_type = 4;
+    string link_type = 5;
+    string current_content = 6;
+    string suggested_content = 7;
+    string reasoning = 8;           // German explanation
+    float confidence = 9;           // 0.0 - 1.0
+    string kilo_session_id = 10;
+}
+
+// ============================================
+// Apply/Reject Messages
+// ============================================
+
+message ApplyRequest {
+    string suggestion_id = 1;
+    string modified_content = 2;    // Optional: user can modify before applying
+}
+
+message ApplyResponse {
+    bool success = 1;
+    string error = 2;
+    string updated_file_path = 3;
+    string backup_path = 4;
+}
+
+message RejectRequest {
+    string suggestion_id = 1;
+    string reason = 2;              // Optional: why rejected
+}
+
+message RejectResponse {
+    bool success = 1;
+}
+
+// ============================================
+// Health Check Messages
+// ============================================
+
+message HealthRequest {}
+
+message HealthResponse {
+    bool healthy = 1;
+    string status = 2;
+    int32 pending_suggestions = 3;
+    int32 active_sessions = 4;
+}

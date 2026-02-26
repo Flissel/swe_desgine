@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE System - Endless Canvas Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/css/edit-modal.css">
+    <link rel="stylesheet" href="static/css/wizard.css">
+    <link rel="stylesheet" href="static/css/pipeline.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Bar -->
+    <header id="header">
+        <div class="header-left">
+            <div class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">RE System Dashboard</span>
+            </div>
+            <div class="project-info" id="project-info">
+                <span class="project-name">No Project Loaded</span>
+            </div>
+        </div>
+        <div class="header-tabs" id="header-tabs">
+            <button class="header-tab active" data-tab="canvas" id="tab-canvas">
+                <span class="tab-icon">◈</span> Canvas
+            </button>
+            <button class="header-tab" data-tab="wizard" id="tab-wizard">
+                <span class="tab-icon">🧙</span> Wizard
+            </button>
+            <button class="header-tab" data-tab="pipeline" id="tab-pipeline">
+                <span class="tab-icon">&#9881;</span> Pipeline
+            </button>
+        </div>
+        <div class="header-center">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="progress-text">Ready</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="quality-gates" id="quality-gates">
+                <div class="gate" data-gate="discovery" title="Discovery">
+                    <span class="gate-dot"></span>
+                    <span class="gate-label">D</span>
+                </div>
+                <div class="gate" data-gate="analysis" title="Analysis">
+                    <span class="gate-dot"></span>
+                    <span class="gate-label">A</span>
+                </div>
+                <div class="gate" data-gate="specification" title="Specification">
+                    <span class="gate-dot"></span>
+                    <span class="gate-label">S</span>
+                </div>
+                <div class="gate" data-gate="testing" title="Testing">
+                    <span class="gate-dot"></span>
+                    <span class="gate-label">T</span>
+                </div>
+                <div class="gate" data-gate="validation" title="Validation">
+                    <span class="gate-dot"></span>
+                    <span class="gate-label">V</span>
+                </div>
+            </div>
+            <button class="btn-icon" id="btn-fit" title="Fit to View">⊡</button>
+            <button class="btn-icon" id="btn-reset" title="Reset View">↺</button>
+            <div class="zoom-control">
+                <button class="btn-zoom" id="btn-zoom-out">−</button>
+                <span class="zoom-level" id="zoom-level">100%</span>
+                <button class="btn-zoom" id="btn-zoom-in">+</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Canvas Area -->
+    <main id="main">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <!-- Project Browser -->
+            <div class="sidebar-section project-browser-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📁</span>
+                    Projects
+                    <button class="btn-refresh" id="btn-refresh-projects" title="Refresh">↻</button>
+                </h3>
+                <div class="project-list" id="project-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Requirements
+                    <span class="badge" id="req-count">0</span>
+                </h3>
+                <div class="item-list" id="requirements-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📖</span>
+                    User Stories
+                    <span class="badge" id="us-count">0</span>
+                </h3>
+                <div class="item-list" id="user-stories-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🎯</span>
+                    Epics
+                    <span class="badge" id="epic-count">0</span>
+                </h3>
+                <div class="item-list" id="epics-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🧪</span>
+                    Tests
+                    <span class="badge" id="test-count">0</span>
+                </h3>
+                <div class="item-list" id="tests-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Diagramme
+                    <span class="badge" id="diagram-count">0</span>
+                </h3>
+                <div class="item-list" id="diagrams-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🖥️</span>
+                    Screens
+                    <span class="badge" id="screen-count">0</span>
+                </h3>
+                <div class="item-list" id="screens-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🔌</span>
+                    API Endpoints
+                    <span class="badge" id="api-count">0</span>
+                </h3>
+                <div class="item-list" id="api-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">👤</span>
+                    Personas
+                    <span class="badge" id="persona-count">0</span>
+                </h3>
+                <div class="item-list" id="personas-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🧩</span>
+                    Components
+                    <span class="badge" id="component-count">0</span>
+                </h3>
+                <div class="item-list" id="components-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📝</span>
+                    Tasks
+                    <span class="badge" id="task-count">0</span>
+                </h3>
+                <div class="item-list" id="tasks-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">&#9881;</span>
+                    Services
+                    <span class="badge" id="service-count">0</span>
+                </h3>
+                <div class="item-list" id="services-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">&#9654;</span>
+                    State Machines
+                    <span class="badge" id="state-machine-count">0</span>
+                </h3>
+                <div class="item-list" id="state-machines-list"></div>
+            </div>
+
+            <!-- Change Propagation Section -->
+            <div class="sidebar-section propagation-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🔄</span>
+                    Änderungen
+                    <span id="watching-indicator" class="indicator" title="File Watching inaktiv"></span>
+                </h3>
+                <div class="propagation-controls">
+                    <button id="watch-toggle-btn" class="btn-primary" onclick="toggleFileWatching()">
+                        Watching starten
+                    </button>
+                </div>
+                <div id="propagation-suggestions" class="suggestions-list">
+                    <p class="empty-state">Keine ausstehenden Vorschläge</p>
+                </div>
+            </div>
+
+            <!-- Auto-Link Section -->
+            <div class="sidebar-section autolink-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🔗</span>
+                    Verwaiste Nodes
+                    <span class="badge" id="orphan-count" style="display: none;">0</span>
+                </h3>
+                <div class="autolink-controls">
+                    <button id="btn-discover-links" class="btn-secondary">
+                        Auto-Discover
+                    </button>
+                </div>
+                <div id="link-suggestions" class="suggestions-list">
+                    <p class="empty-state">Keine Link-Vorschläge</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Canvas -->
+        <div id="canvas-container">
+            <div id="canvas" class="canvas">
+                <!-- Grid background -->
+                <div id="canvas-grid"></div>
+
+                <!-- Nodes will be added here dynamically -->
+                <div id="canvas-nodes"></div>
+
+                <!-- Connections SVG layer -->
+                <svg id="connections-layer" class="connections-layer"></svg>
+            </div>
+        </div>
+
+        <!-- Wizard (embedded, hidden by default) -->
+        <div id="wizard-container" class="wizard-container" style="display:none;"></div>
+
+        <!-- Pipeline View (embedded, hidden by default) -->
+        <div id="pipeline-container" style="display:none;"></div>
+
+        <!-- Log Panel -->
+        <div id="log-panel" class="log-panel">
+            <div class="log-header">
+                <span class="log-title">📜 Activity Log</span>
+                <button class="btn-icon btn-small" id="btn-toggle-log" title="Toggle Log">▼</button>
+            </div>
+            <div class="log-content" id="log-content"></div>
+        </div>
+    </main>
+
+    <!-- Mini Map -->
+    <div id="minimap" class="minimap">
+        <div class="minimap-content" id="minimap-content"></div>
+        <div class="minimap-viewport" id="minimap-viewport"></div>
+    </div>
+
+    <!-- Connection Status -->
+    <div id="connection-status" class="connection-status disconnected">
+        <span class="status-dot"></span>
+        <span class="status-text">Disconnected</span>
+    </div>
+
+    <!-- Layout Switcher (Matrix only) -->
+    <div id="layout-switcher" class="layout-switcher">
+        <button class="layout-btn active" data-layout="by_matrix" onclick="setLayout('by_matrix')" title="Matrix/Tabelle (Spalten=Verzeichnisse, Zeilen=Typen)">📊 Matrix</button>
+    </div>
+
+    <!-- Connection Legend (dynamically populated by buildLegend()) -->
+    <div id="connection-legend" class="connection-legend">
+        <h4>Verbindungstypen</h4>
+        <div id="legend-items"></div>
+    </div>
+
+    <!-- Package Matrix Panel (collapsed by default) -->
+    <div id="package-matrix-panel" class="package-matrix-panel collapsed">
+        <button class="package-matrix-toggle" onclick="togglePackageMatrix()">
+            <span class="toggle-icon">📦</span>
+            <span class="toggle-text">Package Matrix</span>
+            <span class="toggle-arrow">▲</span>
+        </button>
+        <div id="package-matrix"></div>
+    </div>
+
+    <!-- Detail Panel (positioned to the right, shown on node click) -->
+    <div id="detail-panel" class="detail-panel">
+        <div class="detail-header">
+            <h3>Select a node</h3>
+            <button onclick="hideDetailPanel()" class="close-btn">×</button>
+        </div>
+        <div class="detail-content">
+            <p class="detail-hint">Click on a node in the canvas to view its details and connections.</p>
+        </div>
+    </div>
+
+    <!-- Templates for Canvas Nodes -->
+    <template id="template-requirement">
+        <div class="canvas-node node-requirement" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">📋</span>
+                <span class="node-id"></span>
+                <span class="node-priority"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-type"></div>
+            <div class="node-connectors">
+                <div class="connector connector-left" data-side="left"></div>
+                <div class="connector connector-right" data-side="right"></div>
+                <div class="connector connector-bottom" data-side="bottom"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-user-story">
+        <div class="canvas-node node-user-story" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">📖</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-persona"></div>
+            <div class="node-connectors">
+                <div class="connector connector-left" data-side="left"></div>
+                <div class="connector connector-right" data-side="right"></div>
+                <div class="connector connector-top" data-side="top"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-epic">
+        <div class="canvas-node node-epic" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">🎯</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-count"></div>
+            <div class="node-connectors">
+                <div class="connector connector-left" data-side="left"></div>
+                <div class="connector connector-right" data-side="right"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-diagram">
+        <div class="canvas-node node-diagram" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">📊</span>
+                <span class="node-type"></span>
+            </div>
+            <div class="node-diagram-content mermaid"></div>
+            <div class="node-connectors">
+                <div class="connector connector-top" data-side="top"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Standalone Mermaid Template - for manual initialization -->
+    <template id="template-mermaid-standalone">
+        <div class="mermaid-container" data-status="pending">
+            <div class="mermaid-header">
+                <span class="mermaid-type-icon">📊</span>
+                <span class="mermaid-type-label"></span>
+                <span class="mermaid-status-badge">⏳</span>
+                <button class="mermaid-action-btn mermaid-fullscreen" title="Vollbild">⛶</button>
+                <button class="mermaid-action-btn mermaid-refresh" title="Neu laden">🔄</button>
+            </div>
+            <div class="mermaid-content">
+                <div class="mermaid-loading">Lädt Diagramm...</div>
+                <div class="mermaid-svg-wrapper"></div>
+                <div class="mermaid-error" style="display: none;"></div>
+            </div>
+            <div class="mermaid-footer">
+                <span class="mermaid-id"></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-test">
+        <div class="canvas-node node-test" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">🧪</span>
+                <span class="node-id"></span>
+                <span class="node-scenario-count"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-tags"></div>
+            <div class="node-connectors">
+                <div class="connector connector-top" data-side="top"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-api">
+        <div class="canvas-node node-api" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">🔌</span>
+                <span class="node-method"></span>
+            </div>
+            <div class="node-path"></div>
+            <div class="node-connectors">
+                <div class="connector connector-top" data-side="top"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- NEW ARTIFACT TEMPLATES -->
+
+    <template id="template-tech-stack">
+        <div class="canvas-node node-tech-stack" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">🛠️</span>
+                <span class="node-id">Tech Stack</span>
+            </div>
+            <div class="node-title"></div>
+            <div class="tech-details">
+                <div class="tech-frontend"></div>
+                <div class="tech-backend"></div>
+                <div class="tech-db"></div>
+                <div class="tech-deploy"></div>
+                <div class="tech-monitor"></div>
+            </div>
+            <div class="node-connectors">
+                <div class="connector connector-bottom" data-side="bottom"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-persona">
+        <div class="canvas-node node-persona" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">👤</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-role"></div>
+            <div class="node-connectors">
+                <div class="connector connector-left" data-side="left"></div>
+                <div class="connector connector-right" data-side="right"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-user-flow">
+        <div class="canvas-node node-user-flow" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">🔄</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-steps"></div>
+            <div class="node-flow-diagram mermaid"></div>
+            <div class="node-connectors">
+                <div class="connector connector-left" data-side="left"></div>
+                <div class="connector connector-right" data-side="right"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-component">
+        <div class="canvas-node node-component" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">🧩</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-comp-type"></div>
+            <div class="node-connectors">
+                <div class="connector connector-top" data-side="top"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-screen">
+        <div class="canvas-node node-screen" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">📱</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-route"></div>
+            <div class="node-connectors">
+                <div class="connector connector-left" data-side="left"></div>
+                <div class="connector connector-right" data-side="right"></div>
+                <div class="connector connector-bottom" data-side="bottom"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-task">
+        <div class="canvas-node node-task" draggable="true">
+            <div class="node-header">
+                <span class="node-icon">📋</span>
+                <span class="node-id"></span>
+            </div>
+            <div class="node-title"></div>
+            <div class="node-estimate"></div>
+            <div class="node-connectors">
+                <div class="connector connector-top" data-side="top"></div>
+            </div>
+        </div>
+    </template>
+
+    <script type="module" src="static/app.js?v=2"></script>
+</body>
+</html>

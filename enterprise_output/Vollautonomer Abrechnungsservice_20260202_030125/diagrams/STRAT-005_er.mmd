@@ -1,0 +1,76 @@
+erDiagram
+    SYSTEM ||--o{ DEVICE : hosts
+    SYSTEM ||--o{ NETWORK_SEGMENT : segments
+    USER ||--o{ AUTH_REQUEST : initiates
+    DEVICE ||--o{ AUTH_REQUEST : uses
+    ACCESS_POLICY ||--o{ AUTH_REQUEST : governs
+    AUTH_REQUEST ||--o{ LOG_ENTRY : generates
+    NETWORK_SEGMENT ||--o{ ACCESS_POLICY : applies_to
+    DEVICE ||--o{ THREAT_EVENT : emits
+    THREAT_EVENT ||--o{ RESPONSE_ACTION : triggers
+    AI_MODEL ||--o{ THREAT_EVENT : detects
+    AI_MODEL ||--o{ RESPONSE_ACTION : recommends
+
+    SYSTEM {
+        string system_id PK
+        string name
+        string description
+
+    USER {
+        string user_id PK
+        string username
+        string role
+
+    DEVICE {
+        string device_id PK
+        string system_id FK
+        string device_type
+        string status
+
+    NETWORK_SEGMENT {
+        string segment_id PK
+        string system_id FK
+        string name
+        string trust_level
+
+    ACCESS_POLICY {
+        string policy_id PK
+        string segment_id FK
+        string policy_name
+        string rules
+
+    AUTH_REQUEST {
+        string request_id PK
+        string user_id FK
+        string device_id FK
+        string policy_id FK
+        string decision
+        string timestamp
+
+    THREAT_EVENT {
+        string threat_id PK
+        string device_id FK
+        string model_id FK
+        string severity
+        string description
+        string detected_at
+
+    AI_MODEL {
+        string model_id PK
+        string model_name
+        string version
+        string status
+
+    RESPONSE_ACTION {
+        string action_id PK
+        string threat_id FK
+        string model_id FK
+        string action_type
+        string executed_at
+
+    LOG_ENTRY {
+        string log_id PK
+        string request_id FK
+        string event_type
+        string details
+        string created_at

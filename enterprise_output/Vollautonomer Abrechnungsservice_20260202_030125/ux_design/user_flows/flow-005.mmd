@@ -1,0 +1,37 @@
+flowchart TD
+    Start([Start: Customer Management])
+    S1[User oeffnet das Dashboard]
+    Start --> S1
+    S2[User klickt auf 'Customers']
+    S1 --> S2
+    S3[User klickt auf 'Neuen Kunden anlegen']
+    S2 --> S3
+    S4[User fuellt Kundenstammdaten aus (Name, Billing/Shipping Address, Tax ID, Payment Terms, Credit Limit, Preferred Payment Method)]
+    S3 --> S4
+    S5{User klickt auf 'Speichern'}
+    S4 --> S5
+    E5[/Pflichtfeld fehlt oder Tax ID hat ungueltiges Format/]
+    S5 -.-> E5
+    S6[System zeigt Validierungsfehler an]
+    S5 --> S6
+    S7[User korrigiert Eingaben und speichert erneut]
+    S6 --> S7
+    E7[/Serververbindung fehlgeschlagen/]
+    S7 -.-> E7
+    S8[System zeigt Customer List mit neuem Eintrag]
+    S7 --> S8
+    S9[User waehlt 'Bulk Import']
+    S8 --> S9
+    S10{User laedt Importdatei hoch und startet Import}
+    S9 --> S10
+    E10[/Datei fehlerhaft oder Format nicht unterstuetzt/]
+    S10 -.-> E10
+    S11{System findet Dubletten (Tax ID oder Customer Name)}
+    S10 --> S11
+    S12[User waehlt Option fuer jede Dublette (Merge/Update/Skip) und bestaetigt]
+    S11 --> S12
+    E12[/Konflikt bei Zusammenfuehrung kann nicht automatisch geloest werden/]
+    S12 -.-> E12
+    S13[System zeigt Import-Zusammenfassung]
+    S12 --> S13
+    S13 --> End([End])

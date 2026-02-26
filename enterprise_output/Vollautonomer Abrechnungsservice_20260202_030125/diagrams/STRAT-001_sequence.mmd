@@ -1,0 +1,29 @@
+sequenceDiagram
+    actor Board as Unternehmensführung
+    participant Strategy as Strategie-Team
+    participant AI as AI-Automation-Plattform
+    participant Data as Daten-Pipeline
+    participant Billing as Zero-Touch-Abrechnung
+    participant Client as Unternehmenskunden
+    participant Market as Markt/Branche
+
+    Board->>Strategy: Ziel: Marktführerschaft definieren
+    activate Strategy
+    Strategy->>AI: AI-Führerschafts-Roadmap initiieren
+    activate AI
+    AI->>Data: Autonome Prozesse trainieren
+    activate Data
+    Data-->>AI: Modelle & Regeln bereitstellen
+    deactivate Data
+    AI->>Billing: Zero-Touch-Abrechnung integrieren
+    activate Billing
+    Billing-->>AI: Automatisierte Abrechnungs-Workflows
+    deactivate Billing
+    AI-->>Strategy: End-to-End-Automation bereit
+    deactivate AI
+    Strategy->>Client: Value Proposition kommunizieren
+    activate Client
+    Client-->>Strategy: Adoption & Feedback
+    deactivate Client
+    Strategy->>Market: Positionierung als Marktführer
+    deactivate Strategy

@@ -1,0 +1,13 @@
+flowchart TD
+    Start([Start]) --> SelectSource[Quelldatei auswählen]
+    SelectSource --> ValidateFormat{CSV oder Excel?}
+    ValidateFormat -->|CSV| ParseCSV[CSV parsen]
+    ValidateFormat -->|Excel| ParseExcel[Excel parsen]
+    ValidateFormat -->|Nein| ErrorFormat[Fehler: Unbekanntes Format]
+    ErrorFormat --> End([End])
+    ParseCSV --> MapFields[Felder zuordnen]
+    ParseExcel --> MapFields
+    MapFields --> ValidateData[Daten validieren]
+    ValidateData --> ImportData[Kundendaten importieren]
+    ImportData --> Summary[Importzusammenfassung anzeigen]
+    Summary --> End([End])

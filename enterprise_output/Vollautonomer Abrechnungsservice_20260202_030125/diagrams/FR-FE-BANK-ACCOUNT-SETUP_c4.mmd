@@ -1,0 +1,16 @@
+C4Context
+    title Bank Account Setup - System Context
+    Person(user, "User", "Enters and manages bank account details")
+    System(frontend, "Bank Account Setup Frontend", "Secure web interface for bank account setup and management")
+    System_Ext(ibanValidator, "IBAN Validation Service", "Validates IBAN format")
+    System_Ext(bicService, "BIC Existence Check API", "Verifies BIC existence")
+    System_Ext(duplicateCheck, "Duplicate Prevention Service", "Checks for duplicate bank accounts")
+    System_Ext(tokenizationService, "Tokenization Service", "Tokenizes sensitive data")
+    System_Ext(pciCompliance, "PCI DSS Compliance Service", "Ensures PCI DSS compliance")
+
+    Rel(user, frontend, "Uses")
+    Rel(frontend, ibanValidator, "Validates IBAN format")
+    Rel(frontend, bicService, "Checks BIC existence")
+    Rel(frontend, duplicateCheck, "Prevents duplicates")
+    Rel(frontend, tokenizationService, "Tokenizes sensitive data")
+    Rel(frontend, pciCompliance, "Ensures compliance")

@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> AufgabeEingang
+    AufgabeEingang --> TypAnalyse : Aufgabe_erfasst
+    TypAnalyse --> KomplexitaetBewertung : Typ_bestimmt
+    TypAnalyse --> Fehler : Typ_unbekannt
+    KomplexitaetBewertung --> Agentenauswahl : Komplexitaet_bewertet
+    KomplexitaetBewertung --> Fehler : Bewertung_fehlerhaft
+    Agentenauswahl --> Routing : Agent_ausgewaehlt
+    Agentenauswahl --> Fehler : Kein_passender_Agent
+    Routing --> Bestaetigung : Routing_abgeschlossen
+    Routing --> Fehler : Routing_fehlgeschlagen
+    Bestaetigung --> [*] : Bestaetigt
+    Fehler --> [*] : Abbruch

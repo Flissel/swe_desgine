@@ -1,0 +1,30 @@
+classDiagram
+    class SteuerberechnungsAgent {
+        +agentName
+        +berechneMwSt()
+        +berechneAndereSteuern()
+        +kennzeichneSteuer()
+        +pruefeReverseCharge()
+        +erstelleBuchungsvorschlag()
+        +exportiereDATEV()
+
+    class TaxRateFinder {
+        +findeSteuersatz(land, kategorie)
+
+    class VATCalculator {
+        +berechneMwSt(betrag, steuersatz)
+        +berechneReverseCharge(betrag)
+
+    class DATEVExporter {
+        +exportiere(buchungsvorschlag)
+
+    class Buchungsvorschlag {
+        +kontoSoll
+        +kontoHaben
+        +betrag
+        +steuercode
+
+    SteuerberechnungsAgent --> TaxRateFinder : nutzt
+    SteuerberechnungsAgent --> VATCalculator : nutzt
+    SteuerberechnungsAgent --> DATEVExporter : nutzt
+    SteuerberechnungsAgent --> Buchungsvorschlag : erstellt

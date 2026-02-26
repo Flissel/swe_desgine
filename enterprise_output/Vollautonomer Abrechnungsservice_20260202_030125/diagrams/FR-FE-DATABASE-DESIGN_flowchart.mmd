@@ -1,0 +1,16 @@
+flowchart TD
+    Start([Start]) --> GatherReq[Gather frontend requirements]
+    GatherReq --> IdentifyEntities[Identify entities and attributes]
+    IdentifyEntities --> DefineRelations[Define relationships]
+    DefineRelations --> DecideNorm{Normalization required?}
+    DecideNorm -->|Yes| Normalize[Normalize schema]
+    DecideNorm -->|No| SkipNorm[Keep as is]
+    Normalize --> DefineConstraints[Define constraints and keys]
+    SkipNorm --> DefineConstraints
+    DefineConstraints --> DesignERD[Create ER diagram]
+    DesignERD --> ReviewSchema[Review with stakeholders]
+    ReviewSchema --> Approved{Approved?}
+    Approved -->|Yes| Finalize[Finalize database design]
+    Approved -->|No| Revise[Revise design]
+    Revise --> IdentifyEntities
+    Finalize --> End([End])

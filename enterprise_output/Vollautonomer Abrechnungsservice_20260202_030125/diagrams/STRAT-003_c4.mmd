@@ -1,0 +1,18 @@
+C4Context
+    title STRAT-003: Event-Driven Architecture für Autonomie
+    Person(ops, "Operations-Team", "Überwacht Verfügbarkeit und Betrieb")
+    Person(ai, "Autonomie-Operator", "Definiert Autonomieziele und Richtlinien")
+    System(main, "Autonomes Event-Driven System", "99.999% verfügbare Event-Driven-Architektur für autonome Entscheidungsfindung")
+    System_Ext(eventBus, "Event-Bus", "Verteilt Ereignisse an Konsumenten")
+    System_Ext(sensorNet, "Sensor-/Datenquellen", "Liefern Echtzeitereignisse")
+    System_Ext(actuatorApi, "Aktoren-API", "Führt autonome Aktionen aus")
+    System_Ext(mlPlatform, "ML/Policy Engine", "Stellt Modelle und Policies bereit")
+    System_Ext(monitoring, "Monitoring/Alerting", "Überwacht Systemzustand und Verfügbarkeit")
+
+    Rel(ops, main, "Überwacht und betreibt")
+    Rel(ai, main, "Konfiguriert Autonomieziele")
+    Rel(main, eventBus, "Publiziert/Subscribiert Ereignisse")
+    Rel(sensorNet, main, "Sendet Ereignisse")
+    Rel(main, actuatorApi, "Steuert Aktionen")
+    Rel(main, mlPlatform, "Nutzt Modelle/Policies")
+    Rel(main, monitoring, "Sendet Metriken/Events")

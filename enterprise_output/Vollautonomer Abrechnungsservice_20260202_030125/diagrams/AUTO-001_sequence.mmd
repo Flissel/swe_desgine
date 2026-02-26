@@ -1,0 +1,41 @@
+sequenceDiagram
+    actor Scheduler as Scheduler/Trigger
+    participant Orchestrator as Agenten-Orchestrator
+    participant DataSvc as Datenservice
+    participant Agent as Rechnungsagent
+    participant InvoiceSvc as Rechnungssystem
+    participant PDFSvc as PDF-Generator
+    participant EmailSvc as E-Mail-Service
+    participant Customer as Kunde
+
+    Scheduler->>Orchestrator: Starte automatische Rechnungsgenerierung
+    activate Orchestrator
+    Orchestrator->>DataSvc: Lade abrechnungsrelevante Daten
+    activate DataSvc
+    DataSvc-->>Orchestrator: Kundendaten, Leistungen, Preise
+    deactivate DataSvc
+
+    Orchestrator->>Agent: Erstelle Rechnungsentwurf
+    activate Agent
+    Agent->>InvoiceSvc: Validiere & berechne Rechnungspositionen
+    activate InvoiceSvc
+    InvoiceSvc-->>Agent: Berechnete Positionen & Steuern
+    deactivate InvoiceSvc
+    Agent-->>Orchestrator: Finaler Rechnungsentwurf
+    deactivate Agent
+
+    Orchestrator->>InvoiceSvc: Erzeuge Rechnung
+    activate InvoiceSvc
+    InvoiceSvc->>PDFSvc: Generiere PDF
+    activate PDFSvc
+    PDFSvc-->>InvoiceSvc: Rechnungs-PDF
+    deactivate PDFSvc
+    InvoiceSvc-->>Orchestrator: Rechnung erstellt (ID, PDF)
+    deactivate InvoiceSvc
+
+    Orchestrator->>EmailSvc: Versende Rechnung
+    activate EmailSvc
+    EmailSvc->>Customer: E-Mail mit Rechnung
+    EmailSvc-->>Orchestrator: Versandbestätigung
+    deactivate EmailSvc
+    deactivate Orchestrator

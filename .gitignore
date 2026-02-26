@@ -1,0 +1,68 @@
+# Environment / Secrets
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+desktop.ini
+
+# Logs
+*.log
+llm_costs.jsonl
+
+# Node (electron/dashboard)
+node_modules/
+package-lock.json
+
+# Electron build artifacts (large binaries)
+**/dashboard-electron/release/
+**/dashboard-electron/dist-electron/
+**/dashboard-electron/extracted-app/
+**/dashboard-electron/.electron-backup/
+*.exe
+*.blockmap
+*.nsis
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Mypy
+.mypy_cache/
+
+# Training data output (large, regenerated)
+training_data/
+
+# Pipeline checkpoints (large, regenerated)
+**/_checkpoints/
+
+# Backup files
+*_backup.*
+*.bak

@@ -1,0 +1,29 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> LoadingSchema : openDesigner
+    LoadingSchema --> ViewingSchema : schemaLoaded
+    LoadingSchema --> Error : loadFailed
+
+    ViewingSchema --> EditingTable : selectTable
+    ViewingSchema --> EditingRelationship : selectRelationship
+    ViewingSchema --> Idle : closeDesigner
+
+    EditingTable --> Validating : saveTable
+    EditingRelationship --> Validating : saveRelationship
+    EditingTable --> ViewingSchema : cancelEdit
+    EditingRelationship --> ViewingSchema : cancelEdit
+
+    Validating --> Saving : validationPassed
+    Validating --> EditingTable : validationFailedTable
+    Validating --> EditingRelationship : validationFailedRelation
+
+    Saving --> Saved : saveSuccess
+    Saving --> Error : saveFailed
+
+    Saved --> ViewingSchema : continueDesign
+    Saved --> Idle : closeDesigner
+
+    Error --> ViewingSchema : retry
+    Error --> Idle : closeDesigner
+
+    Idle --> [*] : exit

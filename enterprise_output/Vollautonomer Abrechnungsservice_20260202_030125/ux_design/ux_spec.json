@@ -1,0 +1,788 @@
+{
+  "project_name": "Vollautonomer Abrechnungsservice",
+  "personas": [
+    {
+      "id": "PERSONA-001",
+      "name": "Laura Becker",
+      "role": "Senior Accountant (Finance Team)",
+      "age_range": "30-45",
+      "goals": [
+        "Automatische und korrekte Rechnungsstellung",
+        "Zuverlaessiger Audit Trail",
+        "Schnelle Pflege von Bank- und Kundendaten"
+      ],
+      "pain_points": [
+        "Manuelle Nacharbeit bei POD-Validierung",
+        "Fehlerhafte Stammdaten verursachen Zahlungsverzoegerungen",
+        "Intransparente Aenderungshistorie"
+      ],
+      "tech_savviness": "medium",
+      "frequency_of_use": "daily",
+      "quote": "Wenn die Daten stimmen, kann die Rechnung sofort und nachvollziehbar rausgehen.",
+      "background": "8 Jahre im Rechnungswesen, arbeitet mit ERP und kennt Compliance-Anforderungen."
+    },
+    {
+      "id": "PERSONA-002",
+      "name": "Markus Schulte",
+      "role": "Operations Manager",
+      "age_range": "35-50",
+      "goals": [
+        "Echtzeit-Monitoring von Workflows und KPIs",
+        "Schnelles Erkennen von Ausnahmen",
+        "Effiziente, standardisierte Prozessablaeufe"
+      ],
+      "pain_points": [
+        "Fehlende Transparenz ueber Prozessstatus",
+        "Zeitaufwaendige Eskalationen bei Ausnahmen",
+        "Uneinheitliche Daten ueber verschiedene Screens"
+      ],
+      "tech_savviness": "medium-high",
+      "frequency_of_use": "daily",
+      "quote": "Ich brauche ein Dashboard, das mir sofort zeigt, wo es klemmt.",
+      "background": "12 Jahre Operations-Erfahrung, fokussiert auf Prozessoptimierung und Reporting."
+    },
+    {
+      "id": "PERSONA-003",
+      "name": "Svenja Keller",
+      "role": "System Administrator / DevOps",
+      "age_range": "28-40",
+      "goals": [
+        "Stabile Integrationen und API-Verfuegbarkeit",
+        "Sichere Rollen- und Rechtesteuerung",
+        "Zuverlaessiges Monitoring und Auditierung"
+      ],
+      "pain_points": [
+        "Unklare Endpunkt-Verfuegbarkeit",
+        "Manuelle Konfiguration von Schemas",
+        "Fehlende Transparenz bei Zugriffsrechten"
+      ],
+      "tech_savviness": "high",
+      "frequency_of_use": "weekly",
+      "quote": "Ich will Probleme proaktiv erkennen, bevor Nutzer sie merken.",
+      "background": "DevOps-Engineer mit Fokus auf Infrastruktur, Sicherheit und Integrationsstabilitaet."
+    },
+    {
+      "id": "PERSONA-004",
+      "name": "Anita Roy",
+      "role": "QA Engineer",
+      "age_range": "25-38",
+      "goals": [
+        "End-to-End Verifikation der AI-Agenten",
+        "Zuverlaessige Durchsatz- und Stabilitaetswerte",
+        "Reproduzierbare Tests in produktionsnahen Umgebungen"
+      ],
+      "pain_points": [
+        "Schwer nachvollziehbare AI-Fehler",
+        "Instabile Testumgebungen",
+        "Unklare Abbruchgruende im Prozess"
+      ],
+      "tech_savviness": "high",
+      "frequency_of_use": "daily",
+      "quote": "Wenn die Automatisierung nicht zuverlaessig ist, leidet das ganze Team.",
+      "background": "5 Jahre QA im SaaS-Umfeld, spezialisiert auf automatisierte End-to-End-Tests."
+    }
+  ],
+  "user_flows": [
+    {
+      "id": "FLOW-001",
+      "name": "Automatische Rechnungsstellung nach POD-Validierung",
+      "description": "Flow zur automatischen Erstellung einer Rechnung nach erfolgreicher POD-Validierung",
+      "actor": "Laura Becker",
+      "trigger": "Systemereignis: POD-Validierung abgeschlossen",
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "System empfängt Abschluss der POD-Validierung für einen Auftrag",
+          "screen": "Backend Prozess",
+          "expected_result": "POD-Validierungsergebnis wird verarbeitet",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 2,
+          "action": "System prüft, ob alle abrechnungsrelevanten Pflichtdaten vorhanden sind",
+          "screen": "Backend Prozess",
+          "expected_result": "Status der Vollständigkeit wird ermittelt",
+          "decision_point": true,
+          "error_scenario": "Fehlende Pflichtdaten werden erkannt"
+        },
+        {
+          "step_number": 3,
+          "action": "System prüft, ob bereits eine Rechnung für den Auftrag existiert",
+          "screen": "Backend Prozess",
+          "expected_result": "Duplikatsstatus wird ermittelt",
+          "decision_point": true,
+          "error_scenario": "Rechnung existiert bereits"
+        },
+        {
+          "step_number": 4,
+          "action": "System erzeugt automatisch eine Rechnung",
+          "screen": "Backend Prozess",
+          "expected_result": "Rechnung wird erstellt und dem Auftrag zugeordnet",
+          "decision_point": false,
+          "error_scenario": "Erzeugung schlägt fehl (Systemfehler)"
+        },
+        {
+          "step_number": 5,
+          "action": "System protokolliert die erfolgreiche Erstellung und stellt Rechnung im Auftragskontext bereit",
+          "screen": "Auftragsdetail",
+          "expected_result": "Rechnung ist nachvollziehbar dokumentiert und abrufbar",
+          "decision_point": false,
+          "error_scenario": ""
+        }
+      ],
+      "success_criteria": "Rechnung wurde automatisch erstellt, dem Auftrag zugeordnet und protokolliert",
+      "error_scenarios": [
+        "Pflichtdaten fehlen: Keine Rechnung erstellt, Fehlerstatus und Begründung protokolliert",
+        "Duplikat erkannt: Keine Rechnung erstellt, Duplikatversuch protokolliert",
+        "Systemfehler bei Rechnungserstellung: Vorgang fehlgeschlagen und protokolliert"
+      ],
+      "mermaid_diagram": "flowchart TD\n    Start([Start: Automatische Rechnungsstellung nach POD-Validierung])\n    S1[System empfängt Abschluss der POD-Validierung für einen Auftrag]\n    Start --> S1\n    S2{System prüft, ob alle abrechnungsrelevanten Pflichtdaten vorhanden sind}\n    S1 --> S2\n    E2[/Fehlende Pflichtdaten werden erkannt/]\n    S2 -.-> E2\n    S3{System prüft, ob bereits eine Rechnung für den Auftrag existiert}\n    S2 --> S3\n    E3[/Rechnung existiert bereits/]\n    S3 -.-> E3\n    S4[System erzeugt automatisch eine Rechnung]\n    S3 --> S4\n    E4[/Erzeugung schlägt fehl (Systemfehler)/]\n    S4 -.-> E4\n    S5[System protokolliert die erfolgreiche Erstellung und stellt Rechnung im Auftragskontext bereit]\n    S4 --> S5\n    S5 --> End([End])\n"
+    },
+    {
+      "id": "FLOW-002",
+      "name": "Monitoring-Dashboard anzeigen und überwachen",
+      "description": "Flow zum Anzeigen von Workflow-Status, KPIs und Agent-Performance in Echtzeit inkl. Exception-Handling",
+      "actor": "Laura Becker",
+      "trigger": "User öffnet das Monitoring-Dashboard",
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "User meldet sich an und navigiert zum Monitoring-Dashboard",
+          "screen": "Login / Navigation",
+          "expected_result": "Dashboard lädt und Zugriff ist autorisiert",
+          "decision_point": true,
+          "error_scenario": "Kein Zugriff: Hinweis auf fehlende Berechtigung"
+        },
+        {
+          "step_number": 2,
+          "action": "System lädt Echtzeitdaten (Workflows, KPIs, Agent-Performance)",
+          "screen": "Monitoring-Dashboard",
+          "expected_result": "Daten werden innerhalb von 5 Sekunden angezeigt",
+          "decision_point": true,
+          "error_scenario": "Datenquelle nicht verfügbar: Fehlermeldung und Anzeige des letzten Daten-Zeitstempels"
+        },
+        {
+          "step_number": 3,
+          "action": "User überprüft Workflow-Status und KPIs",
+          "screen": "Monitoring-Dashboard",
+          "expected_result": "Aktuelle Status- und KPI-Kacheln sind sichtbar und aktuell",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 4,
+          "action": "Dashboard aktualisiert automatisch oder User klickt auf 'Refresh'",
+          "screen": "Monitoring-Dashboard",
+          "expected_result": "Neue Daten werden geladen und angezeigt",
+          "decision_point": true,
+          "error_scenario": "Aktualisierung fehlgeschlagen: Fehlermeldung und letzte erfolgreiche Aktualisierung anzeigen"
+        },
+        {
+          "step_number": 5,
+          "action": "System erkennt Exception oder SLA-Verstoß",
+          "screen": "Monitoring-Dashboard",
+          "expected_result": "Exception wird hervorgehoben mit Zeitstempel und Link zu Workflow-Details",
+          "decision_point": true,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 6,
+          "action": "User klickt auf den Exception-Link",
+          "screen": "Workflow-Details",
+          "expected_result": "Detailansicht des betroffenen Workflows wird geöffnet",
+          "decision_point": false,
+          "error_scenario": "Workflow nicht verfügbar: Hinweis auf gelöschten/archivierten Workflow"
+        }
+      ],
+      "success_criteria": "Dashboard zeigt innerhalb von 5 Sekunden aktuelle Workflow-Status, KPIs und Agent-Performance an; Exceptions werden hervorgehoben und verlinkt",
+      "error_scenarios": [
+        "Datenquelle nicht verfügbar: Fehlermeldung und letzter Daten-Zeitstempel",
+        "Keine Berechtigung für Dashboardzugriff",
+        "Aktualisierung fehlgeschlagen: Anzeige letzter erfolgreicher Stand"
+      ],
+      "mermaid_diagram": "flowchart TD\n    Start([Start: Monitoring-Dashboard anzeigen und überwachen])\n    S1{User meldet sich an und navigiert zum Monitoring-Dashboard}\n    Start --> S1\n    E1[/Kein Zugriff: Hinweis auf fehlende Berechtigung/]\n    S1 -.-> E1\n    S2{System lädt Echtzeitdaten (Workflows, KPIs, Agent-Performance)}\n    S1 --> S2\n    E2[/Datenquelle nicht verfügbar: Fehlermeldung und Anzeige des letzten Daten-Zeitstempels/]\n    S2 -.-> E2\n    S3[User überprüft Workflow-Status und KPIs]\n    S2 --> S3\n    S4{Dashboard aktualisiert automatisch oder User klickt auf 'Refresh'}\n    S3 --> S4\n    E4[/Aktualisierung fehlgeschlagen: Fehlermeldung und letzte erfolgreiche Aktualisierung anzeigen/]\n    S4 -.-> E4\n    S5{System erkennt Exception oder SLA-Verstoß}\n    S4 --> S5\n    S6[User klickt auf den Exception-Link]\n    S5 --> S6\n    E6[/Workflow nicht verfügbar: Hinweis auf gelöschten/archivierten Workflow/]\n    S6 -.-> E6\n    S6 --> End([End])\n"
+    },
+    {
+      "id": "FLOW-003",
+      "name": "Bankkonto anlegen",
+      "description": "Flow zum Erfassen und Speichern von Bankkontodaten mit Validierung und Sicherheitskontrollen",
+      "actor": "Laura Becker",
+      "trigger": "User navigiert zu 'Bank Account Setup' und klickt auf 'Neues Bankkonto'",
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "User oeffnet das Finanz-Dashboard",
+          "screen": "Finanz-Dashboard",
+          "expected_result": "Dashboard wird angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 2,
+          "action": "User klickt auf 'Bankkonten' im Navigationsmenu",
+          "screen": "Finanz-Dashboard",
+          "expected_result": "Bank Account Setup Seite wird geladen",
+          "decision_point": false,
+          "error_scenario": "Zugriff verweigert bei fehlender Berechtigung"
+        },
+        {
+          "step_number": 3,
+          "action": "User klickt auf 'Neues Bankkonto hinzufuegen'",
+          "screen": "Bank Account Setup",
+          "expected_result": "Leeres Bankkonto-Formular wird angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 4,
+          "action": "User gibt bank_name, account_holder, iban, bic, account_type und currency ein",
+          "screen": "Bank Account Setup",
+          "expected_result": "Eingaben werden im Formular erfasst",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 5,
+          "action": "User klickt auf 'Speichern'",
+          "screen": "Bank Account Setup",
+          "expected_result": "System startet Validierung und Duplikatpruefung",
+          "decision_point": true,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 6,
+          "action": "System validiert IBAN-Format und BIC-Existenz",
+          "screen": "Bank Account Setup",
+          "expected_result": "Validierungsergebnis liegt vor",
+          "decision_point": true,
+          "error_scenario": "Ungueltiger IBAN oder nicht existierender BIC"
+        },
+        {
+          "step_number": 7,
+          "action": "System prueft, ob IBAN bereits existiert",
+          "screen": "Bank Account Setup",
+          "expected_result": "Duplikatpruefung abgeschlossen",
+          "decision_point": true,
+          "error_scenario": "IBAN bereits vorhanden"
+        },
+        {
+          "step_number": 8,
+          "action": "System speichert Bankkonto mit Ende-zu-Ende-Verschluesselung und Tokenization",
+          "screen": "Bank Account Setup",
+          "expected_result": "Bankkonto wird gespeichert und in der Liste angezeigt",
+          "decision_point": false,
+          "error_scenario": "Speichern fehlgeschlagen aufgrund Serverfehler"
+        },
+        {
+          "step_number": 9,
+          "action": "User sieht Erfolgsbestaetigung",
+          "screen": "Bank Account Setup",
+          "expected_result": "Success-Toast und Eintrag in der Bankkonto-Liste",
+          "decision_point": false,
+          "error_scenario": ""
+        }
+      ],
+      "success_criteria": "Bankkonto wird erfolgreich gespeichert, erscheint in der Liste und ist auditierbar",
+      "error_scenarios": [
+        "Ungueltiger IBAN-Format fuehrt zu Validierungsfehler",
+        "BIC existiert nicht und verhindert das Speichern",
+        "Duplikat-IBAN wird erkannt und blockiert",
+        "Serverfehler verhindert das Speichern"
+      ],
+      "mermaid_diagram": "flowchart TD\n    Start([Start: Bankkonto anlegen])\n    S1[User oeffnet das Finanz-Dashboard]\n    Start --> S1\n    S2[User klickt auf 'Bankkonten' im Navigationsmenu]\n    S1 --> S2\n    E2[/Zugriff verweigert bei fehlender Berechtigung/]\n    S2 -.-> E2\n    S3[User klickt auf 'Neues Bankkonto hinzufuegen']\n    S2 --> S3\n    S4[User gibt bank_name, account_holder, iban, bic, account_type und currency ein]\n    S3 --> S4\n    S5{User klickt auf 'Speichern'}\n    S4 --> S5\n    S6{System validiert IBAN-Format und BIC-Existenz}\n    S5 --> S6\n    E6[/Ungueltiger IBAN oder nicht existierender BIC/]\n    S6 -.-> E6\n    S7{System prueft, ob IBAN bereits existiert}\n    S6 --> S7\n    E7[/IBAN bereits vorhanden/]\n    S7 -.-> E7\n    S8[System speichert Bankkonto mit Ende-zu-Ende-Verschluesselung und Tokenization]\n    S7 --> S8\n    E8[/Speichern fehlgeschlagen aufgrund Serverfehler/]\n    S8 -.-> E8\n    S9[User sieht Erfolgsbestaetigung]\n    S8 --> S9\n    S9 --> End([End])\n"
+    },
+    {
+      "id": "FLOW-004",
+      "name": "Company Settings konfigurieren",
+      "description": "Flow zum Aktualisieren der Unternehmensstammdaten inkl. Legal, Tax, Address und Billing Defaults",
+      "actor": "Laura Becker",
+      "trigger": "User navigiert zu 'Company Settings'",
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "User oeffnet das Hauptmenue und waehlt 'Company Settings'",
+          "screen": "Navigation / Dashboard",
+          "expected_result": "Company Settings Seite wird geladen",
+          "decision_point": false,
+          "error_scenario": "Seite laedt nicht aufgrund fehlender Berechtigung"
+        },
+        {
+          "step_number": 2,
+          "action": "User waehlt aktive Entity aus dem Entity-Switcher",
+          "screen": "Company Settings",
+          "expected_result": "Daten der gewaehlten Entity werden angezeigt",
+          "decision_point": true,
+          "error_scenario": "Entity-Liste nicht verfuegbar (Serverfehler)"
+        },
+        {
+          "step_number": 3,
+          "action": "User aktualisiert Felder: company_name, tax_id, vat_number, address, contact_details, default_payment_terms",
+          "screen": "Company Settings",
+          "expected_result": "Eingaben werden im Formular angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 4,
+          "action": "User klickt 'Speichern'",
+          "screen": "Company Settings",
+          "expected_result": "Validierung wird gestartet",
+          "decision_point": true,
+          "error_scenario": "Speichern-Button deaktiviert bei fehlenden Pflichtfeldern"
+        },
+        {
+          "step_number": 5,
+          "action": "System prueft tax_id und vat_number via automatischer Steuer-Validierung",
+          "screen": "Company Settings",
+          "expected_result": "Gueltige Werte werden bestaetigt",
+          "decision_point": true,
+          "error_scenario": "Ungueltige tax_id oder vat_number"
+        },
+        {
+          "step_number": 6,
+          "action": "System speichert die Einstellungen der aktiven Entity",
+          "screen": "Company Settings",
+          "expected_result": "Erfolgsnachricht wird angezeigt und Werte sind gespeichert",
+          "decision_point": false,
+          "error_scenario": "Serverfehler beim Speichern"
+        },
+        {
+          "step_number": 7,
+          "action": "User wechselt zu einer anderen Entity und prueft deren Daten",
+          "screen": "Company Settings",
+          "expected_result": "Nur die Daten der neuen Entity werden angezeigt; vorherige Entity bleibt unveraendert",
+          "decision_point": false,
+          "error_scenario": ""
+        }
+      ],
+      "success_criteria": "Company Settings der aktiven Entity wurden erfolgreich validiert, gespeichert und korrekt angezeigt",
+      "error_scenarios": [
+        "Ungueltige tax_id oder vat_number blockiert Speichern und zeigt Fehlermeldung",
+        "Serverfehler beim Laden oder Speichern der Einstellungen",
+        "Fehlende Pflichtfelder verhindern das Speichern"
+      ],
+      "mermaid_diagram": "flowchart TD\n    Start([Start: Company Settings konfigurieren])\n    S1[User oeffnet das Hauptmenue und waehlt 'Company Settings']\n    Start --> S1\n    E1[/Seite laedt nicht aufgrund fehlender Berechtigung/]\n    S1 -.-> E1\n    S2{User waehlt aktive Entity aus dem Entity-Switcher}\n    S1 --> S2\n    E2[/Entity-Liste nicht verfuegbar (Serverfehler)/]\n    S2 -.-> E2\n    S3[User aktualisiert Felder: company_name, tax_id, vat_number, address, contact_details, default_payment_terms]\n    S2 --> S3\n    S4{User klickt 'Speichern'}\n    S3 --> S4\n    E4[/Speichern-Button deaktiviert bei fehlenden Pflichtfeldern/]\n    S4 -.-> E4\n    S5{System prueft tax_id und vat_number via automatischer Steuer-Validierung}\n    S4 --> S5\n    E5[/Ungueltige tax_id oder vat_number/]\n    S5 -.-> E5\n    S6[System speichert die Einstellungen der aktiven Entity]\n    S5 --> S6\n    E6[/Serverfehler beim Speichern/]\n    S6 -.-> E6\n    S7[User wechselt zu einer anderen Entity und prueft deren Daten]\n    S6 --> S7\n    S7 --> End([End])\n"
+    },
+    {
+      "id": "FLOW-005",
+      "name": "Customer Management",
+      "description": "Flow zum Verwalten von Kundenstammdaten inkl. Anlegen, Validierung und Bulk-Import mit Dublettenprüfung",
+      "actor": "Laura Becker",
+      "trigger": "User oeffnet den Bereich 'Customers'",
+      "steps": [
+        {
+          "step_number": 1,
+          "action": "User oeffnet das Dashboard",
+          "screen": "Dashboard",
+          "expected_result": "Dashboard wird angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 2,
+          "action": "User klickt auf 'Customers'",
+          "screen": "Navigation",
+          "expected_result": "Customer List wird angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 3,
+          "action": "User klickt auf 'Neuen Kunden anlegen'",
+          "screen": "Customer List",
+          "expected_result": "Kundenformular oeffnet sich",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 4,
+          "action": "User fuellt Kundenstammdaten aus (Name, Billing/Shipping Address, Tax ID, Payment Terms, Credit Limit, Preferred Payment Method)",
+          "screen": "Customer Form",
+          "expected_result": "Alle Pflichtfelder sind ausgefuellt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 5,
+          "action": "User klickt auf 'Speichern'",
+          "screen": "Customer Form",
+          "expected_result": "System validiert Eingaben",
+          "decision_point": true,
+          "error_scenario": "Pflichtfeld fehlt oder Tax ID hat ungueltiges Format"
+        },
+        {
+          "step_number": 6,
+          "action": "System zeigt Validierungsfehler an",
+          "screen": "Customer Form",
+          "expected_result": "Fehlerhinweis mit fehlendem/ungueltigem Feld wird angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 7,
+          "action": "User korrigiert Eingaben und speichert erneut",
+          "screen": "Customer Form",
+          "expected_result": "Kunde wird gespeichert",
+          "decision_point": false,
+          "error_scenario": "Serververbindung fehlgeschlagen"
+        },
+        {
+          "step_number": 8,
+          "action": "System zeigt Customer List mit neuem Eintrag",
+          "screen": "Customer List",
+          "expected_result": "Neuer Kunde erscheint mit allen Details",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 9,
+          "action": "User waehlt 'Bulk Import'",
+          "screen": "Customer List",
+          "expected_result": "Import-Dialog wird angezeigt",
+          "decision_point": false,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 10,
+          "action": "User laedt Importdatei hoch und startet Import",
+          "screen": "Bulk Import Dialog",
+          "expected_result": "System verarbeitet Datei",
+          "decision_point": true,
+          "error_scenario": "Datei fehlerhaft oder Format nicht unterstuetzt"
+        },
+        {
+          "step_number": 11,
+          "action": "System findet Dubletten (Tax ID oder Customer Name)",
+          "screen": "Bulk Import Results",
+          "expected_result": "Dubletten werden markiert und Optionen angezeigt: Merge, Update, Skip",
+          "decision_point": true,
+          "error_scenario": ""
+        },
+        {
+          "step_number": 12,
+          "action": "User waehlt Option fuer jede Dublette (Merge/Update/Skip) und bestaetigt",
+          "screen": "Bulk Import Results",
+          "expected_result": "System fuehrt ausgewaehlte Aktion aus und importiert restliche Datensaetze",
+          "decision_point": false,
+          "error_scenario": "Konflikt bei Zusammenfuehrung kann nicht automatisch geloest werden"
+        },
+        {
+          "step_number": 13,
+          "action": "System zeigt Import-Zusammenfassung",
+          "screen": "Bulk Import Summary",
+          "expected_result": "Import erfolgreich abgeschlossen, Customer List aktualisiert",
+          "decision_point": false,
+          "error_scenario": ""
+        }
+      ],
+      "success_criteria": "Kundenstammdaten werden korrekt angelegt oder importiert; Dubletten werden erkannt und behandelt; Validierungsfehler verhindern fehlerhafte Speicherung",
+      "error_scenarios": [
+        "Pflichtfelder fehlen oder Tax ID hat ungueltiges Format",
+        "Serververbindung fehlgeschlagen",
+        "Importdatei hat falsches Format oder ist beschaedigt",
+        "Konflikt bei Dubletten-Merge kann nicht automatisch geloest werden"
+      ],
+      "mermaid_diagram": "flowchart TD\n    Start([Start: Customer Management])\n    S1[User oeffnet das Dashboard]\n    Start --> S1\n    S2[User klickt auf 'Customers']\n    S1 --> S2\n    S3[User klickt auf 'Neuen Kunden anlegen']\n    S2 --> S3\n    S4[User fuellt Kundenstammdaten aus (Name, Billing/Shipping Address, Tax ID, Payment Terms, Credit Limit, Preferred Payment Method)]\n    S3 --> S4\n    S5{User klickt auf 'Speichern'}\n    S4 --> S5\n    E5[/Pflichtfeld fehlt oder Tax ID hat ungueltiges Format/]\n    S5 -.-> E5\n    S6[System zeigt Validierungsfehler an]\n    S5 --> S6\n    S7[User korrigiert Eingaben und speichert erneut]\n    S6 --> S7\n    E7[/Serververbindung fehlgeschlagen/]\n    S7 -.-> E7\n    S8[System zeigt Customer List mit neuem Eintrag]\n    S7 --> S8\n    S9[User waehlt 'Bulk Import']\n    S8 --> S9\n    S10{User laedt Importdatei hoch und startet Import}\n    S9 --> S10\n    E10[/Datei fehlerhaft oder Format nicht unterstuetzt/]\n    S10 -.-> E10\n    S11{System findet Dubletten (Tax ID oder Customer Name)}\n    S10 --> S11\n    S12[User waehlt Option fuer jede Dublette (Merge/Update/Skip) und bestaetigt]\n    S11 --> S12\n    E12[/Konflikt bei Zusammenfuehrung kann nicht automatisch geloest werden/]\n    S12 -.-> E12\n    S13[System zeigt Import-Zusammenfassung]\n    S12 --> S13\n    S13 --> End([End])\n"
+    }
+  ],
+  "information_architecture": [
+    {
+      "id": "IA-001",
+      "name": "Home",
+      "path": "/",
+      "parent_id": "",
+      "children": [
+        "IA-002",
+        "IA-003",
+        "IA-004",
+        "IA-005"
+      ],
+      "content_types": [
+        "dashboard",
+        "quick-actions",
+        "status-overview"
+      ]
+    },
+    {
+      "id": "IA-002",
+      "name": "Monitoring-Dashboard",
+      "path": "/monitoring",
+      "parent_id": "IA-001",
+      "children": [
+        "IA-006",
+        "IA-007",
+        "IA-008"
+      ],
+      "content_types": [
+        "real-time-dashboard",
+        "kpis",
+        "agent-performance",
+        "alerts"
+      ]
+    },
+    {
+      "id": "IA-003",
+      "name": "Rechnungen",
+      "path": "/invoices",
+      "parent_id": "IA-001",
+      "children": [
+        "IA-009",
+        "IA-010",
+        "IA-011"
+      ],
+      "content_types": [
+        "list",
+        "filters",
+        "search",
+        "status"
+      ]
+    },
+    {
+      "id": "IA-004",
+      "name": "Workflows",
+      "path": "/workflows",
+      "parent_id": "IA-001",
+      "children": [
+        "IA-012",
+        "IA-013"
+      ],
+      "content_types": [
+        "workflow-list",
+        "routing-rules",
+        "event-stream"
+      ]
+    },
+    {
+      "id": "IA-005",
+      "name": "Einstellungen",
+      "path": "/settings",
+      "parent_id": "IA-001",
+      "children": [
+        "IA-014",
+        "IA-015",
+        "IA-016",
+        "IA-017",
+        "IA-018"
+      ],
+      "content_types": [
+        "forms",
+        "configuration",
+        "security"
+      ]
+    },
+    {
+      "id": "IA-006",
+      "name": "Workflow-Status",
+      "path": "/monitoring/workflows",
+      "parent_id": "IA-002",
+      "children": [],
+      "content_types": [
+        "real-time-table",
+        "filters",
+        "drilldown"
+      ]
+    },
+    {
+      "id": "IA-007",
+      "name": "Agenten-Performance",
+      "path": "/monitoring/agents",
+      "parent_id": "IA-002",
+      "children": [],
+      "content_types": [
+        "charts",
+        "leaderboard",
+        "logs"
+      ]
+    },
+    {
+      "id": "IA-008",
+      "name": "Exception-Handling",
+      "path": "/monitoring/exceptions",
+      "parent_id": "IA-002",
+      "children": [],
+      "content_types": [
+        "queue",
+        "auto-resolve",
+        "audit-trail"
+      ]
+    },
+    {
+      "id": "IA-009",
+      "name": "Automatische Fakturierung",
+      "path": "/invoices/auto",
+      "parent_id": "IA-003",
+      "children": [],
+      "content_types": [
+        "rules",
+        "status",
+        "POD-validation"
+      ]
+    },
+    {
+      "id": "IA-010",
+      "name": "Rechnungsdetails",
+      "path": "/invoices/:id",
+      "parent_id": "IA-003",
+      "children": [],
+      "content_types": [
+        "detail-view",
+        "timeline",
+        "documents"
+      ]
+    },
+    {
+      "id": "IA-011",
+      "name": "Rechnungserstellung (Agenten)",
+      "path": "/invoices/agents",
+      "parent_id": "IA-003",
+      "children": [],
+      "content_types": [
+        "agent-jobs",
+        "automation-status"
+      ]
+    },
+    {
+      "id": "IA-012",
+      "name": "Workflow-Routing",
+      "path": "/workflows/routing",
+      "parent_id": "IA-004",
+      "children": [],
+      "content_types": [
+        "rules-engine",
+        "complexity-mapping"
+      ]
+    },
+    {
+      "id": "IA-013",
+      "name": "Event-Driven Architektur",
+      "path": "/workflows/events",
+      "parent_id": "IA-004",
+      "children": [],
+      "content_types": [
+        "event-stream",
+        "uptime",
+        "latency"
+      ]
+    },
+    {
+      "id": "IA-014",
+      "name": "Company Settings",
+      "path": "/settings/company",
+      "parent_id": "IA-005",
+      "children": [],
+      "content_types": [
+        "legal",
+        "tax",
+        "address",
+        "billing-defaults"
+      ]
+    },
+    {
+      "id": "IA-015",
+      "name": "Bankkonten",
+      "path": "/settings/bank-accounts",
+      "parent_id": "IA-005",
+      "children": [],
+      "content_types": [
+        "form",
+        "validation",
+        "security-checks"
+      ]
+    },
+    {
+      "id": "IA-016",
+      "name": "Customer Management",
+      "path": "/settings/customers",
+      "parent_id": "IA-005",
+      "children": [
+        "IA-019"
+      ],
+      "content_types": [
+        "list",
+        "bulk-import",
+        "deduplication"
+      ]
+    },
+    {
+      "id": "IA-017",
+      "name": "Compliance & Regulierung",
+      "path": "/settings/compliance",
+      "parent_id": "IA-005",
+      "children": [],
+      "content_types": [
+        "gdpr",
+        "fatca",
+        "tax-rules",
+        "audit-logs"
+      ]
+    },
+    {
+      "id": "IA-018",
+      "name": "AI Governance & Sicherheit",
+      "path": "/settings/ai-governance",
+      "parent_id": "IA-005",
+      "children": [
+        "IA-020",
+        "IA-021"
+      ],
+      "content_types": [
+        "transparency",
+        "bias-detection",
+        "ethics"
+      ]
+    },
+    {
+      "id": "IA-019",
+      "name": "Kundendetails",
+      "path": "/settings/customers/:id",
+      "parent_id": "IA-016",
+      "children": [],
+      "content_types": [
+        "detail-view",
+        "validation-status"
+      ]
+    },
+    {
+      "id": "IA-020",
+      "name": "AI-Entscheidungstransparenz",
+      "path": "/settings/ai-governance/transparency",
+      "parent_id": "IA-018",
+      "children": [],
+      "content_types": [
+        "decision-logs",
+        "explainability"
+      ]
+    },
+    {
+      "id": "IA-021",
+      "name": "Cybersecurity",
+      "path": "/settings/ai-governance/cybersecurity",
+      "parent_id": "IA-018",
+      "children": [],
+      "content_types": [
+        "zero-trust",
+        "threat-detection",
+        "alerts"
+      ]
+    }
+  ],
+  "accessibility_requirements": [
+    "WCAG 2.1 Level AA Compliance",
+    "Keyboard Navigation fuer alle Funktionen",
+    "Screen Reader Support",
+    "Kontrastverhältnis mindestens 4.5:1"
+  ],
+  "interaction_patterns": [
+    "Infinite Scroll fuer Listen",
+    "Modal Dialoge fuer Formulare",
+    "Toast Notifications fuer Feedback",
+    "Drag & Drop fuer Datei-Upload"
+  ],
+  "design_principles": [
+    "Mobile First",
+    "Progressive Disclosure",
+    "Consistency ueber alle Screens",
+    "Fehlertoleranz"
+  ]
+}

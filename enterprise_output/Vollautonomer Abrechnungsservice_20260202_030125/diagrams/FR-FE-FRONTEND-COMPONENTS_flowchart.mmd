@@ -1,0 +1,14 @@
+flowchart TD
+    Start([Start]) --> A[Anforderung erfassen]
+    A --> B[Frontend-Komponentenbedarf analysieren]
+    B --> C{Komponenten spezifiziert?}
+    C -->|Nein| D[Anforderungen klären]
+    D --> B
+    C -->|Ja| E[Komponenten-Design erstellen]
+    E --> F[Komponenten implementieren]
+    F --> G[Komponenten testen]
+    G --> H{Tests erfolgreich?}
+    H -->|Nein| I[Fehler beheben]
+    I --> F
+    H -->|Ja| J[Komponenten integrieren]
+    J --> End([End])

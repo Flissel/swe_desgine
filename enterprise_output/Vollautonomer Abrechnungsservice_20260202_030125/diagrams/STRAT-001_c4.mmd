@@ -1,0 +1,17 @@
+C4Context
+    title STRAT-001: Marktpositionierung durch AI-Führerschaft
+    Person(exec, "Executive Leadership", "Strategic decision makers driving AI leadership")
+    Person(ops, "Finance Operations Team", "Operates and monitors automated billing")
+    Person(client, "Enterprise Customers", "Receive zero-touch invoices and payments")
+    System(main, "Autonomous Finance Automation Platform", "AI-driven zero-touch billing and reconciliation")
+    System_Ext(erp, "ERP Systems", "Provide financial master data and transactions")
+    System_Ext(bank, "Banking APIs", "Payment initiation and settlement status")
+    System_Ext(tax, "Tax Compliance APIs", "Tax calculation and reporting")
+    System_Ext(ai, "AI/ML Services", "Model training and inference for automation")
+    Rel(exec, main, "Sets strategy and KPIs")
+    Rel(ops, main, "Monitors and manages operations")
+    Rel(client, main, "Receives invoices and payment confirmations")
+    Rel(main, erp, "Syncs transactions and master data")
+    Rel(main, bank, "Initiates payments and receives confirmations")
+    Rel(main, tax, "Calculates taxes and reports filings")
+    Rel(main, ai, "Uses models for autonomous processing")

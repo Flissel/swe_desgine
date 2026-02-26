@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE System - Requirements Wizard</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-input: #0f3460;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #4a90d9;
+            --accent-green: #4caf50;
+            --accent-red: #e74c3c;
+            --accent-orange: #ff9800;
+            --border: #2d3748;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .wizard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .wizard-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .wizard-header p {
+            color: var(--text-secondary);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border-radius: 0.5rem;
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            opacity: 1;
+            background: var(--accent-blue);
+        }
+
+        .step.completed {
+            opacity: 1;
+            background: var(--accent-green);
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .wizard-step {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        .wizard-step h2 {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            min-height: 42px;
+        }
+
+        .tag {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-blue);
+            border-radius: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1rem;
+        }
+
+        .tag-input input {
+            flex: 1;
+            min-width: 150px;
+            background: transparent;
+            border: none;
+            padding: 0.25rem;
+        }
+
+        /* File Upload */
+        .file-drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-drop-zone:hover,
+        .file-drop-zone.drag-over {
+            border-color: var(--accent-blue);
+            background: rgba(74, 144, 217, 0.1);
+        }
+
+        .file-drop-zone input {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-item .remove-file {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Requirements List */
+        .requirements-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .requirement-item {
+            background: var(--bg-input);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .requirement-item.functional { border-color: var(--accent-blue); }
+        .requirement-item.security { border-color: var(--accent-red); }
+        .requirement-item.performance { border-color: var(--accent-orange); }
+        .requirement-item.frontend { border-color: #9c27b0; }
+
+        .requirement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .requirement-id {
+            font-family: monospace;
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        .requirement-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .requirement-actions button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .requirement-actions button:hover {
+            color: var(--text-primary);
+        }
+
+        .requirement-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .requirement-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .add-requirement-btn {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 2px dashed var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .add-requirement-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Buttons */
+        .wizard-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a7bc8;
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 2rem;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* JSON Preview */
+        .json-preview {
+            background: var(--bg-input);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover {
+            color: var(--accent-blue);
+        }
+
+        /* ============ Validation Step Styles ============ */
+        .validation-mode-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 1.5rem;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-option:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .mode-option.selected {
+            border-color: var(--accent-blue);
+            background: rgba(74, 144, 217, 0.1);
+        }
+
+        .mode-option h4 {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mode-option p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .validation-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-input);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-card .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .stat-card.passed .stat-value { color: var(--accent-green); }
+        .stat-card.failed .stat-value { color: var(--accent-red); }
+        .stat-card.improved .stat-value { color: var(--accent-orange); }
+        .stat-card.split .stat-value { color: #9c27b0; }
+
+        .validation-progress {
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .validation-progress.active {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-blue);
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .validation-results-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .validation-result-item {
+            background: var(--bg-input);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--border);
+        }
+
+        .validation-result-item.pass { border-color: var(--accent-green); }
+        .validation-result-item.fail { border-color: var(--accent-red); }
+        .validation-result-item.improved { border-color: var(--accent-orange); }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-id {
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .result-badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge-score {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .badge-score.low {
+            background: var(--accent-red);
+        }
+
+        .badge-score.medium {
+            background: var(--accent-orange);
+        }
+
+        .badge-decision {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .badge-decision.ACCEPT { background: var(--accent-green); }
+        .badge-decision.REWRITE { background: var(--accent-orange); }
+        .badge-decision.SPLIT { background: #9c27b0; }
+        .badge-decision.CLARIFY { background: var(--accent-blue); }
+        .badge-decision.REJECT { background: var(--accent-red); }
+
+        .result-title {
+            margin-bottom: 0.5rem;
+        }
+
+        .result-details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .result-criteria {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .result-criteria.expanded {
+            display: block;
+        }
+
+        .criterion-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.85rem;
+        }
+
+        .criterion-item .criterion-score {
+            font-weight: bold;
+        }
+
+        .criterion-item .criterion-score.pass { color: var(--accent-green); }
+        .criterion-item .criterion-score.fail { color: var(--accent-red); }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0;
+        }
+
+        /* Clarification Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .clarification-question {
+            background: var(--bg-input);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .clarification-question h4 {
+            margin-bottom: 0.5rem;
+            color: var(--accent-blue);
+        }
+
+        .suggested-answers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .suggested-answer {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .suggested-answer:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 144, 217, 0.1);
+        }
+
+        .custom-answer {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .custom-answer textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .start-validation-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .validation-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .validation-empty p {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <a href="/" class="back-link">&larr; Zurück zum Dashboard</a>
+
+        <div class="wizard-header">
+            <h1>Requirements Wizard</h1>
+            <p>Erfassen Sie Ihre Anforderungen schrittweise</p>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step active" data-step="1">
+                <span class="step-number">1</span>
+                <span>Projekt</span>
+            </div>
+            <div class="step" data-step="2">
+                <span class="step-number">2</span>
+                <span>Dokumente</span>
+            </div>
+            <div class="step" data-step="3">
+                <span class="step-number">3</span>
+                <span>Requirements</span>
+            </div>
+            <div class="step" data-step="4">
+                <span class="step-number">4</span>
+                <span>Validierung</span>
+            </div>
+            <div class="step" data-step="5">
+                <span class="step-number">5</span>
+                <span>Constraints</span>
+            </div>
+            <div class="step" data-step="6">
+                <span class="step-number">6</span>
+                <span>Export</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Project Info -->
+        <div class="wizard-step active" data-step="1">
+            <h2>Projekt-Grunddaten</h2>
+
+            <div class="form-group">
+                <label for="project-name">Projektname *</label>
+                <input type="text" id="project-name" placeholder="z.B. Abrechnungssystem 2.0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="project-description">Beschreibung</label>
+                <textarea id="project-description" placeholder="Kurze Beschreibung des Projekts..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="project-domain">Domain</label>
+                <select id="project-domain">
+                    <option value="custom">Benutzerdefiniert</option>
+                    <option value="Finance">Finance / Banking</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="E-Commerce">E-Commerce</option>
+                    <option value="Enterprise">Enterprise Software</option>
+                    <option value="IoT">IoT / Embedded</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="autonomy-level">Automatisierungsgrad</label>
+                <select id="autonomy-level">
+                    <option value="none">Keine Automatisierung</option>
+                    <option value="low">Gering (manuelle Bestätigung)</option>
+                    <option value="medium" selected>Mittel (teilautomatisiert)</option>
+                    <option value="high">Hoch (weitgehend autonom)</option>
+                    <option value="full">Vollautomatisiert</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Zielgruppen</label>
+                <div class="tag-input" id="target-users-input">
+                    <input type="text" placeholder="Eingabe + Enter..." id="target-user-text">
+                </div>
+            </div>
+
+            <div class="wizard-nav">
+                <div></div>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Documents -->
+        <div class="wizard-step" data-step="2">
+            <h2>Dokumente hochladen (optional)</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Laden Sie bestehende Anforderungsdokumente hoch. Diese werden automatisch analysiert.
+            </p>
+
+            <div class="file-drop-zone" id="file-drop-zone">
+                <input type="file" id="file-input" multiple accept=".pdf,.docx,.doc,.md,.txt">
+                <p>Dateien hierher ziehen oder <strong>klicken</strong> zum Auswählen</p>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">
+                    Unterstützte Formate: PDF, DOCX, MD, TXT
+                </p>
+            </div>
+
+            <div class="file-list" id="file-list"></div>
+
+            <div class="loading" id="extract-loading">
+                <div class="spinner"></div>
+                <span>Extrahiere Requirements...</span>
+            </div>
+
+            <div class="wizard-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">&larr; Zurück</button>
+                <div>
+                    <button class="btn btn-secondary" onclick="nextStep()">Überspringen</button>
+                    <button class="btn btn-primary" onclick="extractRequirements()" id="extract-btn" disabled>
+                        Analysieren &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Requirements -->
+        <div class="wizard-step" data-step="3">
+            <h2>Requirements</h2>
+
+            <div class="requirements-list" id="requirements-list"></div>
+
+            <button class="add-requirement-btn" onclick="addRequirement()">
+                + Requirement hinzufügen
+            </button>
+
+            <div class="wizard-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">&larr; Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Validation -->
+        <div class="wizard-step" data-step="4">
+            <h2>Validierung & Qualitätsprüfung</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Die KI prüft Ihre Requirements nach IEEE 29148 Qualitätskriterien und verbessert sie automatisch.
+            </p>
+
+            <!-- Mode Selector -->
+            <div class="validation-mode-selector">
+                <div class="mode-option selected" data-mode="AUTO" onclick="setValidationMode('AUTO')">
+                    <h4>🤖 AUTO-Modus</h4>
+                    <p>KI validiert und verbessert automatisch. Schneller Durchlauf ohne Unterbrechungen.</p>
+                </div>
+                <div class="mode-option" data-mode="MANUAL" onclick="setValidationMode('MANUAL')">
+                    <h4>👤 MANUAL-Modus</h4>
+                    <p>Sie entscheiden bei jeder Verbesserung. Klärungsfragen werden gestellt.</p>
+                </div>
+            </div>
+
+            <!-- Start Button -->
+            <button class="btn btn-primary start-validation-btn" onclick="startValidation()" id="start-validation-btn">
+                🚀 Validierung starten
+            </button>
+
+            <!-- Progress -->
+            <div class="validation-progress" id="validation-progress">
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progress-message">Validiere Requirements...</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="validation-stats" id="validation-stats" style="display: none;">
+                <div class="stat-card passed">
+                    <div class="stat-value" id="stat-passed">0</div>
+                    <div class="stat-label">Bestanden</div>
+                </div>
+                <div class="stat-card failed">
+                    <div class="stat-value" id="stat-failed">0</div>
+                    <div class="stat-label">Nicht bestanden</div>
+                </div>
+                <div class="stat-card improved">
+                    <div class="stat-value" id="stat-improved">0</div>
+                    <div class="stat-label">Verbessert</div>
+                </div>
+                <div class="stat-card split">
+                    <div class="stat-value" id="stat-split">0</div>
+                    <div class="stat-label">Aufgeteilt</div>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div class="validation-results-list" id="validation-results">
+                <div class="validation-empty">
+                    <p>Noch keine Validierungsergebnisse.</p>
+                    <p>Klicken Sie auf "Validierung starten" um die Qualitätsprüfung zu beginnen.</p>
+                </div>
+            </div>
+
+            <div class="wizard-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">&larr; Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()" id="validation-next-btn">Weiter &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Clarification Modal -->
+        <div class="modal-overlay" id="clarification-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🔍 Klärung erforderlich</h3>
+                    <button class="modal-close" onclick="closeClarificationModal()">&times;</button>
+                </div>
+                <div id="clarification-content">
+                    <!-- Dynamic content -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="skipClarification()">Überspringen</button>
+                    <button class="btn btn-primary" onclick="submitClarification()">Antwort senden</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 5: Constraints -->
+        <div class="wizard-step" data-step="5">
+            <h2>Constraints</h2>
+
+            <div class="form-group">
+                <label>Technische Constraints</label>
+                <div class="tag-input" id="tech-constraints-input">
+                    <input type="text" placeholder="z.B. Python 3.11+, PostgreSQL..." id="tech-constraint-text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Regulatorische Constraints</label>
+                <div class="tag-input" id="reg-constraints-input">
+                    <input type="text" placeholder="z.B. DSGVO, PCI-DSS..." id="reg-constraint-text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="timeline">Timeline</label>
+                <input type="text" id="timeline" placeholder="z.B. 6 Monate MVP">
+            </div>
+
+            <div class="wizard-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">&larr; Zurück</button>
+                <button class="btn btn-primary" onclick="nextStep()">Weiter &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Step 6: Export -->
+        <div class="wizard-step" data-step="6">
+            <h2>Export & Analyse starten</h2>
+
+            <div class="form-group">
+                <label>Generierte JSON-Konfiguration:</label>
+                <div class="json-preview" id="json-preview"></div>
+            </div>
+
+            <div class="wizard-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">&larr; Zurück</button>
+                <div>
+                    <button class="btn btn-secondary" onclick="downloadJSON()">JSON herunterladen</button>
+                    <button class="btn btn-success" onclick="startAnalysis()">Analyse starten &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wizard State
+        const state = {
+            currentStep: 1,
+            maxStep: 6,
+            project: {
+                name: '',
+                description: '',
+                domain: 'custom',
+                autonomy_level: 'medium',
+                target_users: []
+            },
+            files: [],
+            requirements: [],
+            constraints: {
+                technical: [],
+                regulatory: [],
+                timeline: ''
+            }
+        };
+
+        // Validation State
+        const validationState = {
+            mode: 'AUTO',  // 'AUTO' or 'MANUAL'
+            isRunning: false,
+            results: [],
+            stats: {
+                passed: 0,
+                failed: 0,
+                improved: 0,
+                split: 0
+            },
+            currentClarification: null
+        };
+
+        // Step Navigation
+        function showStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step').forEach(el => {
+                el.classList.remove('active');
+                if (parseInt(el.dataset.step) < step) {
+                    el.classList.add('completed');
+                } else {
+                    el.classList.remove('completed');
+                }
+            });
+
+            document.querySelector(`.wizard-step[data-step="${step}"]`).classList.add('active');
+            document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+
+            state.currentStep = step;
+
+            // Generate JSON preview on last step
+            if (step === 6) {
+                generateJSONPreview();
+            }
+        }
+
+        function nextStep() {
+            saveCurrentStep();
+            if (state.currentStep < state.maxStep) {
+                showStep(state.currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            if (state.currentStep > 1) {
+                showStep(state.currentStep - 1);
+            }
+        }
+
+        function saveCurrentStep() {
+            switch (state.currentStep) {
+                case 1:
+                    state.project.name = document.getElementById('project-name').value;
+                    state.project.description = document.getElementById('project-description').value;
+                    state.project.domain = document.getElementById('project-domain').value;
+                    state.project.autonomy_level = document.getElementById('autonomy-level').value;
+                    break;
+                case 5:
+                    state.constraints.timeline = document.getElementById('timeline').value;
+                    break;
+            }
+        }
+
+        // Tag Input Handling
+        function setupTagInput(inputId, textInputId, array) {
+            const container = document.getElementById(inputId);
+            const textInput = document.getElementById(textInputId);
+
+            textInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && textInput.value.trim()) {
+                    e.preventDefault();
+                    const value = textInput.value.trim();
+                    if (!array.includes(value)) {
+                        array.push(value);
+                        renderTags(container, array);
+                    }
+                    textInput.value = '';
+                }
+            });
+
+            renderTags(container, array);
+        }
+
+        function renderTags(container, array) {
+            const textInput = container.querySelector('input');
+            container.innerHTML = '';
+            array.forEach((tag, idx) => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'tag';
+                tagEl.innerHTML = `${tag} <button onclick="removeTag(${idx}, '${container.id}')">&times;</button>`;
+                container.appendChild(tagEl);
+            });
+            container.appendChild(textInput);
+        }
+
+        function removeTag(idx, containerId) {
+            if (containerId === 'target-users-input') {
+                state.project.target_users.splice(idx, 1);
+                renderTags(document.getElementById(containerId), state.project.target_users);
+            } else if (containerId === 'tech-constraints-input') {
+                state.constraints.technical.splice(idx, 1);
+                renderTags(document.getElementById(containerId), state.constraints.technical);
+            } else if (containerId === 'reg-constraints-input') {
+                state.constraints.regulatory.splice(idx, 1);
+                renderTags(document.getElementById(containerId), state.constraints.regulatory);
+            }
+        }
+
+        // File Upload
+        const dropZone = document.getElementById('file-drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const extractBtn = document.getElementById('extract-btn');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        function handleFiles(files) {
+            for (const file of files) {
+                if (!state.files.find(f => f.name === file.name)) {
+                    state.files.push(file);
+                }
+            }
+            renderFileList();
+        }
+
+        function renderFileList() {
+            fileList.innerHTML = state.files.map((file, idx) => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <span>📄</span>
+                        <span>${file.name}</span>
+                        <span style="color: var(--text-secondary)">(${formatSize(file.size)})</span>
+                    </div>
+                    <button class="remove-file" onclick="removeFile(${idx})">&times;</button>
+                </div>
+            `).join('');
+
+            extractBtn.disabled = state.files.length === 0;
+        }
+
+        function removeFile(idx) {
+            state.files.splice(idx, 1);
+            renderFileList();
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // Extract Requirements
+        async function extractRequirements() {
+            if (state.files.length === 0) return;
+
+            const loading = document.getElementById('extract-loading');
+            loading.classList.add('active');
+            extractBtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                console.log('[WIZARD] Preparing upload for', state.files.length, 'files');
+                state.files.forEach((file, idx) => {
+                    console.log(`[WIZARD] File ${idx+1}: ${file.name}, size=${file.size}, type=${file.type}`);
+                    formData.append('documents', file);
+                });
+
+                console.log('[WIZARD] Sending POST to /api/wizard/extract');
+                const response = await fetch('/api/wizard/extract', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('[WIZARD] Response status:', response.status);
+                const result = await response.json();
+                console.log('[WIZARD] Extract result:', result);
+
+                if (result.success) {
+                    console.log('[WIZARD] Extracted requirements:', result.requirements);
+                    console.log('[WIZARD] Count:', result.count);
+                    state.requirements = [...state.requirements, ...result.requirements];
+                    console.log('[WIZARD] State requirements after merge:', state.requirements);
+                    renderRequirements();
+                    nextStep();
+                } else {
+                    console.error('[WIZARD] Extract error:', result.error);
+                    alert('Fehler: ' + result.error);
+                }
+            } catch (error) {
+                alert('Fehler bei der Extraktion: ' + error.message);
+            } finally {
+                loading.classList.remove('active');
+                extractBtn.disabled = false;
+            }
+        }
+
+        // Requirements Management
+        function renderRequirements() {
+            const list = document.getElementById('requirements-list');
+            list.innerHTML = state.requirements.map((req, idx) => `
+                <div class="requirement-item ${req.category}">
+                    <div class="requirement-header">
+                        <span class="requirement-id">${req.id}</span>
+                        <div class="requirement-actions">
+                            <button onclick="editRequirement(${idx})" title="Bearbeiten">✏️</button>
+                            <button onclick="removeRequirement(${idx})" title="Löschen">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="requirement-title">${req.title}</div>
+                    <div class="requirement-meta">
+                        <span>📁 ${req.category}</span>
+                        <span>⚡ ${req.priority}</span>
+                        ${req.source_file ? `<span>📄 ${req.source_file}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addRequirement() {
+            const id = `REQ-${(state.requirements.length + 1).toString().padStart(3, '0')}`;
+            const title = prompt('Requirement Titel:');
+            if (title) {
+                state.requirements.push({
+                    id,
+                    title,
+                    description: title,
+                    category: 'functional',
+                    priority: 'should',
+                    acceptance_criteria: [],
+                    tags: []
+                });
+                renderRequirements();
+            }
+        }
+
+        function editRequirement(idx) {
+            const req = state.requirements[idx];
+            const newTitle = prompt('Requirement Titel:', req.title);
+            if (newTitle) {
+                req.title = newTitle;
+                req.description = newTitle;
+                renderRequirements();
+            }
+        }
+
+        function removeRequirement(idx) {
+            if (confirm('Requirement wirklich löschen?')) {
+                state.requirements.splice(idx, 1);
+                renderRequirements();
+            }
+        }
+
+        // JSON Generation
+        function generateJSONPreview() {
+            const json = buildJSON();
+            document.getElementById('json-preview').textContent = JSON.stringify(json, null, 2);
+        }
+
+        function buildJSON() {
+            return {
+                project: {
+                    name: state.project.name,
+                    version: '1.0.0',
+                    description: state.project.description,
+                    domain: state.project.domain,
+                    autonomy_level: state.project.autonomy_level,
+                    target_users: state.project.target_users
+                },
+                requirements: state.requirements,
+                constraints: {
+                    technical: state.constraints.technical,
+                    regulatory: state.constraints.regulatory,
+                    timeline: state.constraints.timeline
+                },
+                agents: [],
+                integrations: []
+            };
+        }
+
+        function downloadJSON() {
+            const json = buildJSON();
+            const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.project.name.replace(/\s+/g, '_')}_input.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function startAnalysis() {
+            saveCurrentStep();
+            const json = buildJSON();
+
+            try {
+                // Save JSON via API
+                const response = await fetch('/api/wizard/generate-json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...json.project,
+                        requirements: json.requirements,
+                        technical_constraints: json.constraints.technical,
+                        regulatory_constraints: json.constraints.regulatory,
+                        timeline: json.constraints.timeline,
+                        save_path: true
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('JSON wurde gespeichert. Sie können nun das RE System mit dieser Datei starten.');
+                    // Redirect to dashboard
+                    window.location.href = '/';
+                } else {
+                    alert('Fehler: ' + result.error);
+                }
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        // ============ Validation Functions ============
+
+        function setValidationMode(mode) {
+            validationState.mode = mode;
+            document.querySelectorAll('.mode-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.mode === mode);
+            });
+        }
+
+        async function startValidation() {
+            if (state.requirements.length === 0) {
+                alert('Keine Requirements vorhanden. Bitte fügen Sie zuerst Requirements hinzu.');
+                return;
+            }
+
+            validationState.isRunning = true;
+            validationState.results = [];
+            validationState.stats = { passed: 0, failed: 0, improved: 0, split: 0 };
+
+            // Show progress, hide start button
+            document.getElementById('validation-progress').classList.add('active');
+            document.getElementById('start-validation-btn').disabled = true;
+            document.getElementById('validation-stats').style.display = 'none';
+
+            updateProgress(0, 'Starte Validierung...');
+
+            try {
+                // Step 1: Batch validation
+                updateProgress(20, 'Validiere Requirements...');
+                const validationResult = await fetch('/api/wizard/validate-batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        requirements: state.requirements,
+                        threshold: 0.7
+                    })
+                }).then(r => r.json());
+
+                if (!validationResult.success) {
+                    throw new Error(validationResult.error || 'Validierung fehlgeschlagen');
+                }
+
+                validationState.results = validationResult.results;
+                validationState.stats.passed = validationResult.passed_count;
+                validationState.stats.failed = validationResult.failed_count;
+
+                // Step 2: Get decisions for failed requirements
+                const failedReqs = validationResult.results.filter(r => r.verdict !== 'pass');
+
+                if (failedReqs.length > 0) {
+                    updateProgress(40, 'Analysiere fehlerhafte Requirements...');
+
+                    const decisionResult = await fetch('/api/wizard/decide', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            requirements: failedReqs.map(r => ({
+                                id: r.req_id,
+                                title: r.title,
+                                score: r.score,
+                                evaluation: r.evaluation
+                            }))
+                        })
+                    }).then(r => r.json());
+
+                    if (decisionResult.success) {
+                        // Merge decisions into results
+                        decisionResult.decisions.forEach(decision => {
+                            const resultIdx = validationState.results.findIndex(r => r.req_id === decision.req_id);
+                            if (resultIdx !== -1) {
+                                validationState.results[resultIdx].decision = decision.action;
+                                validationState.results[resultIdx].reason = decision.reason;
+                            }
+                        });
+                    }
+
+                    // Step 3: Auto-improve if AUTO mode
+                    if (validationState.mode === 'AUTO' && failedReqs.length > 0) {
+                        updateProgress(60, 'Verbessere Requirements automatisch...');
+
+                        const improveResult = await fetch('/api/wizard/improve', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                requirements: state.requirements,
+                                config: {
+                                    quality_threshold: 0.7,
+                                    max_iterations: 3,
+                                    mode: 'AUTO'
+                                }
+                            })
+                        }).then(r => r.json());
+
+                        if (improveResult.success) {
+                            // Update requirements with improved versions
+                            state.requirements = improveResult.requirements;
+                            validationState.stats.improved = improveResult.improved_count || 0;
+                            validationState.stats.split = improveResult.split_count || 0;
+
+                            // Re-validate to get final scores
+                            updateProgress(80, 'Überprüfe Verbesserungen...');
+                            const revalidateResult = await fetch('/api/wizard/validate-batch', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    requirements: state.requirements,
+                                    threshold: 0.7
+                                })
+                            }).then(r => r.json());
+
+                            if (revalidateResult.success) {
+                                validationState.results = revalidateResult.results;
+                                validationState.stats.passed = revalidateResult.passed_count;
+                                validationState.stats.failed = revalidateResult.failed_count;
+                            }
+                        }
+                    }
+
+                    // Step 4: Handle MANUAL mode clarifications
+                    if (validationState.mode === 'MANUAL') {
+                        const clarifyReqs = decisionResult.decisions?.filter(d => d.action === 'CLARIFY') || [];
+                        for (const clarifyReq of clarifyReqs) {
+                            updateProgress(70, `Klärung für ${clarifyReq.req_id}...`);
+                            await handleClarification(clarifyReq);
+                        }
+                    }
+                }
+
+                updateProgress(100, 'Validierung abgeschlossen');
+
+            } catch (error) {
+                console.error('Validation error:', error);
+                alert('Fehler bei der Validierung: ' + error.message);
+            } finally {
+                validationState.isRunning = false;
+                document.getElementById('start-validation-btn').disabled = false;
+                document.getElementById('validation-progress').classList.remove('active');
+                document.getElementById('validation-stats').style.display = 'grid';
+                renderValidationResults();
+                updateValidationStats();
+            }
+        }
+
+        function updateProgress(percent, message) {
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+            document.getElementById('progress-percent').textContent = `${percent}%`;
+            document.getElementById('progress-message').textContent = message;
+        }
+
+        function updateValidationStats() {
+            document.getElementById('stat-passed').textContent = validationState.stats.passed;
+            document.getElementById('stat-failed').textContent = validationState.stats.failed;
+            document.getElementById('stat-improved').textContent = validationState.stats.improved;
+            document.getElementById('stat-split').textContent = validationState.stats.split;
+        }
+
+        function renderValidationResults() {
+            const container = document.getElementById('validation-results');
+
+            if (validationState.results.length === 0) {
+                container.innerHTML = `
+                    <div class="validation-empty">
+                        <p>Noch keine Validierungsergebnisse.</p>
+                        <p>Klicken Sie auf "Validierung starten" um die Qualitätsprüfung zu beginnen.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = validationState.results.map((result, idx) => {
+                const scoreClass = result.score >= 0.7 ? '' : (result.score >= 0.5 ? 'medium' : 'low');
+                const itemClass = result.verdict === 'pass' ? 'pass' : (result.decision === 'REWRITE' ? 'improved' : 'fail');
+                const decision = result.decision || (result.verdict === 'pass' ? 'ACCEPT' : 'FAIL');
+
+                // Build criteria details
+                let criteriaHtml = '';
+                if (result.evaluation && result.evaluation.length > 0) {
+                    criteriaHtml = result.evaluation.map(crit => {
+                        const critScore = crit.score !== undefined ? crit.score : (crit.passed ? 1 : 0);
+                        const critClass = critScore >= 0.7 ? 'pass' : 'fail';
+                        return `
+                            <div class="criterion-item">
+                                <span>${crit.criterion || crit.name}</span>
+                                <span class="criterion-score ${critClass}">${(critScore * 100).toFixed(0)}%</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                return `
+                    <div class="validation-result-item ${itemClass}">
+                        <div class="result-header">
+                            <span class="result-id">${result.req_id}</span>
+                            <div class="result-badges">
+                                <span class="badge badge-score ${scoreClass}">${(result.score * 100).toFixed(0)}%</span>
+                                <span class="badge badge-decision ${decision}">${decision}</span>
+                            </div>
+                        </div>
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-details">
+                            ${result.reason ? `<em>${result.reason}</em>` : ''}
+                            <button class="expand-btn" onclick="toggleCriteria(${idx})">Details anzeigen ▼</button>
+                        </div>
+                        <div class="result-criteria" id="criteria-${idx}">
+                            ${criteriaHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleCriteria(idx) {
+            const el = document.getElementById(`criteria-${idx}`);
+            el.classList.toggle('expanded');
+        }
+
+        async function handleClarification(clarifyReq) {
+            // Get clarification questions
+            const clarifyResult = await fetch('/api/wizard/clarify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    req_id: clarifyReq.req_id,
+                    requirement_text: clarifyReq.title || state.requirements.find(r => r.id === clarifyReq.req_id)?.title,
+                    evaluation: clarifyReq.evaluation || []
+                })
+            }).then(r => r.json());
+
+            if (clarifyResult.success && clarifyResult.questions && clarifyResult.questions.length > 0) {
+                validationState.currentClarification = {
+                    req_id: clarifyReq.req_id,
+                    questions: clarifyResult.questions
+                };
+                showClarificationModal(clarifyResult);
+                // Wait for user response
+                await new Promise(resolve => {
+                    validationState.clarificationResolve = resolve;
+                });
+            }
+        }
+
+        function showClarificationModal(clarifyResult) {
+            const content = document.getElementById('clarification-content');
+            const reqId = validationState.currentClarification.req_id;
+            const req = state.requirements.find(r => r.id === reqId);
+
+            content.innerHTML = `
+                <p style="margin-bottom: 1rem;">
+                    <strong>${reqId}:</strong> ${req?.title || 'Unbekanntes Requirement'}
+                </p>
+                ${clarifyResult.questions.map((q, idx) => `
+                    <div class="clarification-question" data-question-idx="${idx}">
+                        <h4>${q.criterion || 'Frage'}</h4>
+                        <p>${q.question}</p>
+                        ${q.suggestions && q.suggestions.length > 0 ? `
+                            <div class="suggested-answers">
+                                ${q.suggestions.map((s, sIdx) => `
+                                    <button class="suggested-answer" onclick="selectSuggestedAnswer(${idx}, ${sIdx})">${s}</button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="custom-answer">
+                            <textarea placeholder="Oder eigene Antwort eingeben..." id="clarify-answer-${idx}"></textarea>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+
+            document.getElementById('clarification-modal').classList.add('active');
+        }
+
+        function selectSuggestedAnswer(questionIdx, suggestionIdx) {
+            const question = validationState.currentClarification.questions[questionIdx];
+            const suggestion = question.suggestions[suggestionIdx];
+            document.getElementById(`clarify-answer-${questionIdx}`).value = suggestion;
+        }
+
+        function closeClarificationModal() {
+            document.getElementById('clarification-modal').classList.remove('active');
+            if (validationState.clarificationResolve) {
+                validationState.clarificationResolve();
+                validationState.clarificationResolve = null;
+            }
+        }
+
+        function skipClarification() {
+            closeClarificationModal();
+        }
+
+        async function submitClarification() {
+            const answers = [];
+            validationState.currentClarification.questions.forEach((q, idx) => {
+                const answerEl = document.getElementById(`clarify-answer-${idx}`);
+                if (answerEl && answerEl.value.trim()) {
+                    answers.push({
+                        criterion: q.criterion,
+                        answer: answerEl.value.trim()
+                    });
+                }
+            });
+
+            if (answers.length > 0) {
+                try {
+                    const response = await fetch('/api/wizard/answer-clarification', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            req_id: validationState.currentClarification.req_id,
+                            answers: answers
+                        })
+                    }).then(r => r.json());
+
+                    if (response.success && response.improved_requirement) {
+                        // Update requirement with improved version
+                        const reqIdx = state.requirements.findIndex(r => r.id === validationState.currentClarification.req_id);
+                        if (reqIdx !== -1) {
+                            state.requirements[reqIdx] = {
+                                ...state.requirements[reqIdx],
+                                ...response.improved_requirement
+                            };
+                            validationState.stats.improved++;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Clarification submission error:', error);
+                }
+            }
+
+            closeClarificationModal();
+        }
+
+        // Initialize
+        setupTagInput('target-users-input', 'target-user-text', state.project.target_users);
+        setupTagInput('tech-constraints-input', 'tech-constraint-text', state.constraints.technical);
+        setupTagInput('reg-constraints-input', 'reg-constraint-text', state.constraints.regulatory);
+        renderRequirements();
+    </script>
+</body>
+</html>

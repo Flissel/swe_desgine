@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Loading : requestSent
+    Loading --> Success : responseOk
+    Loading --> Error : responseError
+    Success --> Idle : reset
+    Error --> Idle : retry
+    Success --> [*]
+    Error --> [*]

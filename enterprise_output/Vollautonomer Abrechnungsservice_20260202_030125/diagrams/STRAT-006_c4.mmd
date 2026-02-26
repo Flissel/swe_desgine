@@ -1,0 +1,16 @@
+C4Context
+    title STRAT-006: Organisatorischer Wandel zu AI-First - System Context
+    Person(executives, "Führungskräfte", "Treffen AI-gestützte Entscheidungen und treiben den Wandel")
+    Person(employees, "Mitarbeitende", "Arbeiten in neuen Rollenprofilen und nutzen AI-gestützte Prozesse")
+    Person(changeMgr, "Change Manager", "Steuern Kultur- und Rollenwandel")
+    System(aiFirstProgram, "AI-First Transformationsprogramm", "Transformation der Unternehmenskultur zu AI-gestützten Entscheidungen mit neuen Rollenprofilen")
+    System_Ext(hrSystem, "HR-System", "Verwaltet Rollenprofile und Organisationsstrukturen")
+    System_Ext(trainingPlatform, "Lernplattform", "Schulungen und Upskilling für AI-Kompetenzen")
+    System_Ext(aiPlatform, "AI-Plattform/APIs", "Stellt AI-Services für Entscheidungen bereit")
+
+    Rel(executives, aiFirstProgram, "Führt und steuert")
+    Rel(employees, aiFirstProgram, "Nimmt teil und nutzt")
+    Rel(changeMgr, aiFirstProgram, "Plant und begleitet")
+    Rel(aiFirstProgram, hrSystem, "Aktualisiert Rollenprofile")
+    Rel(aiFirstProgram, trainingPlatform, "Provisioniert Trainingsinhalte")
+    Rel(aiFirstProgram, aiPlatform, "Nutzt AI-Services")

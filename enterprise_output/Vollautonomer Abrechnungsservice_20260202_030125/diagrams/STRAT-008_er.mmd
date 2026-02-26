@@ -1,0 +1,33 @@
+erDiagram
+    ECOSYSTEM ||--o{ ECOSYSTEM_STANDARD : establishes
+    INDUSTRY_STANDARD ||--o{ ECOSYSTEM_STANDARD : includes
+    ECOSYSTEM ||--o{ PARTNERSHIP : manages
+    TECHNOLOGY_PROVIDER ||--o{ PARTNERSHIP : participates
+
+    ECOSYSTEM {
+        string ecosystem_id PK
+        string name
+        string description
+
+    INDUSTRY_STANDARD {
+        string standard_id PK
+        string name
+        string version
+
+    ECOSYSTEM_STANDARD {
+        string ecosystem_standard_id PK
+        string ecosystem_id FK
+        string standard_id FK
+        date adoption_date
+
+    TECHNOLOGY_PROVIDER {
+        string provider_id PK
+        string name
+        string domain
+
+    PARTNERSHIP {
+        string partnership_id PK
+        string ecosystem_id FK
+        string provider_id FK
+        date start_date
+        string status

@@ -1,0 +1,18 @@
+flowchart TD
+    Start([Start]) --> Scope[Define Scope: Beyond Traditional KPIs]
+    Scope --> Identify[Identify Metrics: Autonomy, AI Performance, Business Impact]
+    Identify --> DataSources[Select Data Sources & Instrumentation]
+    DataSources --> DataReady{Data Available & Reliable?}
+    DataReady -- No --> ImproveData[Improve Data Collection]
+    ImproveData --> DataReady
+    DataReady -- Yes --> Compute[Compute Metrics & Baselines]
+    Compute --> Validate{Indicators Valid & Actionable?}
+    Validate -- No --> Refine[Refine Definitions & Models]
+    Refine --> Compute
+    Validate -- Yes --> Dashboard[Publish Dashboard & Reporting]
+    Dashboard --> Decisions{Decisions Triggered?}
+    Decisions -- No --> Monitor[Monitor & Periodic Review]
+    Monitor --> Compute
+    Decisions -- Yes --> Actions[Implement Business Actions]
+    Actions --> Impact[Measure Business Impact]
+    Impact --> End([End])

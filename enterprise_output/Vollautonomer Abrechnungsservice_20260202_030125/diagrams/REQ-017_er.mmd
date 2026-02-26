@@ -1,0 +1,21 @@
+erDiagram
+    COMPANY ||--o{ COMPANY_SETTING : has
+    SETTING_KEY ||--o{ COMPANY_SETTING : defines
+
+    COMPANY {
+        string company_id PK
+        string name
+        string status
+        datetime created_at
+
+    SETTING_KEY {
+        string setting_key_id PK
+        string key_name
+        string description
+
+    COMPANY_SETTING {
+        string company_setting_id PK
+        string company_id FK
+        string setting_key_id FK
+        string value
+        datetime updated_at

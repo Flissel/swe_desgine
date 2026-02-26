@@ -1,0 +1,7 @@
+C4Context
+    title FR-FE-API-ENDPOINTS - System Context
+    Person(user, "User", "Uses the frontend to access API endpoints")
+    System(mainSystem, "FR-FE-API-ENDPOINTS", "Frontend component for API endpoints")
+    System_Ext(api, "External API", "External systems/APIs")
+    Rel(user, mainSystem, "Interacts with")
+    Rel(mainSystem, api, "Calls")

@@ -1,0 +1,23 @@
+flowchart TD
+    Start([Start: Monitoring-Dashboard anzeigen und überwachen])
+    S1{User meldet sich an und navigiert zum Monitoring-Dashboard}
+    Start --> S1
+    E1[/Kein Zugriff: Hinweis auf fehlende Berechtigung/]
+    S1 -.-> E1
+    S2{System lädt Echtzeitdaten (Workflows, KPIs, Agent-Performance)}
+    S1 --> S2
+    E2[/Datenquelle nicht verfügbar: Fehlermeldung und Anzeige des letzten Daten-Zeitstempels/]
+    S2 -.-> E2
+    S3[User überprüft Workflow-Status und KPIs]
+    S2 --> S3
+    S4{Dashboard aktualisiert automatisch oder User klickt auf 'Refresh'}
+    S3 --> S4
+    E4[/Aktualisierung fehlgeschlagen: Fehlermeldung und letzte erfolgreiche Aktualisierung anzeigen/]
+    S4 -.-> E4
+    S5{System erkennt Exception oder SLA-Verstoß}
+    S4 --> S5
+    S6[User klickt auf den Exception-Link]
+    S5 --> S6
+    E6[/Workflow nicht verfügbar: Hinweis auf gelöschten/archivierten Workflow/]
+    S6 -.-> E6
+    S6 --> End([End])

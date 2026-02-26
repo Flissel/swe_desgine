@@ -1,0 +1,70 @@
+erDiagram
+    WORKFLOW ||--o{ WORKFLOW_RUN : has
+    WORKFLOW_RUN ||--o{ KPI_MEASUREMENT : records
+    KPI ||--o{ KPI_MEASUREMENT : tracked_by
+    AGENT ||--o{ AGENT_PERFORMANCE : has
+    WORKFLOW_RUN ||--o{ AGENT_PERFORMANCE : includes
+    DASHBOARD ||--o{ DASHBOARD_WIDGET : contains
+    DASHBOARD_WIDGET }o--|| KPI : displays
+    USER ||--o{ DASHBOARD : manages
+    USER ||--o{ AGENT : oversees
+
+    WORKFLOW {
+        string workflow_id PK
+        string name
+        string status
+        string owner_id FK
+
+    WORKFLOW_RUN {
+        string run_id PK
+        string workflow_id FK
+        datetime started_at
+        datetime ended_at
+        string status
+
+    KPI {
+        string kpi_id PK
+        string name
+        string unit
+        string description
+
+    KPI_MEASUREMENT {
+        string measurement_id PK
+        string kpi_id FK
+        string run_id FK
+        decimal value
+        datetime measured_at
+
+    AGENT {
+        string agent_id PK
+        string name
+        string type
+        string status
+        string user_id FK
+
+    AGENT_PERFORMANCE {
+        string performance_id PK
+        string agent_id FK
+        string run_id FK
+        decimal throughput
+        decimal error_rate
+        datetime recorded_at
+
+    DASHBOARD {
+        string dashboard_id PK
+        string name
+        string user_id FK
+        string layout
+
+    DASHBOARD_WIDGET {
+        string widget_id PK
+        string dashboard_id FK
+        string kpi_id FK
+        string title
+        string visualization_type
+
+    USER {
+        string user_id PK
+        string name
+        string role
+        string email

@@ -1,0 +1,26 @@
+erDiagram
+    BANK_ACCOUNT ||--o{ VALIDATION_CHECK : has
+    BANK_ACCOUNT ||--o{ SECURITY_MEASURE : applies
+
+    BANK_ACCOUNT {
+        string account_id PK
+        string bank_name
+        string account_holder
+        string iban
+        string bic
+        string account_type
+        string currency
+
+    VALIDATION_CHECK {
+        string validation_id PK
+        string account_id FK
+        boolean iban_format_validation
+        boolean bic_existence_check
+        boolean duplicate_prevention
+
+    SECURITY_MEASURE {
+        string security_id PK
+        string account_id FK
+        boolean end_to_end_encryption
+        boolean tokenization
+        boolean pci_dss_compliance

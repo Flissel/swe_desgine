@@ -1,0 +1,14 @@
+C4Context
+    title User Profile Settings - System Context
+    Person(user, "User", "Manages profile settings and personalization")
+    Person(admin, "Administrator", "Manages roles, permissions, and audits")
+    System(system, "User Profile Settings Frontend", "Personalization and permissions management")
+    System_Ext(auth, "Authentication Service", "Session management and security settings")
+    System_Ext(notify, "Notification Service", "Notification preferences delivery")
+    System_Ext(audit, "Audit Log Service", "Audit trail storage and retrieval")
+
+    Rel(user, system, "Configures settings")
+    Rel(admin, system, "Administers roles and permissions")
+    Rel(system, auth, "Uses", "Sessions, security")
+    Rel(system, notify, "Sends/updates", "Notification preferences")
+    Rel(system, audit, "Writes/reads", "Audit events")

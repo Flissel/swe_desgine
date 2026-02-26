@@ -1,0 +1,48 @@
+erDiagram
+    BILLING_TASK ||--o{ ROUTING_ASSIGNMENT : assigned_by
+    AGENT ||--o{ ROUTING_ASSIGNMENT : receives
+    TASK_TYPE ||--o{ BILLING_TASK : categorizes
+    COMPLEXITY_LEVEL ||--o{ BILLING_TASK : rated_as
+    ROUTING_RULE ||--o{ ROUTING_ASSIGNMENT : applied_by
+    TASK_TYPE ||--o{ ROUTING_RULE : targets
+    COMPLEXITY_LEVEL ||--o{ ROUTING_RULE : targets
+
+    BILLING_TASK {
+        string task_id PK
+        string task_type_id FK
+        string complexity_id FK
+        string description
+        string status
+        datetime created_at
+
+    AGENT {
+        string agent_id PK
+        string name
+        string role
+        string status
+
+    ROUTING_ASSIGNMENT {
+        string assignment_id PK
+        string task_id FK
+        string agent_id FK
+        string rule_id FK
+        datetime assigned_at
+        string outcome
+
+    TASK_TYPE {
+        string task_type_id PK
+        string name
+        string description
+
+    COMPLEXITY_LEVEL {
+        string complexity_id PK
+        string name
+        string score
+
+    ROUTING_RULE {
+        string rule_id PK
+        string task_type_id FK
+        string complexity_id FK
+        string description
+        string priority
+        boolean active

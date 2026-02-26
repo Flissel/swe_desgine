@@ -1,0 +1,10 @@
+flowchart TD
+    Start([Start]) --> A[Benutzer startet Kontoerstellung]
+    A --> B[Benutzerdaten erfassen]
+    B --> C[Identität prüfen]
+    C --> D{Prüfung erfolgreich?}
+    D -- Nein --> E[Fehlermeldung anzeigen]
+    E --> B
+    D -- Ja --> F[Bankkonto anlegen]
+    F --> G[Bestätigung an Benutzer senden]
+    G --> End([End])

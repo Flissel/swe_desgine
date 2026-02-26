@@ -1,0 +1,59 @@
+flowchart LR
+    subgraph Tasks
+        TASK-001((Architektur- und Dat))
+        TASK-002[Implementierung Agen]
+        TASK-003[Workflow-Routing imp]
+        TASK-004[Exception-Handling A]
+        TASK-005[Monitoring-Dashboard]
+        TASK-006[Frontend-Komponenten]
+        TASK-007[Monitoring-Dashboard]
+        TASK-008([Integrationstests fü])
+        TASK-009((Dashboard-Requiremen))
+        TASK-010[Backend-API für Repo]
+        TASK-011[Frontend Dashboard-A]
+        TASK-012[Integration Exceptio]
+        TASK-013[Automatische Fakturi]
+        TASK-014([Dashboard-Tests und ])
+        TASK-015((Security-Anforderung))
+        TASK-016[AuthN/AuthZ für Fakt]
+        TASK-017[Sicheres Bank Accoun]
+        TASK-018((Service-to-Service A))
+        TASK-019[Security Logging & E]
+        TASK-020([Security Testing & R])
+    end
+
+    TASK-001 --> TASK-002
+    TASK-001 --> TASK-003
+    TASK-002 --> TASK-003
+    TASK-001 --> TASK-004
+    TASK-002 --> TASK-004
+    TASK-003 --> TASK-004
+    TASK-002 --> TASK-005
+    TASK-003 --> TASK-005
+    TASK-004 --> TASK-005
+    TASK-001 --> TASK-006
+    TASK-005 --> TASK-007
+    TASK-002 --> TASK-008
+    TASK-003 --> TASK-008
+    TASK-004 --> TASK-008
+    TASK-005 --> TASK-008
+    TASK-007 --> TASK-008
+    TASK-001 --> TASK-010
+    TASK-001 --> TASK-011
+    TASK-002 --> TASK-011
+    TASK-002 --> TASK-012
+    TASK-003 --> TASK-012
+    TASK-002 --> TASK-013
+    TASK-003 --> TASK-014
+    TASK-004 --> TASK-014
+    TASK-005 --> TASK-014
+    TASK-001 --> TASK-016
+    TASK-001 --> TASK-017
+    TASK-002 --> TASK-017
+    TASK-001 --> TASK-018
+    TASK-002 --> TASK-019
+    TASK-004 --> TASK-019
+    TASK-002 --> TASK-020
+    TASK-003 --> TASK-020
+    TASK-004 --> TASK-020
+    TASK-005 --> TASK-020

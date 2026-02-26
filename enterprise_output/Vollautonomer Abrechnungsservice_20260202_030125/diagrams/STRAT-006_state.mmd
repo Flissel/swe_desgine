@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> Assessment
+    Assessment --> VisionAndStrategy : define_AI_first_vision
+    VisionAndStrategy --> GovernanceSetup : establish_governance
+    GovernanceSetup --> RoleDesign : define_new_roles
+    RoleDesign --> CapabilityBuilding : train_upskill
+    CapabilityBuilding --> ProcessRedesign : redesign_processes
+    ProcessRedesign --> ToolingAndDataEnablement : enable_tools_data
+    ToolingAndDataEnablement --> CultureAdoption : drive_change_management
+    CultureAdoption --> AI_Decisioning : adopt_AI_decisions
+    AI_Decisioning --> ContinuousImprovement : monitor_optimize
+    ContinuousImprovement --> [*] : transformation_matured
+    CultureAdoption --> CapabilityBuilding : address_skill_gaps
+    AI_Decisioning --> GovernanceSetup : compliance_issue
+    ContinuousImprovement --> VisionAndStrategy : strategy_refresh

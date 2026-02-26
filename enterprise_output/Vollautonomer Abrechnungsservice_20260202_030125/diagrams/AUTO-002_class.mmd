@@ -1,0 +1,36 @@
+classDiagram
+    class Abrechnungsaufgabe {
+        +id: String
+        +typ: String
+        +komplexitaet: int
+        +status: String
+        +bewerteKomplexitaet(faktoren: Map): int
+
+    class Agent {
+        +id: String
+        +name: String
+        +faehigkeiten: List~String~
+        +kapazitaet: int
+        +kannBearbeiten(typ: String, komplexitaet: int): bool
+
+    class RoutingEngine {
+        +regeln: List~RoutingRegel~
+        +routeAufgabe(aufgabe: Abrechnungsaufgabe): Agent
+        +bewerteAgent(agent: Agent, aufgabe: Abrechnungsaufgabe): int
+
+    class RoutingRegel {
+        +id: String
+        +typ: String
+        +maxKomplexitaet: int
+        +prioritaet: int
+        +passt(aufgabe: Abrechnungsaufgabe): bool
+
+    class AgentRepository {
+        +agenten: List~Agent~
+        +findePassende(aufgabe: Abrechnungsaufgabe): List~Agent~
+
+    RoutingEngine --> Abrechnungsaufgabe : routed
+    RoutingEngine --> Agent : assigns
+    RoutingEngine --> RoutingRegel : uses
+    RoutingEngine --> AgentRepository : queries
+    AgentRepository "1" o-- "*" Agent : verwaltet

@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant User
+    participant UI
+    participant ImportService
+    participant FileParser
+    participant Database
+
+    User->>UI: Select import file (CSV/Excel)
+    activate UI
+    UI->>ImportService: Upload file
+    activate ImportService
+    ImportService->>FileParser: Parse file
+    activate FileParser
+    FileParser-->>ImportService: Parsed customer data
+    deactivate FileParser
+    ImportService->>Database: Store customer records
+    activate Database
+    Database-->>ImportService: Store confirmation
+    deactivate Database
+    ImportService-->>UI: Import result
+    deactivate ImportService
+    UI-->>User: Display success/failure
+    deactivate UI

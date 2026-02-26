@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor User
+    participant System
+    participant Monitoring
+    participant LLM
+    participant Agent as Specialized Agent
+    participant Logger
+
+    User->>System: Submit request
+    activate System
+    System->>Monitoring: Execute task
+    activate Monitoring
+    Monitoring-->>System: Exception detected
+    deactivate Monitoring
+
+    System->>Logger: Log exception context
+    activate Logger
+    Logger-->>System: Logged
+    deactivate Logger
+
+    System->>LLM: Analyze exception & propose fix
+    activate LLM
+    LLM-->>System: Recovery plan
+    deactivate LLM
+
+    System->>Agent: Apply fix/recovery
+    activate Agent
+    Agent-->>System: Recovery result
+    deactivate Agent
+
+    alt Recovery successful
+        System-->>User: Response with recovered result
+    else Recovery failed
+        System->>LLM: Escalate with details
+        activate LLM
+        LLM-->>System: Escalation guidance
+        deactivate LLM
+        System-->>User: Error response with status
+    end
+    deactivate System

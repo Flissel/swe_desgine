@@ -1,0 +1,49 @@
+classDiagram
+    class ZeroTrustController {
+        +policyVersion: String
+        +evaluateAccess(identity: String, context: String): Boolean
+        +enforcePolicy(resource: String, decision: Boolean): void
+
+    class AIThreatDetection {
+        +modelVersion: String
+        +detectThreat(event: String): String
+        +updateModel(dataSet: String): void
+
+    class ThreatIntelligence {
+        +feedStatus: String
+        +ingestIndicator(indicator: String): void
+        +getRiskScore(indicator: String): float
+
+    class PolicyEngine {
+        +policyStore: String
+        +loadPolicies(source: String): void
+        +evaluate(request: String): Boolean
+
+    class AccessGateway {
+        +gatewayId: String
+        +authenticate(identity: String): Boolean
+        +authorize(request: String): Boolean
+
+    class AutonomousSystem {
+        +systemId: String
+        +submitTelemetry(data: String): void
+        +executeAction(command: String): void
+
+    class ResponseOrchestrator {
+        +playbookId: String
+        +mitigate(threatId: String): void
+        +quarantine(assetId: String): void
+
+    class AuditLog {
+        +logStore: String
+        +recordEvent(event: String): void
+        +exportLogs(target: String): void
+
+    ZeroTrustController --> PolicyEngine : uses
+    ZeroTrustController --> AccessGateway : enforces
+    AIThreatDetection --> ThreatIntelligence : enriches
+    AIThreatDetection --> ResponseOrchestrator : triggers
+    AutonomousSystem --> AccessGateway : requests
+    AutonomousSystem --> AIThreatDetection : sendsTelemetry
+    ResponseOrchestrator --> AuditLog : records
+    AccessGateway --> AuditLog : logs

@@ -1,0 +1,39 @@
+erDiagram
+    CUSTOMER ||--|| ADDRESS : billing_address
+    CUSTOMER ||--|| ADDRESS : shipping_address
+    CUSTOMER }o--|| PAYMENT_TERM : has
+    CUSTOMER }o--|| PAYMENT_METHOD : prefers
+    CUSTOMER ||--o{ CUSTOMER_RELATIONSHIP : relates_as_source
+    CUSTOMER ||--o{ CUSTOMER_RELATIONSHIP : relates_as_target
+
+    CUSTOMER {
+        string customer_id PK
+        string customer_name
+        string tax_id
+        decimal credit_limit
+        string billing_address_id FK
+        string shipping_address_id FK
+        string payment_term_id FK
+        string preferred_payment_method_id FK
+
+    ADDRESS {
+        string address_id PK
+        string street
+        string city
+        string postal_code
+        string country
+
+    PAYMENT_TERM {
+        string payment_term_id PK
+        string name
+        int net_days
+
+    PAYMENT_METHOD {
+        string payment_method_id PK
+        string name
+
+    CUSTOMER_RELATIONSHIP {
+        string relationship_id PK
+        string source_customer_id FK
+        string target_customer_id FK
+        string relationship_type

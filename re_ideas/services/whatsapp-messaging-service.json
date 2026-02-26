@@ -1,0 +1,1825 @@
+{
+  "name": "whatsapp-messaging-service",
+  "domain": "messaging",
+  "context": {
+    "description": "End-to-end verschluesselte Messaging-Plattform fuer Echtzeit-Kommunikation mit Text, Sprache, Video und Medienfreigabe",
+    "requirement_count": 285,
+    "categories": [
+      "user_authentication",
+      "profile_management",
+      "messaging",
+      "group_chat",
+      "voice_video_calls",
+      "status_stories",
+      "media_sharing",
+      "encryption_security",
+      "notifications",
+      "contact_management",
+      "search",
+      "settings_privacy",
+      "backup_sync",
+      "business_features"
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "End User",
+      "role": "primary",
+      "concerns": [
+        "Einfache und intuitive Bedienung",
+        "Datenschutz und Sicherheit",
+        "Zuverlaessige Nachrichtenzustellung",
+        "Schnelle Performance",
+        "Plattformuebergreifende Verfuegbarkeit"
+      ]
+    },
+    {
+      "name": "Business User",
+      "role": "secondary",
+      "concerns": [
+        "Professionelle Kommunikation mit Kunden",
+        "Automatisierte Antworten",
+        "Katalog und Shop-Integration",
+        "Statistiken und Analytics",
+        "Verifiziertes Business-Profil"
+      ]
+    },
+    {
+      "name": "Administrator",
+      "role": "support",
+      "concerns": [
+        "Nutzerverwaltung",
+        "Content-Moderation",
+        "Missbrauchspraevention",
+        "Compliance-Einhaltung",
+        "System-Monitoring"
+      ]
+    },
+    {
+      "name": "Developer",
+      "role": "technical",
+      "concerns": [
+        "API-Zugang",
+        "Webhook-Integration",
+        "SDK-Verfuegbarkeit",
+        "Dokumentation",
+        "Rate Limiting"
+      ]
+    }
+  ],
+  "constraints": {
+    "technical": [
+      "Mobile-First Design (iOS, Android)",
+      "End-to-End Verschluesselung (Signal Protocol)",
+      "Offline-Faehigkeit mit Nachrichten-Queue",
+      "WebSocket fuer Echtzeit-Kommunikation",
+      "Max. Gruppenmitglieder: 1024",
+      "Max. Broadcast-Listen: 256 Empfaenger",
+      "Max. Mediengroesse: 2GB fuer Dokumente, 16MB fuer Bilder",
+      "Max. Statusdauer: 24 Stunden",
+      "WebRTC fuer Voice/Video Calls"
+    ],
+    "business": [
+      "DSGVO-Konformitaet",
+      "Datenschutz als Kernprinzip",
+      "Keine Werbung im Chat",
+      "Kostenlos fuer Endnutzer",
+      "Business API kostenpflichtig",
+      "Altersbeschraenkung: 16+ Jahre (EU)"
+    ]
+  },
+  "_imported_requirements": [
+    {
+      "category": "user_authentication",
+      "title": "Telefonnummer-Registrierung",
+      "description": "Das System MUSS Benutzer ueber ihre Telefonnummer registrieren und verifizieren",
+      "priority": "must",
+      "acceptance_criteria": [
+        "SMS-Verifizierungscode wird innerhalb von 60 Sekunden gesendet",
+        "Code ist 6-stellig und 10 Minuten gueltig",
+        "Maximal 3 Verifizierungsversuche pro Stunde",
+        "Fallback auf Anruf-Verifizierung verfuegbar"
+      ],
+      "requirement_id": "WA-AUTH-001",
+      "type": "functional"
+    },
+    {
+      "category": "user_authentication",
+      "title": "Zwei-Faktor-Authentifizierung",
+      "description": "Das System MUSS optionale 2FA mit 6-stelliger PIN unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "PIN kann jederzeit aktiviert/deaktiviert werden",
+        "E-Mail-Backup fuer PIN-Wiederherstellung",
+        "Periodische PIN-Abfrage alle 7 Tage",
+        "PIN wird bei Geraetewechsel abgefragt"
+      ],
+      "requirement_id": "WA-AUTH-002",
+      "type": "functional"
+    },
+    {
+      "category": "user_authentication",
+      "title": "Biometrische Entsperrung",
+      "description": "Das System SOLL biometrische Authentifizierung (Fingerabdruck, Face ID) unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Integration mit System-Biometrie",
+        "Fallback auf PIN/Passwort",
+        "Konfigurierbare Timeout-Dauer",
+        "Separate Einstellung fuer App-Sperre"
+      ],
+      "requirement_id": "WA-AUTH-003",
+      "type": "functional"
+    },
+    {
+      "category": "user_authentication",
+      "title": "Multi-Device Support",
+      "description": "Das System MUSS gleichzeitige Nutzung auf mehreren Geraeten ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bis zu 4 verknuepfte Geraete plus Hauptgeraet",
+        "Web- und Desktop-Clients verfuegbar",
+        "Nachrichten-Synchronisation ueber alle Geraete",
+        "Unabhaengige Sitzungen ohne Telefon-Verbindung"
+      ],
+      "requirement_id": "WA-AUTH-004",
+      "type": "functional"
+    },
+    {
+      "category": "user_authentication",
+      "title": "Passkey-Unterstuetzung",
+      "description": "Das System SOLL passwortlose Anmeldung via Passkeys unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "FIDO2/WebAuthn Standard",
+        "Cross-Platform Synchronisation",
+        "Fallback auf bestehende Methoden"
+      ],
+      "requirement_id": "WA-AUTH-005",
+      "type": "functional"
+    },
+    {
+      "category": "profile_management",
+      "title": "Profilbild",
+      "description": "Das System MUSS Benutzern ermoeglichen, ein Profilbild hochzuladen und zu verwalten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bildgroesse max. 5MB",
+        "Unterstuetzte Formate: JPEG, PNG",
+        "Automatische Komprimierung und Zuschnitt",
+        "Sichtbarkeit konfigurierbar (alle, Kontakte, niemand)"
+      ],
+      "requirement_id": "WA-PROF-001",
+      "type": "functional"
+    },
+    {
+      "category": "profile_management",
+      "title": "Anzeigename",
+      "description": "Das System MUSS einen konfigurierbaren Anzeigenamen unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Max. 25 Zeichen",
+        "Unicode-Unterstuetzung inkl. Emojis",
+        "Aenderung jederzeit moeglich",
+        "Kein eindeutiger Name erforderlich"
+      ],
+      "requirement_id": "WA-PROF-002",
+      "type": "functional"
+    },
+    {
+      "category": "profile_management",
+      "title": "Info/Status Text",
+      "description": "Das System MUSS einen kurzen Info-Text im Profil unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Max. 139 Zeichen",
+        "Voreingestellte Optionen verfuegbar",
+        "Eigener Text moeglich",
+        "Sichtbarkeit konfigurierbar"
+      ],
+      "requirement_id": "WA-PROF-003",
+      "type": "functional"
+    },
+    {
+      "category": "profile_management",
+      "title": "Telefonnummer anzeigen",
+      "description": "Das System MUSS die Telefonnummer im Profil anzeigen koennen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Internationale Formatierung",
+        "Nur fuer Kontakte sichtbar",
+        "Kopierfunktion verfuegbar"
+      ],
+      "requirement_id": "WA-PROF-004",
+      "type": "functional"
+    },
+    {
+      "category": "profile_management",
+      "title": "QR-Code Profil",
+      "description": "Das System SOLL einen scanbaren QR-Code fuer einfaches Hinzufuegen generieren",
+      "priority": "should",
+      "acceptance_criteria": [
+        "QR-Code im Profil abrufbar",
+        "Direkt zur Kontakt-Hinzufuegung",
+        "Teilen als Bild moeglich"
+      ],
+      "requirement_id": "WA-PROF-005",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Textnachricht senden",
+      "description": "Das System MUSS das Senden von Textnachrichten in Echtzeit ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Max. 65536 Zeichen pro Nachricht",
+        "Unicode und Emoji-Unterstuetzung",
+        "Zustellbestaetigung (ein Haken)",
+        "Lesebestaetigung (zwei blaue Haken)",
+        "Offline-Queue bei fehlender Verbindung"
+      ],
+      "requirement_id": "WA-MSG-001",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Sprachnachricht",
+      "description": "Das System MUSS das Senden von Sprachnachrichten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Push-to-Talk Aufnahme",
+        "Max. Laenge: 30 Minuten",
+        "Opus Audio Codec",
+        "Abspielgeschwindigkeit einstellbar (1x, 1.5x, 2x)",
+        "Wellenform-Visualisierung"
+      ],
+      "requirement_id": "WA-MSG-002",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Nachricht loeschen",
+      "description": "Das System MUSS das Loeschen von Nachrichten ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Loeschen fuer mich",
+        "Loeschen fuer alle (innerhalb Zeitlimit)",
+        "Zeitlimit: 2 Tage nach Senden",
+        "Hinweis 'Nachricht wurde geloescht' bleibt sichtbar"
+      ],
+      "requirement_id": "WA-MSG-003",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Nachricht bearbeiten",
+      "description": "Das System MUSS das Bearbeiten gesendeter Nachrichten ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bearbeitung innerhalb von 15 Minuten",
+        "Bearbeitungsmarkierung sichtbar",
+        "Keine Bearbeitungshistorie fuer Empfaenger",
+        "Nur Textnachrichten bearbeitbar"
+      ],
+      "requirement_id": "WA-MSG-004",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Nachricht weiterleiten",
+      "description": "Das System MUSS das Weiterleiten von Nachrichten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "An mehrere Chats gleichzeitig (max. 5)",
+        "Weiterleitung-Label sichtbar",
+        "Haeufig weitergeleitete Nachricht markiert",
+        "Medien werden mit weitergeleitet"
+      ],
+      "requirement_id": "WA-MSG-005",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Nachricht zitieren",
+      "description": "Das System MUSS das Zitieren/Antworten auf spezifische Nachrichten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Swipe-Geste zum Zitieren",
+        "Zitat-Vorschau in Antwort",
+        "Klick auf Zitat scrollt zur Original-Nachricht",
+        "Funktioniert mit allen Nachrichtentypen"
+      ],
+      "requirement_id": "WA-MSG-006",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Reaktionen",
+      "description": "Das System MUSS Emoji-Reaktionen auf Nachrichten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "6 Standard-Emojis + alle anderen",
+        "Mehrere Reaktionen pro Nachricht moeglich",
+        "Reaktionen werden aggregiert angezeigt",
+        "Eigene Reaktion aenderbar"
+      ],
+      "requirement_id": "WA-MSG-007",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Verschwindende Nachrichten",
+      "description": "Das System MUSS selbstloeschende Nachrichten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Optionen: 24 Stunden, 7 Tage, 90 Tage",
+        "Pro Chat einstellbar",
+        "Standardeinstellung fuer neue Chats",
+        "Timer beginnt nach Lesen"
+      ],
+      "requirement_id": "WA-MSG-008",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Einmal-Ansicht Medien",
+      "description": "Das System MUSS View-Once Medien unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bild/Video kann nur einmal angesehen werden",
+        "Kein Screenshot moeglich (best effort)",
+        "Ablauf nach 14 Tagen wenn ungesehen",
+        "Wiederholte Ansicht nicht moeglich"
+      ],
+      "requirement_id": "WA-MSG-009",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Chat sperren",
+      "description": "Das System SOLL das Sperren einzelner Chats mit zusaetzlicher Authentifizierung ermoeglichen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Chat erscheint in separatem gesperrten Bereich",
+        "Biometrische oder PIN-Entsperrung",
+        "Keine Benachrichtigungsvorschau fuer gesperrte Chats",
+        "Chat-Inhalt nicht in der Suche"
+      ],
+      "requirement_id": "WA-MSG-010",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Broadcast-Listen",
+      "description": "Das System MUSS Broadcast-Listen fuer Massen-Nachrichten an mehrere Empfaenger unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Max. 256 Empfaenger pro Liste",
+        "Empfaenger muessen Absender in Kontakten haben",
+        "Antworten kommen als Einzel-Chat",
+        "Listen speicher- und verwaltbar"
+      ],
+      "requirement_id": "WA-MSG-011",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Formatierte Texte",
+      "description": "Das System MUSS grundlegende Textformatierung unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Fett: *text*",
+        "Kursiv: _text_",
+        "Durchgestrichen: ~text~",
+        "Monospace: ```text```",
+        "Aufzaehlungslisten",
+        "Nummerierte Listen"
+      ],
+      "requirement_id": "WA-MSG-012",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Erwaehnung (@mention)",
+      "description": "Das System MUSS @-Erwaehnungen in Gruppenchats unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "@Name zum Erwaehnen",
+        "Autovervollstaendigung beim Tippen",
+        "Erwaehnter Nutzer erhaelt Benachrichtigung",
+        "@alle fuer Gruppen-Admins"
+      ],
+      "requirement_id": "WA-MSG-013",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Standort teilen",
+      "description": "Das System MUSS das Teilen von Standorten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Aktuellen Standort senden",
+        "Live-Standort teilen (15min, 1h, 8h)",
+        "Kartenvorschau in Nachricht",
+        "Navigation zur Position starten"
+      ],
+      "requirement_id": "WA-MSG-014",
+      "type": "functional"
+    },
+    {
+      "category": "messaging",
+      "title": "Kontakt teilen",
+      "description": "Das System MUSS das Teilen von Kontaktdaten unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "vCard-Format",
+        "Mehrere Kontakte auf einmal",
+        "Direktes Hinzufuegen moeglich",
+        "Name, Nummer, E-Mail enthalten"
+      ],
+      "requirement_id": "WA-MSG-015",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Gruppe erstellen",
+      "description": "Das System MUSS das Erstellen von Gruppenchats ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Mindestens 1 weiterer Teilnehmer",
+        "Max. 1024 Mitglieder",
+        "Gruppenname erforderlich (max. 100 Zeichen)",
+        "Gruppenbild optional"
+      ],
+      "requirement_id": "WA-GRP-001",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Gruppenadministration",
+      "description": "Das System MUSS umfangreiche Gruppenadmin-Funktionen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Mehrere Admins moeglich",
+        "Admins koennen Mitglieder hinzufuegen/entfernen",
+        "Admins koennen Gruppeninfo aendern",
+        "Gruenderrechte uebertragbar"
+      ],
+      "requirement_id": "WA-GRP-002",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Gruppeneinstellungen",
+      "description": "Das System MUSS konfigurierbare Gruppeneinstellungen unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Wer kann Gruppeninfo aendern (alle/nur Admins)",
+        "Wer kann Nachrichten senden (alle/nur Admins)",
+        "Wer kann Mitglieder hinzufuegen",
+        "Genehmigung fuer neue Mitglieder"
+      ],
+      "requirement_id": "WA-GRP-003",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Einladungslink",
+      "description": "Das System MUSS Gruppeneinladungen per Link ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Generierbarer Einladungslink",
+        "Link widerrufbar",
+        "QR-Code fuer Link",
+        "Admin-Genehmigung optional"
+      ],
+      "requirement_id": "WA-GRP-004",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Gruppe verlassen",
+      "description": "Das System MUSS das Verlassen von Gruppen ohne Benachrichtigung ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Stilles Verlassen moeglich",
+        "Chatverlauf bleibt erhalten",
+        "Erneuter Beitritt per Einladung",
+        "Optional: Benachrichtigung nur an Admins"
+      ],
+      "requirement_id": "WA-GRP-005",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Community",
+      "description": "Das System MUSS Communities mit mehreren Gruppen unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Meta-Gruppe mit Ankuendigungskanal",
+        "Bis zu 50 verknuepfte Gruppen",
+        "Bis zu 5000 Mitglieder",
+        "Community-weite Ankuendigungen"
+      ],
+      "requirement_id": "WA-GRP-006",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Kanaele",
+      "description": "Das System MUSS One-Way-Broadcast-Kanaele unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Nur Admins koennen senden",
+        "Unbegrenzte Follower",
+        "Reaktionen auf Posts moeglich",
+        "Kanal-Verzeichnis zur Entdeckung"
+      ],
+      "requirement_id": "WA-GRP-007",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Umfragen",
+      "description": "Das System MUSS Umfragen in Gruppen und Einzelchats unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Bis zu 12 Antwortoptionen",
+        "Einzelne oder mehrere Antworten",
+        "Anonyme Abstimmung optional",
+        "Echtzeit-Ergebnisse"
+      ],
+      "requirement_id": "WA-GRP-008",
+      "type": "functional"
+    },
+    {
+      "category": "group_chat",
+      "title": "Events planen",
+      "description": "Das System SOLL Event-Planung in Gruppen unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Datum, Zeit, Ort angeben",
+        "Teilnehmer koennen zusagen/absagen",
+        "Erinnerungen vor Event",
+        "Kalender-Integration"
+      ],
+      "requirement_id": "WA-GRP-009",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Sprachanruf",
+      "description": "Das System MUSS verschluesselte Sprachanrufe unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "End-to-End verschluesselt",
+        "HD-Audio (Opus Codec)",
+        "Anruf halten moeglich",
+        "Stummschalten moeglich",
+        "Lautsprecher/Kopfhoerer umschalten"
+      ],
+      "requirement_id": "WA-CALL-001",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Videoanruf",
+      "description": "Das System MUSS verschluesselte Videoanrufe unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "End-to-End verschluesselt",
+        "HD-Video bis 720p",
+        "Kamera wechseln (vorne/hinten)",
+        "Video ausschalten waehrend Anruf",
+        "Bild-in-Bild Modus"
+      ],
+      "requirement_id": "WA-CALL-002",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Gruppenanruf",
+      "description": "Das System MUSS Gruppen-Sprach/Videoanrufe unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bis zu 32 Teilnehmer",
+        "Teilnehmer waehrend Anruf hinzufuegbar",
+        "Aktiver Sprecher hervorgehoben",
+        "Raster-/Sprecher-Ansicht waehlbar"
+      ],
+      "requirement_id": "WA-CALL-003",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Bildschirmfreigabe",
+      "description": "Das System SOLL Bildschirmfreigabe waehrend Anrufen unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Gesamter Bildschirm oder App",
+        "Audio mit Bildschirm teilbar",
+        "Annotation-Tools optional",
+        "Nur waehrend Videoanruf"
+      ],
+      "requirement_id": "WA-CALL-004",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Anruflink",
+      "description": "Das System SOLL Anruflinks fuer geplante Anrufe ermoeglichen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Teilnahme ohne Kontakt-Hinzufuegung",
+        "Link wiederverwendbar",
+        "Warteraum optional",
+        "Teilnehmerlimit einstellbar"
+      ],
+      "requirement_id": "WA-CALL-005",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Anruf ablehnen mit Nachricht",
+      "description": "Das System MUSS schnelle Antworten beim Ablehnen eines Anrufs bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Voreingestellte Nachrichten",
+        "Eigene Nachrichten konfigurierbar",
+        "Nachricht wird automatisch gesendet"
+      ],
+      "requirement_id": "WA-CALL-006",
+      "type": "functional"
+    },
+    {
+      "category": "voice_video_calls",
+      "title": "Anrufverlauf",
+      "description": "Das System MUSS einen Anrufverlauf fuehren",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Eingehende/Ausgehende/Verpasste Anrufe",
+        "Dauer und Zeitstempel",
+        "Direkter Rueckruf moeglich",
+        "Verlauf loeschbar"
+      ],
+      "requirement_id": "WA-CALL-007",
+      "type": "functional"
+    },
+    {
+      "category": "status_stories",
+      "title": "Status erstellen",
+      "description": "Das System MUSS das Erstellen von 24-Stunden-Status-Updates ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bild/Video/Text als Status",
+        "Max. 30 Sekunden Video",
+        "Mehrere Status-Segmente",
+        "Automatisches Loeschen nach 24h"
+      ],
+      "requirement_id": "WA-STS-001",
+      "type": "functional"
+    },
+    {
+      "category": "status_stories",
+      "title": "Status anzeigen",
+      "description": "Das System MUSS das Anzeigen von Kontakt-Status ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Chronologische Reihenfolge",
+        "Gesehene Status markiert",
+        "Halten zum Pausieren",
+        "Tippen zum Weiter/Zurueck"
+      ],
+      "requirement_id": "WA-STS-002",
+      "type": "functional"
+    },
+    {
+      "category": "status_stories",
+      "title": "Status-Antwort",
+      "description": "Das System MUSS Antworten auf Status ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Text-Antwort moeglich",
+        "Emoji-Reaktion moeglich",
+        "Antwort oeffnet Einzel-Chat",
+        "Absender wird benachrichtigt"
+      ],
+      "requirement_id": "WA-STS-003",
+      "type": "functional"
+    },
+    {
+      "category": "status_stories",
+      "title": "Status-Datenschutz",
+      "description": "Das System MUSS konfigurierbare Status-Sichtbarkeit bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Meine Kontakte",
+        "Meine Kontakte ausser...",
+        "Nur teilen mit...",
+        "Wer kann meinen Status sehen"
+      ],
+      "requirement_id": "WA-STS-004",
+      "type": "functional"
+    },
+    {
+      "category": "status_stories",
+      "title": "Status stumm schalten",
+      "description": "Das System SOLL das Stummschalten von Kontakt-Status ermoeglichen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Status wird nicht oben angezeigt",
+        "Weiterhin manuell abrufbar",
+        "Stummschaltung aufhebbar"
+      ],
+      "requirement_id": "WA-STS-005",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Bilder senden",
+      "description": "Das System MUSS das Senden von Bildern unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "JPEG, PNG, GIF, WebP",
+        "Max. 16MB pro Bild",
+        "Automatische Komprimierung",
+        "Original-Qualitaet als Option",
+        "Mehrere Bilder auf einmal"
+      ],
+      "requirement_id": "WA-MED-001",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Videos senden",
+      "description": "Das System MUSS das Senden von Videos unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "MP4, 3GP, MOV",
+        "Max. 16MB bei normaler Qualitaet",
+        "Max. 2GB als Dokument",
+        "Video-Trimming vor Senden",
+        "GIF-Konvertierung fuer kurze Videos"
+      ],
+      "requirement_id": "WA-MED-002",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Dokumente senden",
+      "description": "Das System MUSS das Senden beliebiger Dokumente unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Max. 2GB pro Datei",
+        "Alle Dateitypen erlaubt",
+        "PDF-Vorschau verfuegbar",
+        "Dateiname und Groesse angezeigt"
+      ],
+      "requirement_id": "WA-MED-003",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Bildbearbeitung",
+      "description": "Das System MUSS grundlegende Bildbearbeitung vor dem Senden bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Zuschneiden",
+        "Drehen",
+        "Text hinzufuegen",
+        "Zeichnen/Malen",
+        "Sticker hinzufuegen",
+        "Filter anwenden"
+      ],
+      "requirement_id": "WA-MED-004",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Sticker",
+      "description": "Das System MUSS Sticker in Chats unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Vorinstallierte Sticker-Packs",
+        "Sticker-Store zum Download",
+        "Eigene Sticker erstellen",
+        "Favoriten-Sticker speichern",
+        "Animierte Sticker (WebP)"
+      ],
+      "requirement_id": "WA-MED-005",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "GIFs",
+      "description": "Das System MUSS GIF-Suche und -Versand unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Integrierte GIF-Suche (Tenor/Giphy)",
+        "Favoriten speichern",
+        "GIF-Erstellung aus Video",
+        "Autoplay im Chat"
+      ],
+      "requirement_id": "WA-MED-006",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Kamera-Integration",
+      "description": "Das System MUSS direkten Kamerazugriff im Chat bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Foto aufnehmen",
+        "Video aufnehmen",
+        "Wechsel Front/Rueck-Kamera",
+        "Blitz-Steuerung",
+        "Direkt senden oder bearbeiten"
+      ],
+      "requirement_id": "WA-MED-007",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Audio-Dateien",
+      "description": "Das System MUSS das Senden von Audio-Dateien unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "MP3, AAC, WAV, OPUS",
+        "Max. 16MB",
+        "Wiedergabe im Chat",
+        "Wellenform-Anzeige"
+      ],
+      "requirement_id": "WA-MED-008",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "Galerie-Zugriff",
+      "description": "Das System MUSS Zugriff auf die Geraete-Galerie bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Aktuelle Medien anzeigen",
+        "Nach Ordnern filtern",
+        "Mehrfachauswahl",
+        "Sortierung nach Datum"
+      ],
+      "requirement_id": "WA-MED-009",
+      "type": "functional"
+    },
+    {
+      "category": "media_sharing",
+      "title": "HD-Medien",
+      "description": "Das System SOLL das Senden von Medien in HD-Qualitaet unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "HD-Option beim Senden",
+        "Hoehere Dateigroe sse erlaubt",
+        "Qualitaetsanzeige fuer Empfaenger",
+        "Standard-Einstellung konfigurierbar"
+      ],
+      "requirement_id": "WA-MED-010",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "End-to-End Verschluesselung",
+      "description": "Das System MUSS alle Nachrichten end-to-end verschluesseln",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Signal Protocol Implementation",
+        "Automatisch fuer alle Chats",
+        "Keine Server-seitige Entschluesselung",
+        "Verschluesselungsindikator sichtbar"
+      ],
+      "requirement_id": "WA-SEC-001",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "Sicherheitscode-Verifizierung",
+      "description": "Das System MUSS manuelle Verifizierung der Verschluesselung ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "60-stelliger Sicherheitscode",
+        "QR-Code zum Scannen",
+        "Sicherheitsbenachrichtigung bei Aenderung",
+        "Verifizierungsstatus im Profil"
+      ],
+      "requirement_id": "WA-SEC-002",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "Nachrichtensperre",
+      "description": "Das System MUSS App-Sperre mit Authentifizierung bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Biometrische Sperre",
+        "PIN/Passwort Sperre",
+        "Konfigurierbarer Timeout",
+        "Inhalt in Benachrichtigungen verstecken"
+      ],
+      "requirement_id": "WA-SEC-003",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "Blockieren",
+      "description": "Das System MUSS das Blockieren von Kontakten ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Blockierte koennen nicht anrufen/schreiben",
+        "Kein Profilbild/Status/Online-Status sichtbar",
+        "Blockierte Kontakte-Liste einsehbar",
+        "Stilles Blockieren (keine Benachrichtigung)"
+      ],
+      "requirement_id": "WA-SEC-004",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "Melden",
+      "description": "Das System MUSS das Melden von Nachrichten/Kontakten ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Letzte 5 Nachrichten werden uebermittelt",
+        "Meldekategorien waehlbar",
+        "Optional: Blockieren nach Meldung",
+        "Bestaetigung der Meldung"
+      ],
+      "requirement_id": "WA-SEC-005",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "Zwei-Schritte-Verifizierung",
+      "description": "Das System MUSS optionale zusaetzliche PIN-Sicherung bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "6-stellige PIN",
+        "Periodische Abfrage",
+        "E-Mail-Wiederherstellung",
+        "Schutz bei SIM-Swap"
+      ],
+      "requirement_id": "WA-SEC-006",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "Spam-Erkennung",
+      "description": "Das System SOLL automatische Spam-Erkennung implementieren",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Verdaechtige Nachrichten markiert",
+        "Haeufig weitergeleitete Nachrichten erkannt",
+        "Neue Kontakte-Warnhinweis",
+        "Automatische Spam-Filterung"
+      ],
+      "requirement_id": "WA-SEC-007",
+      "type": "functional"
+    },
+    {
+      "category": "encryption_security",
+      "title": "IP-Adresse schuetzen",
+      "description": "Das System SOLL IP-Adressen bei Anrufen verschleiern koennen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Relay-Server fuer Anrufe",
+        "Aktivierbar in Einstellungen",
+        "Moegliche Qualitaetseinbusse dokumentiert"
+      ],
+      "requirement_id": "WA-SEC-008",
+      "type": "functional"
+    },
+    {
+      "category": "notifications",
+      "title": "Push-Benachrichtigungen",
+      "description": "Das System MUSS zuverlaessige Push-Benachrichtigungen liefern",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Sofortige Zustellung",
+        "Anpassbare Toene",
+        "Vibration konfigurierbar",
+        "LED-Farbe (wo verfuegbar)"
+      ],
+      "requirement_id": "WA-NOT-001",
+      "type": "functional"
+    },
+    {
+      "category": "notifications",
+      "title": "Benachrichtigungsvorschau",
+      "description": "Das System MUSS konfigurierbare Benachrichtigungsvorschauen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Absender + Nachricht anzeigen",
+        "Nur Absender anzeigen",
+        "Keine Vorschau",
+        "Pro Chat einstellbar"
+      ],
+      "requirement_id": "WA-NOT-002",
+      "type": "functional"
+    },
+    {
+      "category": "notifications",
+      "title": "Schnellantwort",
+      "description": "Das System MUSS Antworten direkt aus der Benachrichtigung ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Inline-Antwort ohne App-Oeffnung",
+        "Emoji-Reaktionen verfuegbar",
+        "Als gelesen markieren",
+        "Stummschalten direkt moeglich"
+      ],
+      "requirement_id": "WA-NOT-003",
+      "type": "functional"
+    },
+    {
+      "category": "notifications",
+      "title": "Nicht stoeren",
+      "description": "Das System MUSS einen Nicht-Stoeren-Modus bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Fuer 8 Stunden/1 Woche/Immer",
+        "Pro Chat einstellbar",
+        "Ausnahmen fuer Anrufe moeglich",
+        "Zeitplan-basiert"
+      ],
+      "requirement_id": "WA-NOT-004",
+      "type": "functional"
+    },
+    {
+      "category": "notifications",
+      "title": "Reaktionsbenachrichtigungen",
+      "description": "Das System MUSS ueber Reaktionen auf eigene Nachrichten benachrichtigen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Einzel- und Gruppenreaktionen",
+        "Aggregierte Benachrichtigung",
+        "Deaktivierbar"
+      ],
+      "requirement_id": "WA-NOT-005",
+      "type": "functional"
+    },
+    {
+      "category": "notifications",
+      "title": "Anrufbenachrichtigungen",
+      "description": "Das System MUSS separate Anrufbenachrichtigungseinstellungen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Eigener Klingelton",
+        "Vibration ein/aus",
+        "Ganzer Bildschirm bei Anruf"
+      ],
+      "requirement_id": "WA-NOT-006",
+      "type": "functional"
+    },
+    {
+      "category": "contact_management",
+      "title": "Kontakte synchronisieren",
+      "description": "Das System MUSS Geraete-Kontakte mit WhatsApp-Nutzern abgleichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Automatische Erkennung von WhatsApp-Nutzern",
+        "Periodische Synchronisation",
+        "Manuelle Aktualisierung moeglich",
+        "Datenschutz: Hashes statt Klarnummern"
+      ],
+      "requirement_id": "WA-CON-001",
+      "type": "functional"
+    },
+    {
+      "category": "contact_management",
+      "title": "Kontakt hinzufuegen",
+      "description": "Das System MUSS verschiedene Wege zum Kontakt-Hinzufuegen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Per Telefonnummer",
+        "Per QR-Code",
+        "Per geteiltem Kontakt",
+        "Per Einladungslink"
+      ],
+      "requirement_id": "WA-CON-002",
+      "type": "functional"
+    },
+    {
+      "category": "contact_management",
+      "title": "Favoriten",
+      "description": "Das System SOLL Favoriten-Kontakte unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Als Favorit markieren",
+        "Favoriten oben in Liste",
+        "Schnellzugriff auf Favoriten"
+      ],
+      "requirement_id": "WA-CON-003",
+      "type": "functional"
+    },
+    {
+      "category": "contact_management",
+      "title": "Labels/Tags",
+      "description": "Das System SOLL (fuer Business) Kontakt-Labels unterstuetzen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Eigene Labels erstellen",
+        "Mehrere Labels pro Kontakt",
+        "Nach Labels filtern",
+        "Farbcodierung"
+      ],
+      "requirement_id": "WA-CON-004",
+      "type": "functional"
+    },
+    {
+      "category": "contact_management",
+      "title": "Unbekannte Absender",
+      "description": "Das System MUSS unbekannte Absender gesondert behandeln",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Markierung als unbekannter Absender",
+        "Option: Blockieren oder Hinzufuegen",
+        "Warnhinweis bei erster Nachricht"
+      ],
+      "requirement_id": "WA-CON-005",
+      "type": "functional"
+    },
+    {
+      "category": "search",
+      "title": "Nachrichtensuche",
+      "description": "Das System MUSS Volltext-Suche in Nachrichten bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Suche ueber alle Chats",
+        "Suche innerhalb eines Chats",
+        "Hervorhebung der Treffer",
+        "Navigation zwischen Treffern"
+      ],
+      "requirement_id": "WA-SRC-001",
+      "type": "functional"
+    },
+    {
+      "category": "search",
+      "title": "Mediensuche",
+      "description": "Das System MUSS Filterung nach Medientypen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Filter: Bilder, Videos, Links, Dokumente",
+        "Galerie-Ansicht fuer Medien",
+        "Chronologische Sortierung",
+        "Pro Chat oder global"
+      ],
+      "requirement_id": "WA-SRC-002",
+      "type": "functional"
+    },
+    {
+      "category": "search",
+      "title": "Chat-Suche",
+      "description": "Das System MUSS Suche nach Chats/Kontakten bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Nach Name suchen",
+        "Nach Telefonnummer suchen",
+        "Gruppen eingeschlossen",
+        "Archivierte Chats durchsuchen"
+      ],
+      "requirement_id": "WA-SRC-003",
+      "type": "functional"
+    },
+    {
+      "category": "search",
+      "title": "Datumsbasierte Suche",
+      "description": "Das System SOLL Sprung zu bestimmtem Datum ermoeglichen",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Kalender-Auswahl",
+        "Direkter Sprung im Chat",
+        "Datum im Header anzeigen"
+      ],
+      "requirement_id": "WA-SRC-004",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Zuletzt online",
+      "description": "Das System MUSS konfigurierbare Online-Status-Sichtbarkeit bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Alle / Meine Kontakte / Niemand",
+        "Bestimmte Kontakte ausschliessen",
+        "Reziprozitaet: Eigener Status nicht sichtbar wenn versteckt"
+      ],
+      "requirement_id": "WA-SET-001",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Lesebestaetigung",
+      "description": "Das System MUSS konfigurierbare Lesebestaetigung bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Global ein/ausschaltbar",
+        "In Gruppen immer aktiv",
+        "Reziprozitaet beachten"
+      ],
+      "requirement_id": "WA-SET-002",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Profilbild-Sichtbarkeit",
+      "description": "Das System MUSS konfigurierbare Profilbild-Sichtbarkeit bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Alle / Meine Kontakte / Niemand",
+        "Standardeinstellung: Kontakte"
+      ],
+      "requirement_id": "WA-SET-003",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Info-Sichtbarkeit",
+      "description": "Das System MUSS konfigurierbare Info/Status-Text-Sichtbarkeit bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Alle / Meine Kontakte / Niemand"
+      ],
+      "requirement_id": "WA-SET-004",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Gruppen-Einladungen",
+      "description": "Das System MUSS konfigurieren, wer zu Gruppen hinzufuegen darf",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Alle / Meine Kontakte / Ausgewaehlte Kontakte",
+        "Einladungsanfrage bei Einschraenkung"
+      ],
+      "requirement_id": "WA-SET-005",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Speichernutzung",
+      "description": "Das System MUSS Uebersicht und Verwaltung der Speichernutzung bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Speicherverbrauch pro Chat",
+        "Nach Medientyp aufgeschluesselt",
+        "Massenloeschung moeglich",
+        "Automatisches Loeschen alter Medien"
+      ],
+      "requirement_id": "WA-SET-006",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Datennutzung",
+      "description": "Das System MUSS Kontrolle ueber Datenverbrauch bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Auto-Download Einstellungen (WLAN/Mobil)",
+        "Medien-Upload-Qualitaet",
+        "Datensparmodus bei Anrufen"
+      ],
+      "requirement_id": "WA-SET-007",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Chat-Hintergrund",
+      "description": "Das System MUSS anpassbare Chat-Hintergruende bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Voreingestellte Hintergruende",
+        "Eigenes Bild waehlen",
+        "Einheitliche Farbe",
+        "Pro Chat oder global"
+      ],
+      "requirement_id": "WA-SET-008",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Dark Mode",
+      "description": "Das System MUSS einen Dark Mode bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Hell / Dunkel / System",
+        "Automatischer Wechsel",
+        "OLED-optimiertes Schwarz"
+      ],
+      "requirement_id": "WA-SET-009",
+      "type": "functional"
+    },
+    {
+      "category": "settings_privacy",
+      "title": "Sprache",
+      "description": "Das System MUSS mehrere Sprachen unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "60+ Sprachen",
+        "Unabhaengig von Geraetesprache",
+        "RTL-Unterstuetzung"
+      ],
+      "requirement_id": "WA-SET-010",
+      "type": "functional"
+    },
+    {
+      "category": "backup_sync",
+      "title": "Cloud-Backup",
+      "description": "Das System MUSS Chat-Backup in der Cloud ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Google Drive (Android) / iCloud (iOS)",
+        "Automatisches Backup (taeglich/woechentlich/monatlich)",
+        "Manuelles Backup jederzeit",
+        "Videos optional einschliessen"
+      ],
+      "requirement_id": "WA-BAK-001",
+      "type": "functional"
+    },
+    {
+      "category": "backup_sync",
+      "title": "Verschluesseltes Backup",
+      "description": "Das System MUSS End-to-End verschluesselte Backups anbieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "64-stelliger Schluessel oder Passwort",
+        "Ohne Schluessel nicht wiederherstellbar",
+        "Schluessel-Wiederherstellung ueber Account"
+      ],
+      "requirement_id": "WA-BAK-002",
+      "type": "functional"
+    },
+    {
+      "category": "backup_sync",
+      "title": "Chat exportieren",
+      "description": "Das System MUSS den Export einzelner Chats ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Als TXT-Datei",
+        "Mit oder ohne Medien",
+        "Per E-Mail oder andere Apps teilen"
+      ],
+      "requirement_id": "WA-BAK-003",
+      "type": "functional"
+    },
+    {
+      "category": "backup_sync",
+      "title": "Chatverlauf uebertragen",
+      "description": "Das System MUSS Chatverlauf auf neues Geraet uebertragen koennen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Gleiches Betriebssystem: Vollstaendige Uebertragung",
+        "Cross-Platform: Begrenzte Uebertragung (14 Tage)",
+        "QR-Code basierte Einrichtung",
+        "Lokale Uebertragung ohne Cloud"
+      ],
+      "requirement_id": "WA-BAK-004",
+      "type": "functional"
+    },
+    {
+      "category": "backup_sync",
+      "title": "Chat archivieren",
+      "description": "Das System MUSS das Archivieren von Chats ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Chat wird aus Hauptliste entfernt",
+        "Archivierte Chats separat abrufbar",
+        "Option: Bei neuer Nachricht dearchivieren oder nicht"
+      ],
+      "requirement_id": "WA-BAK-005",
+      "type": "functional"
+    },
+    {
+      "category": "backup_sync",
+      "title": "Chat anpinnen",
+      "description": "Das System MUSS das Anpinnen wichtiger Chats ermoeglichen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Max. 3 angepinnte Chats",
+        "Angepinnte Chats oben in Liste",
+        "Reihenfolge aenderbar"
+      ],
+      "requirement_id": "WA-BAK-006",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Business-Profil",
+      "description": "Das System MUSS erweiterte Business-Profile unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Firmenname und Beschreibung",
+        "Geschaeftsadresse",
+        "Geschaeftszeiten",
+        "Website und E-Mail",
+        "Branchenkategorie"
+      ],
+      "requirement_id": "WA-BUS-001",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Verifiziertes Business",
+      "description": "Das System MUSS Verifizierung fuer Businesses bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Gruener Haken bei verifizierten Accounts",
+        "Verifizierungsprozess dokumentiert",
+        "Vertrauenswuerdigkeit signalisiert"
+      ],
+      "requirement_id": "WA-BUS-002",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Schnellantworten",
+      "description": "Das System MUSS vordefinierte Schnellantworten fuer Businesses bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Antwortvorlagen erstellen",
+        "Tastenkuerzel zuweisen",
+        "Platzhalter fuer Personalisierung"
+      ],
+      "requirement_id": "WA-BUS-003",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Abwesenheitsnachrichten",
+      "description": "Das System MUSS automatische Abwesenheitsnachrichten bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Ausserhalb der Geschaeftszeiten",
+        "Benutzerdefinierte Nachricht",
+        "Zeitplanung moeglich"
+      ],
+      "requirement_id": "WA-BUS-004",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Begrussungsnachrichten",
+      "description": "Das System MUSS automatische Begrussungen bei Erstkontakt bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bei erster Nachricht eines Kunden",
+        "Nach 14 Tagen Inaktivitaet",
+        "Benutzerdefinierter Text"
+      ],
+      "requirement_id": "WA-BUS-005",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Produktkatalog",
+      "description": "Das System MUSS einen Produktkatalog fuer Businesses bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Bis zu 500 Produkte",
+        "Bild, Name, Preis, Beschreibung",
+        "Kategorisierung",
+        "In Chat teilbar"
+      ],
+      "requirement_id": "WA-BUS-006",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Warenkorb",
+      "description": "Das System SOLL einen Warenkorb fuer Bestellungen bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Produkte aus Katalog hinzufuegen",
+        "Mengen aendern",
+        "Bestellung als Nachricht senden",
+        "Keine integrierte Zahlung (extern)"
+      ],
+      "requirement_id": "WA-BUS-007",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "WhatsApp Pay",
+      "description": "Das System KANN In-App-Zahlungen in ausgewaehlten Maerkten bieten",
+      "priority": "could",
+      "acceptance_criteria": [
+        "UPI-Integration (Indien)",
+        "Bankkonto-Verknuepfung",
+        "Biometrische Autorisierung",
+        "Transaktionsverlauf"
+      ],
+      "requirement_id": "WA-BUS-008",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "Business-Statistiken",
+      "description": "Das System MUSS grundlegende Nachrichtenstatistiken fuer Businesses bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Gesendete Nachrichten",
+        "Zugestellte Nachrichten",
+        "Gelesene Nachrichten",
+        "Zeitraum waehlbar"
+      ],
+      "requirement_id": "WA-BUS-009",
+      "type": "functional"
+    },
+    {
+      "category": "business_features",
+      "title": "API-Zugang",
+      "description": "Das System MUSS eine Business-API fuer Integrationen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Cloud API (hosted by Meta)",
+        "On-Premise API (selbst gehostet)",
+        "Webhook-Benachrichtigungen",
+        "Message Templates",
+        "Rate Limiting dokumentiert"
+      ],
+      "requirement_id": "WA-BUS-010",
+      "type": "functional"
+    },
+    {
+      "category": "accessibility",
+      "title": "Screenreader-Unterstuetzung",
+      "description": "Das System MUSS vollstaendige Screenreader-Kompatibilitaet bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "TalkBack (Android) Unterstuetzung",
+        "VoiceOver (iOS) Unterstuetzung",
+        "Alle UI-Elemente mit Labels",
+        "Logische Lesereihenfolge"
+      ],
+      "requirement_id": "WA-ACC-001",
+      "type": "functional"
+    },
+    {
+      "category": "accessibility",
+      "title": "Schriftgroesse",
+      "description": "Das System MUSS anpassbare Schriftgroessen unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "System-Schriftgroesse wird respektiert",
+        "Zusaetzliche In-App-Einstellung",
+        "Chat-Text und UI skalierbar"
+      ],
+      "requirement_id": "WA-ACC-002",
+      "type": "functional"
+    },
+    {
+      "category": "accessibility",
+      "title": "Kontrast",
+      "description": "Das System MUSS ausreichenden Farbkontrast bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "WCAG AA Konformitaet",
+        "Hochkontrast-Modus optional",
+        "Farben fuer Farbenblinde unterscheidbar"
+      ],
+      "requirement_id": "WA-ACC-003",
+      "type": "functional"
+    },
+    {
+      "category": "accessibility",
+      "title": "Sprachnachrichten transkribieren",
+      "description": "Das System SOLL Transkription von Sprachnachrichten bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "On-Device Transkription",
+        "Mehrere Sprachen",
+        "Text unter Sprachnachricht anzeigen"
+      ],
+      "requirement_id": "WA-ACC-004",
+      "type": "functional"
+    },
+    {
+      "category": "performance",
+      "title": "Offline-Modus",
+      "description": "Das System MUSS grundlegende Funktionalitaet offline bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Nachrichten offline schreiben",
+        "Automatisches Senden bei Verbindung",
+        "Lokaler Chat-Verlauf lesbar",
+        "Medien-Cache verfuegbar"
+      ],
+      "requirement_id": "WA-PERF-001",
+      "type": "functional"
+    },
+    {
+      "category": "performance",
+      "title": "Schneller App-Start",
+      "description": "Das System MUSS schnellen App-Start gewaehrleisten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Cold Start unter 2 Sekunden",
+        "Warm Start unter 500ms",
+        "Progressive UI-Ladung"
+      ],
+      "requirement_id": "WA-PERF-002",
+      "type": "functional"
+    },
+    {
+      "category": "performance",
+      "title": "Effiziente Synchronisation",
+      "description": "Das System MUSS effiziente Nachrichtensynchronisation implementieren",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Delta-Synchronisation",
+        "Komprimierte Uebertragung",
+        "Priorisierung neuer Nachrichten"
+      ],
+      "requirement_id": "WA-PERF-003",
+      "type": "functional"
+    },
+    {
+      "category": "performance",
+      "title": "Batterieeffizienz",
+      "description": "Das System MUSS batterieeffizient arbeiten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Minimaler Hintergrundverbrauch",
+        "Adaptive Sync-Frequenz",
+        "Doze-Mode Kompatibilitaet"
+      ],
+      "requirement_id": "WA-PERF-004",
+      "type": "functional"
+    },
+    {
+      "category": "performance",
+      "title": "Speichereffizienz",
+      "description": "Das System MUSS speichereffizient arbeiten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Lazy Loading von Medien",
+        "Automatische Cache-Bereinigung",
+        "Komprimierte Speicherung"
+      ],
+      "requirement_id": "WA-PERF-005",
+      "type": "functional"
+    },
+    {
+      "category": "integration",
+      "title": "Share-Extension",
+      "description": "Das System MUSS System-Sharing-Integration bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Als Share-Target registriert",
+        "Alle Dateitypen akzeptiert",
+        "Direktes Senden an Kontakte",
+        "Teilen in Status"
+      ],
+      "requirement_id": "WA-INT-001",
+      "type": "functional"
+    },
+    {
+      "category": "integration",
+      "title": "Siri/Google Assistant",
+      "description": "Das System SOLL Sprachassistenten-Integration bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Nachrichten per Sprache senden",
+        "Anrufe per Sprache starten",
+        "Nachrichten vorlesen lassen"
+      ],
+      "requirement_id": "WA-INT-002",
+      "type": "functional"
+    },
+    {
+      "category": "integration",
+      "title": "Widgets",
+      "description": "Das System SOLL Home-Screen-Widgets bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Chat-Shortcut Widgets",
+        "Ungelesene Nachrichten zaehler",
+        "Quick-Actions Widget"
+      ],
+      "requirement_id": "WA-INT-003",
+      "type": "functional"
+    },
+    {
+      "category": "integration",
+      "title": "Watch-App",
+      "description": "Das System SOLL Smartwatch-Integration bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Benachrichtigungen auf Watch",
+        "Schnellantworten",
+        "Sprachantworten",
+        "Keine vollstaendige Chat-Funktion"
+      ],
+      "requirement_id": "WA-INT-004",
+      "type": "functional"
+    },
+    {
+      "category": "integration",
+      "title": "Desktop-App",
+      "description": "Das System MUSS native Desktop-Anwendungen bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Windows und macOS",
+        "Volle Funktionalitaet",
+        "Keyboard-Shortcuts",
+        "Native Benachrichtigungen"
+      ],
+      "requirement_id": "WA-INT-005",
+      "type": "functional"
+    },
+    {
+      "category": "integration",
+      "title": "Web-Version",
+      "description": "Das System MUSS eine Web-Version bieten",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Alle gaengigen Browser",
+        "QR-Code Authentifizierung",
+        "Keine App-Installation noetig",
+        "Feature-Paritaet mit Mobile"
+      ],
+      "requirement_id": "WA-INT-006",
+      "type": "functional"
+    },
+    {
+      "category": "ai_features",
+      "title": "Meta AI Chat",
+      "description": "Das System SOLL KI-Assistenten-Integration bieten",
+      "priority": "should",
+      "acceptance_criteria": [
+        "Chat mit Meta AI",
+        "Fragen beantworten",
+        "Bilder generieren",
+        "Opt-in Nutzung"
+      ],
+      "requirement_id": "WA-AI-001",
+      "type": "functional"
+    },
+    {
+      "category": "ai_features",
+      "title": "Smart Reply",
+      "description": "Das System SOLL intelligente Antwortvorschlaege bieten",
+      "priority": "could",
+      "acceptance_criteria": [
+        "Kontextbasierte Vorschlaege",
+        "On-Device Processing",
+        "Deaktivierbar"
+      ],
+      "requirement_id": "WA-AI-002",
+      "type": "functional"
+    },
+    {
+      "category": "ai_features",
+      "title": "Sticker-Vorschlaege",
+      "description": "Das System SOLL kontextbasierte Sticker-Vorschlaege machen",
+      "priority": "could",
+      "acceptance_criteria": [
+        "Basierend auf Nachrichtentext",
+        "Emoji-zu-Sticker Vorschlaege"
+      ],
+      "requirement_id": "WA-AI-003",
+      "type": "functional"
+    },
+    {
+      "category": "localization",
+      "title": "RTL-Unterstuetzung",
+      "description": "Das System MUSS rechts-nach-links Sprachen vollstaendig unterstuetzen",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Arabisch, Hebraeisch, Persisch",
+        "Gespiegelte UI",
+        "Korrekte Textausrichtung"
+      ],
+      "requirement_id": "WA-LOC-001",
+      "type": "functional"
+    },
+    {
+      "category": "localization",
+      "title": "Regionale Formate",
+      "description": "Das System MUSS regionale Formate respektieren",
+      "priority": "must",
+      "acceptance_criteria": [
+        "Datums-/Zeitformat regional",
+        "Zahlenformate",
+        "Waehrungsformate"
+      ],
+      "requirement_id": "WA-LOC-002",
+      "type": "functional"
+    },
+    {
+      "category": "localization",
+      "title": "Lokale Sticker",
+      "description": "Das System SOLL regionalspezifische Sticker-Packs bieten",
+      "priority": "could",
+      "acceptance_criteria": [
+        "Regionale Feiertage",
+        "Lokale Kuenstler",
+        "Kulturspezifische Designs"
+      ],
+      "requirement_id": "WA-LOC-003",
+      "type": "functional"
+    }
+  ]
+}

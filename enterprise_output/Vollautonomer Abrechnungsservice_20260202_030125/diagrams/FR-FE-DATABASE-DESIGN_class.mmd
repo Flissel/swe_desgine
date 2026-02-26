@@ -1,0 +1,58 @@
+classDiagram
+    class DatabaseDesigner {
+        +projectName: String
+        +currentSchemaId: String
+        +loadProject(projectId: String) : void
+        +saveProject() : void
+        +exportSchema(format: String) : String
+
+    class Schema {
+        +id: String
+        +name: String
+        +version: String
+        +validate() : bool
+        +clone(newName: String) : Schema
+
+    class Table {
+        +id: String
+        +name: String
+        +engine: String
+        +addColumn(column: Column) : void
+        +removeColumn(columnId: String) : void
+
+    class Column {
+        +id: String
+        +name: String
+        +dataType: String
+        +isNullable: bool
+        +setDefault(value: String) : void
+        +setNullable(flag: bool) : void
+
+    class Relationship {
+        +id: String
+        +type: String
+        +onDelete: String
+        +onUpdate: String
+        +validate() : bool
+        +generateJoin() : String
+
+    class DiagramCanvas {
+        +zoomLevel: float
+        +gridEnabled: bool
+        +renderSchema(schema: Schema) : void
+        +toggleGrid(enabled: bool) : void
+
+    class ValidationService {
+        +rulesetVersion: String
+        +validateSchema(schema: Schema) : bool
+        +validateTable(table: Table) : bool
+
+    DatabaseDesigner "1" --> "1" Schema : manages
+    Schema "1" --> "*" Table : contains
+    Table "1" --> "*" Column : has
+    Schema "1" --> "*" Relationship : defines
+    Relationship "1" --> "1" Table : source
+    Relationship "1" --> "1" Table : target
+    DiagramCanvas "1" --> "1" Schema : renders
+    ValidationService "1" --> "1" Schema : validates
+    ValidationService "1" --> "*" Table : validates

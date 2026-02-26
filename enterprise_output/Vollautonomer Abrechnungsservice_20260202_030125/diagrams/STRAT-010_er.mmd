@@ -1,0 +1,58 @@
+erDiagram
+    ARCHITECTURE ||--o{ QUANTUM_APPLICATION : supports
+    ARCHITECTURE ||--o{ SCALABILITY_PLAN : includes
+    ARCHITECTURE ||--o{ RISK_ASSESSMENT : assessed_by
+    RISK_ASSESSMENT ||--o{ GEOPOLITICAL_RISK : identifies
+    RISK_ASSESSMENT ||--o{ MITIGATION_PLAN : results_in
+    MITIGATION_PLAN ||--o{ COMPLIANCE_REQUIREMENT : ensures
+    ARCHITECTURE ||--o{ STAKEHOLDER : governed_by
+
+    ARCHITECTURE {
+        string architecture_id PK
+        string name
+        string description
+        string target_scale
+
+    QUANTUM_APPLICATION {
+        string application_id PK
+        string architecture_id FK
+        string name
+        string use_case
+        string readiness_level
+
+    SCALABILITY_PLAN {
+        string plan_id PK
+        string architecture_id FK
+        string horizon
+        string strategy
+
+    RISK_ASSESSMENT {
+        string assessment_id PK
+        string architecture_id FK
+        string assessment_date
+        string overall_risk_level
+
+    GEOPOLITICAL_RISK {
+        string risk_id PK
+        string assessment_id FK
+        string region
+        string risk_type
+        string impact_level
+
+    MITIGATION_PLAN {
+        string mitigation_id PK
+        string assessment_id FK
+        string strategy
+        string status
+
+    COMPLIANCE_REQUIREMENT {
+        string compliance_id PK
+        string mitigation_id FK
+        string regulation
+        string requirement
+
+    STAKEHOLDER {
+        string stakeholder_id PK
+        string architecture_id FK
+        string name
+        string role

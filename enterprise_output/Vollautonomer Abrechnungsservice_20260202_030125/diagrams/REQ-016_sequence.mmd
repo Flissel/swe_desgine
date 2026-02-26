@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant User
+    participant UI as Web/App UI
+    participant API as Account Service
+    participant DB as Account DB
+    participant Bank as Core Banking System
+
+    User->>UI: Request to create new bank account
+    activate UI
+    UI->>API: Submit account creation details
+    activate API
+    API->>DB: Validate user and check eligibility
+    activate DB
+    DB-->>API: Eligibility confirmed
+    deactivate DB
+    API->>Bank: Create bank account
+    activate Bank
+    Bank-->>API: Account created (accountId)
+    deactivate Bank
+    API->>DB: Persist account record
+    activate DB
+    DB-->>API: Account persisted
+    deactivate DB
+    API-->>UI: Return account confirmation
+    deactivate API
+    UI-->>User: Show new account details
+    deactivate UI

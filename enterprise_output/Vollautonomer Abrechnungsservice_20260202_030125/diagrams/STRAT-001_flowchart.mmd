@@ -1,0 +1,19 @@
+flowchart TD
+    Start([Start]) --> A[Marktanalyse & Wettbewerbsbenchmarking]
+    A --> B[AI-Strategie für autonome Finanzautomatisierung definieren]
+    B --> C{Zero-Touch-Abrechnung machbar?}
+    C -->|Ja| D[Produkt- und Architekturdesign]
+    C -->|Nein| E[Technische Lücken schließen & Partner evaluieren]
+    E --> D
+    D --> F[Modellentwicklung & Datenpipeline aufbauen]
+    F --> G[Sicherheits-, Compliance- & Risikoprüfungen]
+    G --> H{Compliance erfüllt?}
+    H -->|Ja| I[Pilotkunden onboarden]
+    H -->|Nein| J[Anpassungen & Nachbesserungen]
+    J --> G
+    I --> K[Erfolgsmessung & KPI-Review]
+    K --> L{Marktführerschaft erreichbar?}
+    L -->|Ja| M[Go-to-Market & Skalierung]
+    L -->|Nein| N[Strategie iterieren & Differenzierung erhöhen]
+    N --> B
+    M --> End([End])

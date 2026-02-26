@@ -1,0 +1,48 @@
+sequenceDiagram
+    actor Regulator
+    actor User
+    participant AISystem as AI System
+    participant Compliance as Compliance Engine
+    participant DataProc as Data Processor
+    participant GDPR as GDPR Service
+    participant FATCA as FATCA Service
+    participant Tax as Tax Rules Service
+    participant Audit as Audit Log
+
+    User->>AISystem: Submit request/data
+    activate AISystem
+    AISystem->>Compliance: Validate regulatory compliance
+    activate Compliance
+    Compliance->>DataProc: Classify data and purpose
+    activate DataProc
+    DataProc-->>Compliance: Data classification
+    deactivate DataProc
+
+    Compliance->>GDPR: Check GDPR constraints
+    activate GDPR
+    GDPR-->>Compliance: GDPR status
+    deactivate GDPR
+
+    Compliance->>FATCA: Check FATCA obligations
+    activate FATCA
+    FATCA-->>Compliance: FATCA status
+    deactivate FATCA
+
+    Compliance->>Tax: Check tax laws
+    activate Tax
+    Tax-->>Compliance: Tax compliance status
+    deactivate Tax
+
+    Compliance->>AISystem: Compliance decision & required actions
+    deactivate Compliance
+    AISystem->>Audit: Record compliance decision
+    activate Audit
+    Audit-->>AISystem: Logged
+    deactivate Audit
+
+    AISystem-->>User: Processed response with compliance safeguards
+    deactivate AISystem
+    Regulator-->>Audit: Periodic audit request
+    activate Audit
+    Audit-->>Regulator: Compliance report
+    deactivate Audit

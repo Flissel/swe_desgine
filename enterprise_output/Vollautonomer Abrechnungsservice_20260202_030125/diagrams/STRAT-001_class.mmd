@@ -1,0 +1,36 @@
+classDiagram
+    class AILeadershipStrategy {
+        +goal: String
+        +positioning: String
+        +defineVision(visionText: String)
+        +measureProgress(kpiName: String)
+
+    class AutonomousFinanceAutomation {
+        +automationLevel: String
+        +scope: String
+        +orchestrateWorkflow(workflowId: String)
+        +optimizeProcess(processName: String)
+
+    class ZeroTouchBilling {
+        +billingModel: String
+        +complianceLevel: String
+        +generateInvoice(contractId: String)
+        +reconcilePayment(paymentRef: String)
+
+    class MarketPositioning {
+        +brandMessage: String
+        +targetSegment: String
+        +updatePositioning(newMessage: String)
+        +analyzeMarket(trendId: String)
+
+    class KPI {
+        +name: String
+        +value: Number
+        +updateValue(newValue: Number)
+        +evaluateThreshold(threshold: Number)
+
+    AILeadershipStrategy --> AutonomousFinanceAutomation : drives
+    AutonomousFinanceAutomation --> ZeroTouchBilling : enables
+    AILeadershipStrategy --> MarketPositioning : defines
+    AILeadershipStrategy --> KPI : measures
+    MarketPositioning --> KPI : tracks

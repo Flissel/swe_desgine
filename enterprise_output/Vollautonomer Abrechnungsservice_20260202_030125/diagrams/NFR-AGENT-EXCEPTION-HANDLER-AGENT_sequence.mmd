@@ -1,0 +1,38 @@
+sequenceDiagram
+    participant User
+    participant Agent as Exception-Handler-Agent
+    participant ErrorAnalyzer
+    participant SolutionRecommender
+    participant LearningSystem
+    participant Escalation as Escalation-Team
+
+    User->>Agent: Report exception/unusual case
+    activate Agent
+    Agent->>ErrorAnalyzer: Analyze exception
+    activate ErrorAnalyzer
+    ErrorAnalyzer-->>Agent: Analysis result
+    deactivate ErrorAnalyzer
+
+    Agent->>SolutionRecommender: Request solution proposals
+    activate SolutionRecommender
+    SolutionRecommender-->>Agent: Suggested solutions
+    deactivate SolutionRecommender
+
+    alt Solution applicable
+        Agent-->>User: Provide solution
+        Agent->>LearningSystem: Log case & outcome
+        activate LearningSystem
+        LearningSystem-->>Agent: Update complete
+        deactivate LearningSystem
+    else No viable solution
+        Agent->>Escalation: Escalate case
+        activate Escalation
+        Escalation-->>Agent: Escalation response
+        deactivate Escalation
+        Agent-->>User: Inform about escalation
+        Agent->>LearningSystem: Log escalation & outcome
+        activate LearningSystem
+        LearningSystem-->>Agent: Update complete
+        deactivate LearningSystem
+    end
+    deactivate Agent

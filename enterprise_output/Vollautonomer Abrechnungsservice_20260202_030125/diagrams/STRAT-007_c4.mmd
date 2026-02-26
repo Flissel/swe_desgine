@@ -1,0 +1,21 @@
+C4Context
+    title STRAT-007: Data Strategy für kontinuierliches Lernen
+    Person(data_scientist, "Data Scientist", "Überwacht Datenqualität und Modellleistung")
+    Person(ml_engineer, "ML Engineer", "Konfiguriert Pipelines und Optimierung")
+    Person(data_steward, "Data Steward", "Stellt Datenrichtlinien sicher")
+
+    System(core_system, "Data Strategy Platform", "Automatisierte Datenqualitätssicherung und kontinuierliche AI-Modell-Optimierung")
+
+    System_Ext(data_sources, "Externe Datenquellen", "Liefern Rohdaten für das Lernen")
+    System_Ext(model_registry, "Model Registry", "Speichert und versioniert Modelle")
+    System_Ext(monitoring, "Monitoring & Alerting", "Erkennt Anomalien und Drift")
+    System_Ext(deployment_platform, "Deployment Platform", "Rollout optimierter Modelle")
+
+    Rel(data_scientist, core_system, "Nutzt für Analysen und Optimierung")
+    Rel(ml_engineer, core_system, "Konfiguriert und betreibt Pipelines")
+    Rel(data_steward, core_system, "Prüft Qualität und Compliance")
+
+    Rel(data_sources, core_system, "Liefert Daten")
+    Rel(core_system, model_registry, "Registriert Modelle")
+    Rel(core_system, monitoring, "Sendet Metriken und Drift-Signale")
+    Rel(core_system, deployment_platform, "Stellt optimierte Modelle bereit")

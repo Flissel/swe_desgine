@@ -1,0 +1,48 @@
+erDiagram
+    EXCEPTION ||--o{ DETECTION : triggers
+    EXCEPTION ||--o{ REMEDIATION : resolved_by
+    LLM ||--o{ DETECTION : performs
+    AGENT ||--o{ DETECTION : assists
+    LLM ||--o{ REMEDIATION : executes
+    AGENT ||--o{ REMEDIATION : executes
+    CASE ||--o{ EXCEPTION : contains
+
+    EXCEPTION {
+        string exception_id PK
+        string case_id FK
+        string type
+        string status
+        datetime created_at
+
+    DETECTION {
+        string detection_id PK
+        string exception_id FK
+        string llm_id FK
+        string agent_id FK
+        string method
+        datetime detected_at
+
+    REMEDIATION {
+        string remediation_id PK
+        string exception_id FK
+        string llm_id FK
+        string agent_id FK
+        string action
+        string outcome
+        datetime remediated_at
+
+    LLM {
+        string llm_id PK
+        string name
+        string version
+
+    AGENT {
+        string agent_id PK
+        string name
+        string specialization
+
+    CASE {
+        string case_id PK
+        string title
+        string owner
+        datetime opened_at

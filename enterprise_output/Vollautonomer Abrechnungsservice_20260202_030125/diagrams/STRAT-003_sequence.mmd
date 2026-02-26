@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant Sensor as Sensoren/Edge
+    participant Bus as Event Bus
+    participant Decision as Entscheidungs-Engine
+    participant Policy as Policy Service
+    participant State as Zustands-Store
+    participant Actuator as Aktorik/Autonomie
+    participant Monitor as Monitoring/Alerting
+
+    Sensor->>Bus: Publish Ereignis
+    activate Bus
+    Bus-->>Monitor: Telemetrie (Eingang)
+    Bus->>Decision: Dispatch Ereignis
+    activate Decision
+    Decision->>State: Lade Kontext
+    activate State
+    State-->>Decision: Kontextdaten
+    deactivate State
+    Decision->>Policy: Policy-Check
+    activate Policy
+    Policy-->>Decision: Entscheidungspolicy
+    deactivate Policy
+    Decision->>Decision: Entscheidung ableiten
+    Decision->>Actuator: Sende Aktion
+    activate Actuator
+    Actuator-->>Decision: Aktion bestätigt
+    deactivate Actuator
+    Decision->>State: Schreibe Ergebnis/State
+    activate State
+    State-->>Decision: Persistiert
+    deactivate State
+    Decision-->>Bus: Emit Ergebnis-Event
+    deactivate Decision
+    Bus-->>Monitor: Telemetrie (Ausgang)
+    deactivate Bus

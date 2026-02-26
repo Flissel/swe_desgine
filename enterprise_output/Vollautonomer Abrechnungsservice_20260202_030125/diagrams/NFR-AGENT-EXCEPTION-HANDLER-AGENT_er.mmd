@@ -1,0 +1,34 @@
+erDiagram
+    AGENT ||--o{ AGENT_CAPABILITY : has
+    CAPABILITY ||--o{ AGENT_CAPABILITY : assigned
+    AGENT ||--o{ AGENT_TOOL : uses
+    TOOL ||--o{ AGENT_TOOL : provided
+    AGENT ||--o{ ACCEPTANCE_CRITERION : defines
+
+    AGENT {
+        string agent_id PK
+        string name
+        string description
+
+    CAPABILITY {
+        string capability_id PK
+        string name
+
+    TOOL {
+        string tool_id PK
+        string name
+
+    AGENT_CAPABILITY {
+        string agent_capability_id PK
+        string agent_id FK
+        string capability_id FK
+
+    AGENT_TOOL {
+        string agent_tool_id PK
+        string agent_id FK
+        string tool_id FK
+
+    ACCEPTANCE_CRITERION {
+        string acceptance_criterion_id PK
+        string agent_id FK
+        string description

@@ -1,0 +1,26 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> ViewingCustomer : open_customer
+    Idle --> CreatingCustomer : create_new
+    Idle --> BulkImportExport : start_bulk_import_export
+    Idle --> DuplicateDetection : run_duplicate_detection
+    Idle --> RelationshipManagement : manage_relationships
+    ViewingCustomer --> EditingCustomer : edit
+    ViewingCustomer --> Idle : close_view
+    CreatingCustomer --> Validating : submit
+    EditingCustomer --> Validating : submit
+    Validating --> Saving : validation_ok
+    Validating --> Error : validation_failed
+    Saving --> ViewingCustomer : save_success
+    Saving --> Error : save_failed
+    Error --> EditingCustomer : fix_errors
+    Error --> Idle : cancel
+    BulkImportExport --> Idle : complete
+    BulkImportExport --> Error : import_export_failed
+    DuplicateDetection --> Idle : resolve_duplicates
+    DuplicateDetection --> Error : detection_failed
+    RelationshipManagement --> Idle : save_relationships
+    RelationshipManagement --> Error : save_failed
+    ViewingCustomer --> DeletingCustomer : delete
+    DeletingCustomer --> [*] : confirm_delete
+    DeletingCustomer --> ViewingCustomer : cancel_delete

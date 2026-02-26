@@ -1,0 +1,16 @@
+C4Context
+    title Customer Management - System Context
+    Person(billing_staff, "Billing Staff", "Manages customer data for automated billing")
+    Person(admin, "Administrator", "Configures customer settings and oversees data quality")
+    System(customer_mgmt, "Customer Management Frontend", "Manages customer data: names, addresses, tax IDs, payment terms, credit limits, preferred payment methods; supports bulk import/export, duplicate detection, relationship management")
+    System_Ext(billing_system, "Billing System", "Consumes customer data for automated invoicing")
+    System_Ext(payment_gateway, "Payment Gateway", "Uses preferred payment methods for transactions")
+    System_Ext(tax_service, "Tax/Compliance Service", "Validates tax IDs and compliance data")
+    System_Ext(crm_system, "CRM System", "Shares customer relationship data")
+
+    Rel(billing_staff, customer_mgmt, "Manages customer records")
+    Rel(admin, customer_mgmt, "Administers and audits data")
+    Rel(customer_mgmt, billing_system, "Provides customer master data")
+    Rel(customer_mgmt, payment_gateway, "Supplies preferred payment method details")
+    Rel(customer_mgmt, tax_service, "Sends tax IDs for validation")
+    Rel(customer_mgmt, crm_system, "Synchronizes relationship data")

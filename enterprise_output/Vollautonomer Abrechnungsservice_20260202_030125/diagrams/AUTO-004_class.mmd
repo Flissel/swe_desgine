@@ -1,0 +1,79 @@
+classDiagram
+    class MonitoringDashboard {
+        +dashboardId: String
+        +refreshRate: Integer
+        +status: String
+        +renderDashboard(userId: String)
+        +updateLayout(layoutId: String)
+
+    class Workflow {
+        +workflowId: String
+        +name: String
+        +state: String
+        +startTime: DateTime
+        +endTime: DateTime
+        +start(userId: String)
+        +stop(reason: String)
+
+    class KPI {
+        +kpiId: String
+        +name: String
+        +value: Float
+        +unit: String
+        +threshold: Float
+        +evaluate(status: String)
+        +refresh(sourceId: String)
+
+    class Agent {
+        +agentId: String
+        +name: String
+        +status: String
+        +performanceScore: Float
+        +updateStatus(status: String)
+        +computePerformance(window: String)
+
+    class PerformanceMetric {
+        +metricId: String
+        +name: String
+        +value: Float
+        +timestamp: DateTime
+        +aggregate(window: String)
+
+    class Alert {
+        +alertId: String
+        +severity: String
+        +message: String
+        +createdAt: DateTime
+        +acknowledge(userId: String)
+        +resolve(userId: String)
+
+    class ManagementInterface {
+        +interfaceId: String
+        +accessLevel: String
+        +lastAccess: DateTime
+        +configureThreshold(kpiId: String)
+        +assignAgent(agentId: String)
+
+    class DataSource {
+        +sourceId: String
+        +type: String
+        +endpoint: String
+        +connect(token: String)
+        +fetch(payload: String)
+
+    class DashboardUser {
+        +userId: String
+        +name: String
+        +role: String
+        +login(timestamp: DateTime)
+        +logout(timestamp: DateTime)
+
+    MonitoringDashboard "1" --> "many" Workflow : monitors
+    MonitoringDashboard "1" --> "many" KPI : displays
+    MonitoringDashboard "1" --> "many" Agent : tracks
+    Agent "1" --> "many" PerformanceMetric : produces
+    KPI "1" --> "many" PerformanceMetric : derivedFrom
+    MonitoringDashboard "1" --> "many" Alert : triggers
+    ManagementInterface "1" --> "1" MonitoringDashboard : manages
+    MonitoringDashboard "1" --> "many" DataSource : pullsFrom
+    DashboardUser "1" --> "1" ManagementInterface : uses

@@ -1,0 +1,43 @@
+classDiagram
+    class ExceptionHandler {
+        +handlerId: String
+        +status: String
+        +detectException(context: String): ExceptionEvent
+        +resolveException(event: ExceptionEvent): ResolutionResult
+
+    class LLMEngine {
+        +modelName: String
+        +version: String
+        +analyze(context: String): AnalysisResult
+        +suggestFix(event: ExceptionEvent): ResolutionPlan
+
+    class SpecializedAgent {
+        +agentId: String
+        +domain: String
+        +executePlan(plan: ResolutionPlan): ResolutionResult
+
+    class ExceptionEvent {
+        +eventId: String
+        +timestamp: DateTime
+        +severity: String
+        +message: String
+
+    class AnalysisResult {
+        +confidence: Float
+        +rootCause: String
+
+    class ResolutionPlan {
+        +planId: String
+        +steps: String
+
+    class ResolutionResult {
+        +success: Boolean
+        +details: String
+
+    ExceptionHandler --> LLMEngine : uses
+    ExceptionHandler --> SpecializedAgent : dispatches
+    ExceptionHandler --> ExceptionEvent : detects
+    LLMEngine --> AnalysisResult : produces
+    LLMEngine --> ResolutionPlan : creates
+    SpecializedAgent --> ResolutionResult : returns
+    ExceptionHandler --> ResolutionResult : reports

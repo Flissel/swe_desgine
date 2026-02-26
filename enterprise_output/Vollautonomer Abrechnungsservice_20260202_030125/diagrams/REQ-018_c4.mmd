@@ -1,0 +1,7 @@
+C4Context
+    title System Context
+    Person(user, "User", "Imports customer data")
+    System(mainSystem, "Customer Data Import System", "Imports customer data from CSV or Excel")
+    System_Ext(fileSource, "CSV/Excel Files", "External data source")
+    Rel(user, mainSystem, "Uses")
+    Rel(mainSystem, fileSource, "Imports data from")

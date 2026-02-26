@@ -1,0 +1,17 @@
+C4Context
+    title STRAT-009: Performance-Metriken jenseits traditioneller KPIs - System Context
+    Person(analyst, "Business Analyst", "Definiert Metriken und bewertet Business-Impact")
+    Person(data_scientist, "Data Scientist", "Modelliert AI-Performance-Indikatoren")
+    Person(exec, "Executive", "Überwacht strategische Performance und Autonomie-Grad")
+    System(core, "Performance Metrics Platform", "Misst Autonomie-Grad, AI-Performance und Business-Impact")
+    System_Ext(ml_platform, "ML Platform", "Liefert Modellmetriken und Inferenzdaten")
+    System_Ext(bi_system, "BI System", "Stellt Geschäftskennzahlen und Berichte bereit")
+    System_Ext(data_lake, "Data Lake", "Speichert Rohdaten und Ereignisse")
+    System_Ext(hr_system, "HR System", "Liefert Team- und Prozessdaten für Autonomie-Messung")
+    Rel(analyst, core, "Konfiguriert Metriken und analysiert Reports")
+    Rel(data_scientist, core, "Integriert AI-Performance-Indikatoren")
+    Rel(exec, core, "Überwacht strategische KPIs und Impact")
+    Rel(core, ml_platform, "Bezieht Modell- und Inferenzmetriken")
+    Rel(core, bi_system, "Korreliert Business-Impact-Kennzahlen")
+    Rel(core, data_lake, "Liest Rohdaten für Metrik-Berechnung")
+    Rel(core, hr_system, "Bezieht Organisationsdaten für Autonomie-Grad")

@@ -1,0 +1,1767 @@
+{
+  "project_name": "Project Tasks",
+  "features": {
+    "FEAT-001": [
+      {
+        "id": "TASK-001",
+        "title": "Architektur- und Datenflussdesign für Agenten-Fakturierung",
+        "description": "Erstelle ein technisches Design für die agentenbasierte Rechnungsgenerierung inklusive Workflow-Routing und Exception-Handling. Definiere Datenflüsse, Schnittstellen und Zustandsübergänge.",
+        "task_type": "design",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "solution architecture",
+          "backend",
+          "workflow design"
+        ],
+        "suggested_assignee_role": "Solution Architect",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Architekturdiagramm mit Agenten, Routing und Exception-Handling vorhanden",
+          "API- und Event-Schnittstellen dokumentiert",
+          "Zustandsmodell der Rechnungs-Workflows beschrieben"
+        ]
+      },
+      {
+        "id": "TASK-002",
+        "title": "Implementierung Agenten-basierte Rechnungsgenerierung",
+        "description": "Implementiere den Agenten zur automatischen Rechnungsgenerierung (AUTO-001) inkl. Erzeugung von Rechnungsentwürfen und Übergabe an das Routing.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "python",
+          "event-driven architecture"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Agent erstellt Rechnungsentwürfe anhand definierter Trigger",
+          "Erfolgreiche Übergabe an Routing-Komponente",
+          "Logging für erzeugte Rechnungen vorhanden"
+        ]
+      },
+      {
+        "id": "TASK-003",
+        "title": "Workflow-Routing implementieren",
+        "description": "Implementiere das Workflow-Routing (AUTO-002) zur Weiterleitung von Rechnungen an die nächsten Prozessschritte.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001",
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "workflow",
+          "integration"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Routing-Regeln gemäß Design umgesetzt",
+          "Fehlerhafte Zustände werden erkannt und gemeldet",
+          "Unit-Tests für Routing-Regeln vorhanden"
+        ]
+      },
+      {
+        "id": "TASK-004",
+        "title": "Exception-Handling Agent implementieren",
+        "description": "Implementiere Exception-Handling (AUTO-003) für fehlerhafte Rechnungsprozesse inkl. Retry-Mechanismen und Fehlerklassifizierung.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001",
+          "TASK-002",
+          "TASK-003"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "error handling",
+          "messaging"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Exceptions werden klassifiziert und protokolliert",
+          "Retry-Mechanismus für temporäre Fehler implementiert",
+          "Fehlerhafte Vorgänge werden an Monitoring gemeldet"
+        ]
+      },
+      {
+        "id": "TASK-005",
+        "title": "Monitoring-Dashboard Backend-Endpunkte",
+        "description": "Erstelle Backend-Endpoints und Metriken für das Monitoring-Dashboard (AUTO-004) inkl. Status von Rechnungen, Fehlern und Agentenaktivitäten.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003",
+          "TASK-004"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "observability",
+          "api design"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "API liefert aggregierte Statusdaten",
+          "Metriken für Fehler und Durchsatz vorhanden",
+          "Dokumentation der API-Endpunkte vorhanden"
+        ]
+      },
+      {
+        "id": "TASK-006",
+        "title": "Frontend-Komponenten für Bank Account Setup",
+        "description": "Implementiere Frontend-Komponenten und UI-Flow für Bank Account Setup (US-003) basierend auf vorhandenen Designrichtlinien.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "react"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Formularvalidierung für Bankdaten implementiert",
+          "Daten werden korrekt an Backend-API gesendet",
+          "UI entspricht Design-System"
+        ]
+      },
+      {
+        "id": "TASK-007",
+        "title": "Monitoring-Dashboard UI",
+        "description": "Implementiere das Monitoring-Dashboard UI (US-002) zur Anzeige von Rechnungsstatus, Fehlern und Agentenaktivitäten.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "react",
+          "data visualization"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Dashboard zeigt Status, Fehler und Durchsatz an",
+          "Daten werden in Echtzeit/regelmäßig aktualisiert",
+          "Fehlerzustände werden visuell hervorgehoben"
+        ]
+      },
+      {
+        "id": "TASK-008",
+        "title": "Integrationstests für Fakturierung & Monitoring",
+        "description": "Erstelle und führe Integrationstests für automatische Fakturierung, Routing, Exception-Handling und Monitoring durch.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-001",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003",
+          "TASK-004",
+          "TASK-005",
+          "TASK-007"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "testing",
+          "backend",
+          "automation"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Testfälle decken alle kritischen Flows ab",
+          "Fehlerfälle werden korrekt erkannt und gemeldet",
+          "Testreport mit Erfolgsquote verfügbar"
+        ]
+      }
+    ],
+    "FEAT-002": [
+      {
+        "id": "TASK-009",
+        "title": "Dashboard-Requirements und UI-Konzept",
+        "description": "Erarbeite die detaillierten Anforderungen für das Monitoring-Dashboard (KPIs, Filter, Zeiträume) und erstelle ein UI-Wireframe.",
+        "task_type": "design",
+        "parent_feature_id": "FEAT-002",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 6,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "ux",
+          "product",
+          "wireframing"
+        ],
+        "suggested_assignee_role": "UX/UI Designer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "UI-Wireframe für Dashboard inklusive Haupt-KPIs",
+          "Liste der benötigten Datenquellen und Filteroptionen"
+        ]
+      },
+      {
+        "id": "TASK-010",
+        "title": "Backend-API für Reporting-KPIs",
+        "description": "Implementiere API-Endpunkte zur Bereitstellung von KPIs (z.B. Rechnungen erstellt, Fehlerquoten, Durchlaufzeiten) für das Dashboard.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-002",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "api",
+          "database"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "API liefert aggregierte KPI-Daten korrekt",
+          "API-Dokumentation aktualisiert"
+        ]
+      },
+      {
+        "id": "TASK-011",
+        "title": "Frontend Dashboard-Ansicht implementieren",
+        "description": "Erstelle das Dashboard-Frontend basierend auf dem UI-Konzept, inklusive Charts, KPI-Cards und Filter.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-002",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001",
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "charts"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Dashboard zeigt KPI-Cards und Charts an",
+          "Filter und Zeiträume funktionieren"
+        ]
+      },
+      {
+        "id": "TASK-012",
+        "title": "Integration Exception-Handling ins Reporting",
+        "description": "Binde Exception-Handling Daten (AUTO-003) in das Dashboard ein, inkl. Fehlerübersicht und Statusanzeige.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-002",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "backend"
+        ],
+        "suggested_assignee_role": "Fullstack Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Dashboard zeigt Exception-Status und Fehlerliste an",
+          "Daten werden korrekt aus dem Backend geladen"
+        ]
+      },
+      {
+        "id": "TASK-013",
+        "title": "Automatische Fakturierung Reporting-Daten anbinden",
+        "description": "Stelle sicher, dass Daten aus der automatischen Fakturierung (AUTO-001/REQ-001) in die Reporting-API einfließen.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-002",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "integration"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "KPIs enthalten Daten der automatischen Fakturierung",
+          "Aggregationen korrekt für definierte Zeiträume"
+        ]
+      },
+      {
+        "id": "TASK-014",
+        "title": "Dashboard-Tests und QA",
+        "description": "Erstelle Tests für Reporting-API und UI (Unit + Integration) und führe QA der Dashboard-Funktionalitäten durch.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-002",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-003",
+          "TASK-004",
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "testing",
+          "qa",
+          "automation"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Unit- und Integrationstests vorhanden und erfolgreich",
+          "Keine kritischen Bugs im Dashboard"
+        ]
+      }
+    ],
+    "FEAT-003": [
+      {
+        "id": "TASK-015",
+        "title": "Security-Anforderungen & Threat Modeling",
+        "description": "Erstelle ein Threat Model (STRIDE) für automatische Fakturierung, Monitoring-Dashboard und Bank Account Setup. Definiere Security-Anforderungen (AuthN/AuthZ, Datenverschlüsselung, Logging, Exception-Handling) und priorisiere Controls.",
+        "task_type": "documentation",
+        "parent_feature_id": "FEAT-003",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 6,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "security",
+          "requirements"
+        ],
+        "suggested_assignee_role": "Security Analyst",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Threat Model dokumentiert",
+          "Security-Anforderungen pro User Story festgelegt und priorisiert"
+        ]
+      },
+      {
+        "id": "TASK-016",
+        "title": "AuthN/AuthZ für Fakturierung & Dashboard",
+        "description": "Implementiere rollenbasierte Zugriffskontrolle für APIs der automatischen Fakturierung und des Monitoring-Dashboards (z. B. OAuth2/JWT). Stelle sicher, dass nur berechtigte Rollen Zugriff erhalten.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-003",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "security",
+          "auth"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "API-Endpunkte durch AuthN/AuthZ geschützt",
+          "Rollenberechtigungen sind dokumentiert und getestet"
+        ]
+      },
+      {
+        "id": "TASK-017",
+        "title": "Sicheres Bank Account Setup",
+        "description": "Implementiere sichere Eingabevalidierung im Frontend, serverseitige Validierung im Backend und Verschlüsselung sensibler Bankdaten (z. B. IBAN/BIC) bei Speicherung.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-003",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 14,
+        "complexity": "complex",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001",
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "backend",
+          "security"
+        ],
+        "suggested_assignee_role": "Fullstack Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Client- und Server-Validierung umgesetzt",
+          "Sensibledaten werden verschlüsselt gespeichert",
+          "Nur authentifizierte Nutzer können Bankdaten anlegen"
+        ]
+      },
+      {
+        "id": "TASK-018",
+        "title": "Service-to-Service Auth für Agenten & Workflow-Routing",
+        "description": "Richte sichere Service-Authentifizierung für agentenbasierte Rechnungsgenerierung und Workflow-Routing ein (mTLS oder Token-basierte Auth). Konfiguriere Secrets-Management.",
+        "task_type": "devops",
+        "parent_feature_id": "FEAT-003",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "devops",
+          "security",
+          "infrastructure"
+        ],
+        "suggested_assignee_role": "DevOps Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Service-to-Service Auth ist aktiv und dokumentiert",
+          "Secrets werden sicher verwaltet (kein Klartext in Code/Config)"
+        ]
+      },
+      {
+        "id": "TASK-019",
+        "title": "Security Logging & Exception-Handling",
+        "description": "Implementiere sicherheitsrelevante Logs (Auth-Events, Zugriff, Fehler) und stelle sicher, dass Exception-Handling keine sensiblen Daten offenlegt. Integration ins Monitoring-Dashboard.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-003",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [
+          "TASK-002",
+          "TASK-004"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "logging",
+          "security"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Security-Logs sind strukturiert verfügbar",
+          "Fehlerausgaben enthalten keine sensiblen Daten",
+          "Monitoring zeigt sicherheitsrelevante Events"
+        ]
+      },
+      {
+        "id": "TASK-020",
+        "title": "Security Testing & Review",
+        "description": "Führe Security-Tests (SAST/Dependency Scan + grundlegender Penetrationstest) durch und dokumentiere Findings inkl. Fixes oder Tickets.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-003",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003",
+          "TASK-004",
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "security",
+          "testing"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Security-Scan durchgeführt und dokumentiert",
+          "Kritische Findings behoben oder erfasst"
+        ]
+      }
+    ],
+    "FEAT-004": [
+      {
+        "id": "TASK-021",
+        "title": "UI/UX-Design für User-, Company- und Bank-Settings",
+        "description": "Erstelle Wireframes und Design-Spezifikationen für User Profile Settings, Company Settings und Bank Account Setup inklusive Validierungs- und Fehlermeldungszuständen.",
+        "task_type": "design",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "ux",
+          "ui",
+          "figma"
+        ],
+        "suggested_assignee_role": "UX/UI Designer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Wireframes für alle drei Einstellungsbereiche liegen vor",
+          "Fehler- und Leerezustände sind definiert",
+          "Design ist mit Produktteam abgestimmt"
+        ]
+      },
+      {
+        "id": "TASK-022",
+        "title": "Backend-APIs für User- und Company-Settings",
+        "description": "Implementiere REST-Endpunkte zum Lesen/Aktualisieren von User-Profile- und Company-Settings inkl. Validierung und Authentifizierung.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "api",
+          "authentication"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "CRUD-Endpunkte für User Profile Settings verfügbar",
+          "CRUD-Endpunkte für Company Settings verfügbar",
+          "Validierung und Auth-Checks implementiert"
+        ]
+      },
+      {
+        "id": "TASK-023",
+        "title": "Frontend User- und Company-Settings",
+        "description": "Implementiere die UI für User Profile Settings und Company Settings inkl. Form-Validierung und API-Integration.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001",
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "react"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Forms für User- und Company-Settings funktionieren",
+          "Validierungen werden clientseitig durchgeführt",
+          "Änderungen werden erfolgreich über API gespeichert"
+        ]
+      },
+      {
+        "id": "TASK-024",
+        "title": "Frontend Bank Account Setup",
+        "description": "Implementiere den Bank Account Setup Flow im Frontend inkl. Anbindung an die Bank-Setup-API und Fehlerbehandlung.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "react"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Bankdaten können eingegeben und gesendet werden",
+          "API-Response wird korrekt verarbeitet",
+          "Fehlerfälle werden angezeigt"
+        ]
+      },
+      {
+        "id": "TASK-025",
+        "title": "Automatische Fakturierung: Agenten-Workflow",
+        "description": "Implementiere agenten-basierte Rechnungsgenerierung inkl. Workflow-Routing und Exception-Handling gemäß AUTO-001 bis AUTO-003.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 14,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "workflow",
+          "billing"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Agenten-Workflow generiert Rechnungen automatisch",
+          "Routing-Logik ist implementiert",
+          "Exceptions werden protokolliert und behandelt"
+        ]
+      },
+      {
+        "id": "TASK-026",
+        "title": "Monitoring-Dashboard (Frontend)",
+        "description": "Baue das Monitoring-Dashboard zur Anzeige des Fakturierungsstatus inkl. API-Anbindung.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "data-visualization"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Dashboard zeigt Status der automatischen Fakturierung",
+          "Daten werden via API geladen",
+          "UI ist responsiv und verständlich"
+        ]
+      },
+      {
+        "id": "TASK-027",
+        "title": "Tests für User Management & Billing-Workflow",
+        "description": "Erstelle Unit- und Integrationstests für Settings-APIs, Bank-Setup-Flow und Billing-Agenten-Workflow.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-004",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003",
+          "TASK-004",
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "testing",
+          "backend",
+          "frontend"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Mindestens 80% Testabdeckung für Kernlogik",
+          "Kritische User-Flows sind abgedeckt",
+          "Tests laufen im CI erfolgreich durch"
+        ]
+      }
+    ],
+    "FEAT-005": [
+      {
+        "id": "TASK-028",
+        "title": "Datenbank-Schema für Kunden, Rechnungen und Bankkonten entwerfen",
+        "description": "Erstelle ein relationales Datenmodell inkl. Tabellen für Kunden, Rechnungen, Rechnungspositionen, Bankkonten, Workflow-Status und Exception-Logs. Definiere Schlüssel, Indizes und Constraints.",
+        "task_type": "design",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "database",
+          "data-modeling",
+          "sql"
+        ],
+        "suggested_assignee_role": "Database Architect",
+        "status": "todo",
+        "acceptance_criteria": [
+          "ER-Diagramm und Tabellenentwurf liegen vor",
+          "Schlüssel/Indizes/Constraints sind dokumentiert",
+          "Entwurf deckt Kunden-, Rechnungs- und Bankdaten ab"
+        ]
+      },
+      {
+        "id": "TASK-029",
+        "title": "Backend: Agentenbasierte Rechnungsgenerierung implementieren",
+        "description": "Implementiere Service/Agent, der Rechnungen automatisch erzeugt (AUTO-001) inkl. Steuerberechnungs-Logik (NFR-AGENT-STEUERBERECHNUNGS-AGENT) und Persistierung in der DB.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "typescript",
+          "tax-logic",
+          "sql"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Rechnungen werden automatisch generiert und gespeichert",
+          "Steuerberechnung ist korrekt integriert",
+          "Fehler bei der Generierung werden protokolliert"
+        ]
+      },
+      {
+        "id": "TASK-030",
+        "title": "Backend: Workflow-Routing und Exception-Handling",
+        "description": "Implementiere Workflow-Routing (AUTO-002) für Rechnungszustände und Exception-Handling (AUTO-003) inkl. Retry-Logik und Logging.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "workflow",
+          "error-handling"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Workflow-Statuswechsel sind implementiert",
+          "Fehlerfälle werden abgefangen und geloggt",
+          "Retry-Mechanismus für fehlgeschlagene Schritte vorhanden"
+        ]
+      },
+      {
+        "id": "TASK-031",
+        "title": "Frontend: Bank Account Setup UI",
+        "description": "Erstelle die UI für das Einrichten von Bankkonten (US-003) inkl. Validierung und Anbindung an Backend-API.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "ui",
+          "api-integration"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Bankkonto kann angelegt und aktualisiert werden",
+          "Formularvalidierung ist implementiert",
+          "UI entspricht UX-Standards"
+        ]
+      },
+      {
+        "id": "TASK-032",
+        "title": "Monitoring-Dashboard für Rechnungsprozesse",
+        "description": "Implementiere das Monitoring-Dashboard (US-002, AUTO-004) zur Anzeige von Rechnungsstatus, Fehlern und Durchlaufzeiten.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-003"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "dashboard",
+          "api-integration"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Dashboard zeigt aktuelle Rechnungsstatus an",
+          "Fehler und Ausnahmen sind sichtbar",
+          "Daten werden live oder periodisch aktualisiert"
+        ]
+      },
+      {
+        "id": "TASK-033",
+        "title": "Tests: Rechnungsgenerierung und Workflow",
+        "description": "Erstelle Unit- und Integrationstests für Rechnungsgenerierung, Workflow-Routing und Exception-Handling.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "testing",
+          "backend",
+          "automation"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Tests decken Kernlogik der Generierung ab",
+          "Workflow-Statuswechsel sind getestet",
+          "Exception-Handling wird geprüft"
+        ]
+      },
+      {
+        "id": "TASK-034",
+        "title": "Dokumentation der Datenflüsse und APIs",
+        "description": "Dokumentiere Datenmodelle, API-Endpunkte und den Rechnungsworkflow inkl. Exception-Fällen.",
+        "task_type": "documentation",
+        "parent_feature_id": "FEAT-005",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "simple",
+        "story_points": 2,
+        "depends_on": [
+          "TASK-003",
+          "TASK-004",
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "documentation",
+          "api",
+          "process"
+        ],
+        "suggested_assignee_role": "Technical Writer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "API-Dokumentation ist vollständig",
+          "Workflow inkl. Fehlerpfade ist beschrieben",
+          "Datenmodelle sind erläutert"
+        ]
+      }
+    ],
+    "FEAT-006": [
+      {
+        "id": "TASK-035",
+        "title": "Performance-Anforderungen und KPIs definieren",
+        "description": "Erfasse Performance-KPIs für automatische Fakturierung, Workflow-Routing, Exception-Handling, Monitoring-Dashboard und Bank-Account-Setup. Lege Zielwerte (Latenz, Durchsatz, Ressourcenverbrauch) fest und dokumentiere Messpunkte.",
+        "task_type": "documentation",
+        "parent_feature_id": "FEAT-006",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "simple",
+        "story_points": 2,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "requirements",
+          "system-analysis"
+        ],
+        "suggested_assignee_role": "Project Manager",
+        "status": "todo",
+        "acceptance_criteria": [
+          "KPIs für alle relevanten Komponenten definiert",
+          "Messpunkte und Zielwerte dokumentiert"
+        ]
+      },
+      {
+        "id": "TASK-036",
+        "title": "Profiling der Fakturierungs- und Routing-Workflows",
+        "description": "Implementiere Performance-Metriken und Profiling für agentenbasierte Rechnungsgenerierung, Workflow-Routing und Exception-Handling. Identifiziere Bottlenecks und erfasse Baseline-Werte.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-006",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "observability",
+          "performance"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Profiling-Metriken erfasst",
+          "Baseline-Performance dokumentiert",
+          "Top 3 Bottlenecks identifiziert"
+        ]
+      },
+      {
+        "id": "TASK-037",
+        "title": "Optimierungen für automatische Fakturierung und Routing",
+        "description": "Setze gezielte Optimierungen auf Basis des Profilings um (z.B. Caching, Batch-Verarbeitung, DB-Indexierung, Parallelisierung).",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-006",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-002"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "performance"
+        ],
+        "suggested_assignee_role": "Senior Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Durchsatz um mindestens 30% verbessert",
+          "P95-Latenz unter Zielwert",
+          "Keine Regressionen in bestehenden Tests"
+        ]
+      },
+      {
+        "id": "TASK-038",
+        "title": "Dashboard-Performance optimieren",
+        "description": "Optimierung der Datenabfragen und Rendering-Performance des Monitoring-Dashboards. Reduziere Ladezeit durch Query-Optimierung und lazy loading.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-006",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "backend",
+          "performance"
+        ],
+        "suggested_assignee_role": "Fullstack Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Initiale Ladezeit < 2 Sekunden",
+          "Dashboard bleibt bei 1k+ Events responsiv"
+        ]
+      },
+      {
+        "id": "TASK-039",
+        "title": "Frontend Performance Bank Account Setup",
+        "description": "Optimierung der UI-Performance im Bank-Account-Setup (Form-Validierung, Input-Debounce, Render-Optimierungen).",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-006",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 6,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "performance"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Interaktionen ohne wahrnehmbare Verzögerung",
+          "Keine unnötigen Re-Renders im Profiling"
+        ]
+      },
+      {
+        "id": "TASK-040",
+        "title": "Performance-Tests und Regressionstests",
+        "description": "Erstelle und führe Performance- und Regressionstests für die optimierten Komponenten durch. Vergleiche Ergebnisse mit den definierten KPIs.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-006",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-003",
+          "TASK-004",
+          "TASK-005"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "testing",
+          "performance",
+          "automation"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Performance-Ziele erreicht oder dokumentiert",
+          "Regressionstests ohne kritische Fehler"
+        ]
+      }
+    ],
+    "FEAT-007": [
+      {
+        "id": "TASK-041",
+        "title": "API-Contract für Integration definieren",
+        "description": "Spezifiziere die benötigten API-Endpunkte, Payloads und Response-Schemata für automatische Fakturierung, Monitoring und Bank Account Setup. Abstimmung mit Backend/Frontend und Dokumentation der Schnittstellen.",
+        "task_type": "design",
+        "parent_feature_id": "FEAT-007",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 6,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "api-design",
+          "backend",
+          "frontend",
+          "documentation"
+        ],
+        "suggested_assignee_role": "Solution Architect",
+        "status": "todo",
+        "acceptance_criteria": [
+          "API-Endpunkte für REQ-001/AUTO-001/002/003/004 definiert",
+          "Request/Response-Schemata dokumentiert",
+          "Abstimmung mit Stakeholdern erfolgt"
+        ]
+      },
+      {
+        "id": "TASK-042",
+        "title": "Backend-Endpunkte implementieren (Fakturierung & Workflow)",
+        "description": "Implementiere REST-Endpunkte für agentenbasierte Rechnungsgenerierung, Workflow-Routing und Exception-Handling inkl. Validierung und Fehlercodes.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-007",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 12,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "api-development",
+          "java"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Endpunkte für AUTO-001/002/003 verfügbar",
+          "Validierung und Fehlerbehandlung implementiert",
+          "Unit-Tests für Kernlogik vorhanden"
+        ]
+      },
+      {
+        "id": "TASK-043",
+        "title": "Monitoring-Dashboard API-Endpunkt implementieren",
+        "description": "Implementiere Endpunkt zur Bereitstellung von Monitoring-Metriken für das Dashboard inkl. Filter/Zeitraum-Parameter.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-007",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "api-development"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "API liefert Metriken gemäß AUTO-004",
+          "Parameter für Zeitraum/Filter unterstützt",
+          "Response-Format entspricht Spezifikation"
+        ]
+      },
+      {
+        "id": "TASK-044",
+        "title": "Frontend-Integration Bank Account Setup",
+        "description": "Integration der API-Endpunkte im Frontend für Bank Account Setup inklusive Formular-Validierung und Error-Handling.",
+        "task_type": "development",
+        "parent_feature_id": "FEAT-007",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 10,
+        "complexity": "complex",
+        "story_points": 8,
+        "depends_on": [
+          "TASK-001"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "frontend",
+          "typescript",
+          "api-integration"
+        ],
+        "suggested_assignee_role": "Frontend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Formular sendet Daten an API-Endpunkt",
+          "Validierungs- und Fehlermeldungen angezeigt",
+          "Erfolgszustand korrekt dargestellt"
+        ]
+      },
+      {
+        "id": "TASK-045",
+        "title": "Integrationstests für End-to-End Fakturierung & Monitoring",
+        "description": "Erstelle Integrationstests, die automatische Fakturierung, Workflow-Routing, Exception-Handling und Monitoring-Endpunkte prüfen.",
+        "task_type": "testing",
+        "parent_feature_id": "FEAT-007",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "medium",
+        "story_points": 5,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "testing",
+          "api-testing",
+          "automation"
+        ],
+        "suggested_assignee_role": "QA Engineer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Tests decken AUTO-001/002/003/004 ab",
+          "Tests laufen in CI erfolgreich",
+          "Testberichte dokumentiert"
+        ]
+      },
+      {
+        "id": "TASK-046",
+        "title": "API-Dokumentation aktualisieren",
+        "description": "Ergänze die Entwicklerdokumentation für alle neuen Endpunkte inkl. Beispiel-Requests/Responses und Fehlercodes.",
+        "task_type": "documentation",
+        "parent_feature_id": "FEAT-007",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "simple",
+        "story_points": 3,
+        "depends_on": [
+          "TASK-002",
+          "TASK-003",
+          "TASK-004"
+        ],
+        "blocks": [],
+        "required_skills": [
+          "documentation",
+          "api"
+        ],
+        "suggested_assignee_role": "Technical Writer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Dokumentation enthält alle Endpunkte",
+          "Beispiele für Requests/Responses vorhanden",
+          "Fehlercodes und Troubleshooting beschrieben"
+        ]
+      }
+    ],
+    "DATABASE": [
+      {
+        "id": "TASK-047",
+        "title": "Create Invoice model and migration",
+        "description": "Implement database model for Invoice entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Invoice model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-048",
+        "title": "Create PODValidation model and migration",
+        "description": "Implement database model for PODValidation entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "PODValidation model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-049",
+        "title": "Create Agent model and migration",
+        "description": "Implement database model for Agent entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Agent model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-050",
+        "title": "Create Workflow model and migration",
+        "description": "Implement database model for Workflow entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Workflow model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-051",
+        "title": "Create CompliancePolicy model and migration",
+        "description": "Implement database model for CompliancePolicy entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "CompliancePolicy model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-052",
+        "title": "Create Company model and migration",
+        "description": "Implement database model for Company entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Company model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-053",
+        "title": "Create CompanySettings model and migration",
+        "description": "Implement database model for CompanySettings entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "CompanySettings model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-054",
+        "title": "Create BankAccount model and migration",
+        "description": "Implement database model for BankAccount entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "BankAccount model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-055",
+        "title": "Create Customer model and migration",
+        "description": "Implement database model for Customer entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "Customer model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      },
+      {
+        "id": "TASK-056",
+        "title": "Create UserProfile model and migration",
+        "description": "Implement database model for UserProfile entity with all attributes and relationships. Create migration script.",
+        "task_type": "development",
+        "parent_feature_id": "DATABASE",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 4,
+        "complexity": "medium",
+        "story_points": 3,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "database",
+          "orm"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "UserProfile model created with all attributes",
+          "Migration script works forward and backward",
+          "Unit tests for model validation"
+        ]
+      }
+    ],
+    "API": [
+      {
+        "id": "TASK-057",
+        "title": "Implement api API endpoints",
+        "description": "Implement 32 endpoints for api resource including validation, error handling, and documentation.",
+        "task_type": "development",
+        "parent_feature_id": "API",
+        "parent_user_story_id": "",
+        "parent_requirement_id": "",
+        "estimated_hours": 8,
+        "complexity": "complex",
+        "story_points": 5,
+        "depends_on": [],
+        "blocks": [],
+        "required_skills": [
+          "backend",
+          "api",
+          "rest"
+        ],
+        "suggested_assignee_role": "Backend Developer",
+        "status": "todo",
+        "acceptance_criteria": [
+          "All 32 endpoints implemented",
+          "Request/response validation",
+          "OpenAPI documentation updated",
+          "Integration tests written"
+        ]
+      }
+    ]
+  },
+  "total_tasks": 57,
+  "total_hours": 470,
+  "total_story_points": 303,
+  "critical_path": [
+    "TASK-001",
+    "TASK-002",
+    "TASK-003",
+    "TASK-004",
+    "TASK-005",
+    "TASK-007",
+    "TASK-008"
+  ],
+  "dependency_graph": {
+    "TASK-001": [],
+    "TASK-002": [
+      "TASK-001"
+    ],
+    "TASK-003": [
+      "TASK-001",
+      "TASK-002"
+    ],
+    "TASK-004": [
+      "TASK-001",
+      "TASK-002",
+      "TASK-003"
+    ],
+    "TASK-005": [
+      "TASK-002",
+      "TASK-003",
+      "TASK-004"
+    ],
+    "TASK-006": [
+      "TASK-001"
+    ],
+    "TASK-007": [
+      "TASK-005"
+    ],
+    "TASK-008": [
+      "TASK-002",
+      "TASK-003",
+      "TASK-004",
+      "TASK-005",
+      "TASK-007"
+    ],
+    "TASK-009": [],
+    "TASK-010": [
+      "TASK-001"
+    ],
+    "TASK-011": [
+      "TASK-001",
+      "TASK-002"
+    ],
+    "TASK-012": [
+      "TASK-002",
+      "TASK-003"
+    ],
+    "TASK-013": [
+      "TASK-002"
+    ],
+    "TASK-014": [
+      "TASK-003",
+      "TASK-004",
+      "TASK-005"
+    ],
+    "TASK-015": [],
+    "TASK-016": [
+      "TASK-001"
+    ],
+    "TASK-017": [
+      "TASK-001",
+      "TASK-002"
+    ],
+    "TASK-018": [
+      "TASK-001"
+    ],
+    "TASK-019": [
+      "TASK-002",
+      "TASK-004"
+    ],
+    "TASK-020": [
+      "TASK-002",
+      "TASK-003",
+      "TASK-004",
+      "TASK-005"
+    ],
+    "TASK-021": [],
+    "TASK-022": [],
+    "TASK-023": [
+      "TASK-001",
+      "TASK-002"
+    ],
+    "TASK-024": [
+      "TASK-001"
+    ],
+    "TASK-025": [],
+    "TASK-026": [
+      "TASK-005"
+    ],
+    "TASK-027": [
+      "TASK-002",
+      "TASK-003",
+      "TASK-004",
+      "TASK-005"
+    ],
+    "TASK-028": [],
+    "TASK-029": [
+      "TASK-001"
+    ],
+    "TASK-030": [
+      "TASK-002"
+    ],
+    "TASK-031": [
+      "TASK-001"
+    ],
+    "TASK-032": [
+      "TASK-003"
+    ],
+    "TASK-033": [
+      "TASK-002",
+      "TASK-003"
+    ],
+    "TASK-034": [
+      "TASK-003",
+      "TASK-004",
+      "TASK-005"
+    ],
+    "TASK-035": [],
+    "TASK-036": [
+      "TASK-001"
+    ],
+    "TASK-037": [
+      "TASK-002"
+    ],
+    "TASK-038": [
+      "TASK-001"
+    ],
+    "TASK-039": [
+      "TASK-001"
+    ],
+    "TASK-040": [
+      "TASK-003",
+      "TASK-004",
+      "TASK-005"
+    ],
+    "TASK-041": [],
+    "TASK-042": [
+      "TASK-001"
+    ],
+    "TASK-043": [
+      "TASK-001"
+    ],
+    "TASK-044": [
+      "TASK-001"
+    ],
+    "TASK-045": [
+      "TASK-002",
+      "TASK-003"
+    ],
+    "TASK-046": [
+      "TASK-002",
+      "TASK-003",
+      "TASK-004"
+    ],
+    "TASK-047": [],
+    "TASK-048": [],
+    "TASK-049": [],
+    "TASK-050": [],
+    "TASK-051": [],
+    "TASK-052": [],
+    "TASK-053": [],
+    "TASK-054": [],
+    "TASK-055": [],
+    "TASK-056": [],
+    "TASK-057": []
+  }
+}
