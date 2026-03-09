@@ -104,7 +104,7 @@ class UXDesignGenerator:
 ## User Stories:
 {user_stories_text}
 
-Erstelle 2-4 Personas im folgenden JSON-Format:
+Erstelle 6-8 diverse Personas im folgenden JSON-Format (Power User, Gelegenheitsnutzer, Admin, Neuer Nutzer, Barrierefreier Nutzer, Business/Enterprise Nutzer, etc.):
 
 {{
     "personas": [
@@ -165,6 +165,13 @@ Erstelle einen detaillierten User Flow im folgenden JSON-Format:
         "Serververbindung fehlgeschlagen"
     ]
 }}
+
+Beachte:
+- Jeder Flow MUSS mindestens 5 Schritte haben mit decision_points
+- Erstelle Error-Recovery Flows (verlorene Verbindung, fehlgeschlagener Versand, abgelehnte Zahlung)
+- Erstelle Onboarding/First-Time-User Flows
+- Erstelle Edge-Case Flows (Offline-Modus, Geraetewechsel, Account-Recovery)
+- Jeder Schritt MUSS ein error_scenario haben wenn relevant
 
 Antworte NUR mit dem JSON-Objekt."""
 
@@ -341,16 +348,18 @@ Antworte NUR mit dem JSON-Objekt."""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="ux_design_generator",
                 model=self.model,
                 response=response,
                 latency_ms=latency_ms,
-                metadata={"method": "generate_personas"}
+                metadata={"method": "generate_personas"},
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON
             if "```json" in content:
@@ -431,16 +440,18 @@ Description: {user_story.get('description', '')}"""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="ux_design_generator",
                 model=self.model,
                 response=response,
                 latency_ms=latency_ms,
-                metadata={"method": "generate_user_flow"}
+                metadata={"method": "generate_user_flow"},
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON
             if "```json" in content:
@@ -546,16 +557,18 @@ Description: {user_story.get('description', '')}"""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="ux_design_generator",
                 model=self.model,
                 response=response,
                 latency_ms=latency_ms,
-                metadata={"method": "generate_information_architecture"}
+                metadata={"method": "generate_information_architecture"},
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON
             if "```json" in content:
@@ -622,15 +635,17 @@ Description: {user_story.get('description', '')}"""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             log_llm_call(
                 component="ux_design_generator",
                 model=self.model,
                 response=response,
                 latency_ms=latency_ms,
                 metadata={"method": "generate_validation_rules"},
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
             if "```json" in content:
                 content = content.split("```json")[1].split("```")[0].strip()
             elif "```" in content:
@@ -642,6 +657,63 @@ Description: {user_story.get('description', '')}"""
         except Exception as e:
             print(f"    [WARN] Validation rules generation failed: {e}")
             return []
+
+    @staticmethod
+    def _select_diverse_flow_stories(stories: List[Any], max_flows: int) -> List[Any]:
+        """Select stories covering different functional areas for flow generation."""
+        if len(stories) <= max_flows:
+            return list(stories)
+
+        CATEGORY_KEYWORDS = {
+            "auth": ["login", "register", "password", "auth", "2fa", "passkey", "signup"],
+            "messaging": ["message", "chat", "send", "receive", "group", "conversation"],
+            "profile": ["profile", "status", "picture", "about", "avatar", "account"],
+            "settings": ["setting", "preference", "config", "notification", "privacy"],
+            "media": ["photo", "video", "image", "media", "upload", "gallery", "camera"],
+            "contacts": ["contact", "friend", "block", "invite", "address"],
+            "calls": ["call", "voice", "ring", "dial", "audio"],
+            "search": ["search", "find", "discover", "filter", "browse"],
+            "admin": ["admin", "manage", "moderate", "report", "dashboard"],
+            "business": ["business", "catalog", "payment", "order", "cart", "shop"],
+        }
+
+        categories: Dict[str, List] = {k: [] for k in CATEGORY_KEYWORDS}
+        categories["other"] = []
+
+        for story in stories:
+            title = (story.get("title", "") if isinstance(story, dict)
+                     else getattr(story, "title", "")).lower()
+            desc = (story.get("description", "") if isinstance(story, dict)
+                    else getattr(story, "description", "")).lower()
+            text = f"{title} {desc}"
+
+            placed = False
+            for cat, keywords in CATEGORY_KEYWORDS.items():
+                if any(kw in text for kw in keywords):
+                    categories[cat].append(story)
+                    placed = True
+                    break
+            if not placed:
+                categories["other"].append(story)
+
+        # Round-robin pick from non-empty categories
+        result = []
+        non_empty = {k: v for k, v in categories.items() if v}
+        idx = {k: 0 for k in non_empty}
+
+        while len(result) < max_flows:
+            added = False
+            for cat in list(non_empty.keys()):
+                if len(result) >= max_flows:
+                    break
+                if idx[cat] < len(non_empty[cat]):
+                    result.append(non_empty[cat][idx[cat]])
+                    idx[cat] += 1
+                    added = True
+            if not added:
+                break
+
+        return result
 
     async def generate_ux_spec(
         self,
@@ -659,13 +731,25 @@ Description: {user_story.get('description', '')}"""
 
         print("  Generating user flows...")
         user_flows = []
-        # Generate flows for top user stories with first persona
-        main_persona = personas[0] if personas else Persona(id="PERSONA-001", name="Default User", role="User")
+        gen_config = self.config.get("generators", {}).get("ux_design", {})
+        max_flows = gen_config.get("max_flows", 30)
+        rotate_personas = gen_config.get("rotate_personas", True)
+        default_persona = Persona(id="PERSONA-001", name="Default User", role="User")
 
-        for i, us in enumerate(user_stories[:5], 1):
+        # Select diverse stories across categories (not just first N)
+        diverse_stories = self._select_diverse_flow_stories(user_stories, max_flows)
+        total = len(diverse_stories)
+
+        for i, us in enumerate(diverse_stories, 1):
+            # Round-robin personas so flows span different user types
+            if rotate_personas and personas:
+                persona = personas[i % len(personas)]
+            else:
+                persona = personas[0] if personas else default_persona
+
             title = us.get('title', 'Story') if isinstance(us, dict) else getattr(us, 'title', 'Story')
-            print(f"    [{i}/5] Flow for: {title}...")
-            flow = await self.generate_user_flow(project_name, main_persona, us)
+            print(f"    [{i}/{total}] Flow for: {title} (Persona: {persona.name})...")
+            flow = await self.generate_user_flow(project_name, persona, us)
             if flow:
                 user_flows.append(flow)
         print(f"    Generated {len(user_flows)} user flows")

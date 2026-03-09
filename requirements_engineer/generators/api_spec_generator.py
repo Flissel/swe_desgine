@@ -222,6 +222,13 @@ Guidelines:
 - EVERY endpoint MUST have a "response_body" with the expected response schema
 - Set "is_public": true for registration, login, password-reset, health-check, and other unauthenticated endpoints
 - For file/image/media upload endpoints, set "content_type": "multipart/form-data" and use type "string" with format "binary" for file fields
+- Every resource MUST have full CRUD coverage (GET list, GET by id, POST create, PUT/PATCH update, DELETE)
+- Include batch/bulk operation endpoints for high-volume resources (e.g., POST /api/v1/messages/batch)
+- For real-time/messaging features: include typing indicator endpoints (POST /typing/start, POST /typing/stop), read receipt endpoints, presence/status endpoints
+- For user-facing APIs: include device registration, session management, push notification token registration endpoints
+- Include rate limiting headers in response descriptions (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+- Include internal/admin endpoints: GET /internal/health, GET /internal/metrics, GET /internal/ready
+- For search features: include filter, sort, and full-text search query parameters
 
 Return ONLY valid JSON, no other text."""
 
@@ -289,15 +296,20 @@ Return ONLY valid JSON, no other text."""
         )
         latency_ms = int((time.time() - start_time) * 1000)
 
+        response_text = response.choices[0].message.content.strip()
+
         # Log the LLM call
         log_llm_call(
             component="api_spec_generator",
             model=self.model_name,
             response=response,
-            latency_ms=latency_ms
+            latency_ms=latency_ms,
+            system_message="You are an expert API architect. Always respond with valid JSON only.",
+            user_message=prompt,
+            response_text=response_text,
         )
 
-        return response.choices[0].message.content.strip()
+        return response_text
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         """Extract JSON from LLM response with robust error handling."""
@@ -485,6 +497,29 @@ Return ONLY valid JSON, no other text."""
                 await self.derive_endpoints(req, constraints)
                 print(f"    Derived endpoints for {req.requirement_id}: {req.title}")
 
+        # Deduplicate endpoints: merge same method+path, combine requirement refs
+        total_before = len(self.endpoints)
+        seen = {}  # key: (method, path) -> endpoint
+        deduped = []
+        for ep in self.endpoints:
+            key = (ep.method.upper(), ep.path)
+            if key in seen:
+                existing = seen[key]
+                if ep.parent_requirement_id and ep.parent_requirement_id not in (existing.tags or []):
+                    if existing.tags is None:
+                        existing.tags = []
+                    existing.tags.append(ep.parent_requirement_id)
+                existing_param_names = {p.name for p in existing.parameters}
+                for p in ep.parameters:
+                    if p.name not in existing_param_names:
+                        existing.parameters.append(p)
+            else:
+                seen[key] = ep
+                deduped.append(ep)
+        self.endpoints = deduped
+        if total_before != len(self.endpoints):
+            print(f"  Deduplicated: {len(self.endpoints)} unique endpoints (from {total_before} total)")
+
         # Build OpenAPI structure
         openapi = {
             "openapi": "3.0.3",
@@ -499,13 +534,7 @@ Return ONLY valid JSON, no other text."""
             "paths": {},
             "components": {
                 "schemas": {},
-                "securitySchemes": {
-                    "bearerAuth": {
-                        "type": "http",
-                        "scheme": "bearer",
-                        "bearerFormat": "JWT"
-                    }
-                }
+                "securitySchemes": self._build_security_schemes()
             },
             "security": [{"bearerAuth": []}]
         }
@@ -598,6 +627,40 @@ Return ONLY valid JSON, no other text."""
 
         return yaml.dump(openapi, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
+    def _build_security_schemes(self) -> dict:
+        """Build security schemes for OpenAPI spec (JWT + API Key + OAuth2)."""
+        schemes = {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "JWT Bearer token authentication. Include in Authorization header."
+            },
+            "apiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-Key",
+                "description": "API key for service-to-service authentication."
+            },
+            "oauth2Auth": {
+                "type": "oauth2",
+                "description": "OAuth 2.0 authorization code flow for user-facing applications.",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://auth.example.com/authorize",
+                        "tokenUrl": "https://auth.example.com/token",
+                        "refreshUrl": "https://auth.example.com/refresh",
+                        "scopes": {
+                            "read": "Read access to resources",
+                            "write": "Write access to resources",
+                            "admin": "Administrative access"
+                        }
+                    }
+                }
+            }
+        }
+        return schemes
+
     def _build_empty_spec(self, server_url: str = "https://api.example.com") -> str:
         """Build an empty OpenAPI spec when no requirements are processed."""
         openapi = {
@@ -613,13 +676,7 @@ Return ONLY valid JSON, no other text."""
             "paths": {},
             "components": {
                 "schemas": {},
-                "securitySchemes": {
-                    "bearerAuth": {
-                        "type": "http",
-                        "scheme": "bearer",
-                        "bearerFormat": "JWT"
-                    }
-                }
+                "securitySchemes": self._build_security_schemes()
             },
             "security": [{"bearerAuth": []}]
         }

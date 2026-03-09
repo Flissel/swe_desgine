@@ -60,7 +60,7 @@ class PresentationEvaluator(BaseStageEvaluator):
             from requirements_engineer.stages.presentation_stage import PresentationStage
             from omegaconf import OmegaConf
 
-            config = OmegaConf.load("re_config.yaml")
+            config = OmegaConf.load(str(Path(__file__).parent.parent.parent / "re_config.yaml"))
             config_dict = OmegaConf.to_container(config, resolve=True)
 
             project_id = self._project_input.get("id", "test_project")

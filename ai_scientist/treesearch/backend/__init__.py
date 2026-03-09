@@ -16,7 +16,7 @@ def _get_training_collector():
     if not TRAINING_COLLECTION_ENABLED:
         return None
     try:
-        from ai_scientist.training.collector import TrainingDataCollector
+        from requirements_engineer.training.collector import TrainingDataCollector
         return TrainingDataCollector.get_instance()
     except ImportError:
         return None

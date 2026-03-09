@@ -168,12 +168,48 @@ class Epic:
     parent_requirements: List[str] = field(default_factory=list)  # List of REQ IDs
     status: str = "draft"  # draft, in_progress, done
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    # Enriched fields for planning
+    acceptance_criteria: List[str] = field(default_factory=list)
+    definition_of_done: List[str] = field(default_factory=list)
+    story_points: int = 0
+    business_value: str = ""  # ROI / business justification
+    priority: str = "should"  # must / should / could / wont
+    owner_role: str = ""  # Team or role responsible
+    dependencies: List[str] = field(default_factory=list)  # Other EPIC IDs
 
     def to_markdown(self) -> str:
         """Convert to markdown format."""
         md = f"# {self.id}: {self.title}\n\n"
-        md += f"**Status:** {self.status}\n\n"
+        md += f"**Status:** {self.status}  \n"
+        md += f"**Priority:** {self.priority}  \n"
+        if self.story_points:
+            md += f"**Story Points:** {self.story_points}  \n"
+        if self.owner_role:
+            md += f"**Owner:** {self.owner_role}  \n"
+        md += "\n"
+
         md += f"## Description\n\n{self.description}\n\n"
+
+        if self.business_value:
+            md += f"## Business Value\n\n{self.business_value}\n\n"
+
+        if self.acceptance_criteria:
+            md += f"## Acceptance Criteria\n\n"
+            for i, ac in enumerate(self.acceptance_criteria, 1):
+                md += f"{i}. {ac}\n"
+            md += "\n"
+
+        if self.definition_of_done:
+            md += f"## Definition of Done\n\n"
+            for dod in self.definition_of_done:
+                md += f"- {dod}\n"
+            md += "\n"
+
+        if self.dependencies:
+            md += f"## Dependencies\n\n"
+            for dep in self.dependencies:
+                md += f"- {dep}\n"
+            md += "\n"
 
         if self.parent_requirements:
             md += f"## Linked Requirements\n\n"
@@ -251,18 +287,37 @@ Return JSON format:
 {{
     "epics": [
         {{
-            "title": "Epic title",
-            "description": "What this epic covers and its business value",
-            "requirement_ids": ["REQ-001", "REQ-002"]
+            "title": "Epic title (concise, action-oriented)",
+            "description": "Detailed description of the business capability this epic delivers",
+            "business_value": "Business value / ROI justification (why this epic matters)",
+            "requirement_ids": ["REQ-001", "REQ-002"],
+            "acceptance_criteria": [
+                "Measurable criterion that defines when this epic is complete",
+                "Another measurable criterion"
+            ],
+            "definition_of_done": [
+                "All user stories implemented and tested",
+                "Integration tests pass",
+                "Documentation updated"
+            ],
+            "priority": "must",
+            "story_points": 21,
+            "owner_role": "Team or role responsible (e.g. Backend Team, Mobile Team)",
+            "dependencies": ["Title of prerequisite epic, if any"]
         }}
     ]
 }}
 
 Guidelines:
-- Group by business capability (e.g., "User Authentication", "Shopping Cart", "Order Management")
-- Each epic should have a clear scope
+- Group by business capability (e.g., "User Authentication", "Messaging", "Media Sharing")
+- Each epic should have a clear, focused scope
+- CRITICAL: No epic may cover more than 20 requirements. If a group exceeds 20, split it into smaller, focused epics
 - Requirements can belong to multiple epics if they span capabilities
-- Aim for 3-7 epics depending on scope
+- Aim for 5-12 epics depending on scope
+- priority: "must" (core functionality), "should" (important), "could" (nice-to-have)
+- story_points: Use Fibonacci (5, 8, 13, 21, 34) based on total estimated effort
+- acceptance_criteria: 2-5 measurable criteria per epic
+- dependencies: Reference other epic titles that must be completed first
 
 Return ONLY valid JSON, no other text."""
 
@@ -398,15 +453,21 @@ Return ONLY valid JSON, no other text."""
         temperature = getattr(self, 'temperature', 0.7)
         max_tokens = max_tokens_override or getattr(self, 'max_tokens', 8000)
 
+        # Detect language from prompt content for consistent output
+        lang = self._detect_language(prompt)
+        system_msg = f"You are an expert Business Analyst. Write ALL output (titles, descriptions, acceptance criteria) in {lang}. Always respond with valid JSON only."
+
         response = await self.client.chat.completions.create(
             model=self.model_name,
             messages=[
-                {"role": "system", "content": "You are an expert Business Analyst. Always respond with valid JSON only."},
+                {"role": "system", "content": system_msg},
                 {"role": "user", "content": prompt}
             ],
             temperature=temperature,
             max_tokens=max_tokens
         )
+
+        response_text = response.choices[0].message.content.strip()
 
         # Log the LLM call for cost tracking
         latency_ms = int((time.time() - start_time) * 1000)
@@ -415,10 +476,26 @@ Return ONLY valid JSON, no other text."""
                 component="user_story_generator",
                 model=self.model_name,
                 response=response,
-                latency_ms=latency_ms
+                latency_ms=latency_ms,
+                system_message=system_msg,
+                user_message=prompt,
+                response_text=response_text,
             )
 
-        return response.choices[0].message.content.strip()
+        return response_text
+
+    @staticmethod
+    def _detect_language(text: str) -> str:
+        """Detect whether input text is German or English based on common markers."""
+        german_markers = {
+            "und", "oder", "der", "die", "das", "ist", "ein", "eine",
+            "für", "mit", "auf", "als", "nach", "bei", "soll", "muss",
+            "kann", "wird", "von", "des", "den", "dem", "nicht", "werden",
+        }
+        words = set(text.lower().split())
+        if len(words & german_markers) >= 3:
+            return "German"
+        return "English"
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         """Extract JSON from LLM response with robust error handling."""
@@ -957,16 +1034,13 @@ Return ONLY valid JSON."""
             epics = []
             for epic_data in data.get("epics", []):
                 epic_id = self._generate_epic_id()
-                epic = Epic(
-                    id=epic_id,
-                    title=epic_data.get("title", "Unnamed Epic"),
-                    description=epic_data.get("description", ""),
-                    parent_requirements=epic_data.get("requirement_ids", [])
-                )
+                epic = self._create_epic_from_data(epic_id, epic_data)
                 self.epics[epic_id] = epic
                 epics.append(epic)
                 print(f"  Generated {epic_id}: {epic.title}")
 
+            # Split oversized epics (>20 requirements)
+            epics = self._split_oversized_epics(epics)
             return epics
 
         # For large sets, process in batches and merge epics
@@ -1005,18 +1079,54 @@ Return ONLY valid JSON."""
                 else:
                     # Create new epic
                     epic_id = self._generate_epic_id()
-                    epic = Epic(
-                        id=epic_id,
-                        title=epic_data.get("title", "Unnamed Epic"),
-                        description=epic_data.get("description", ""),
-                        parent_requirements=epic_data.get("requirement_ids", [])
-                    )
+                    epic = self._create_epic_from_data(epic_id, epic_data)
                     self.epics[epic_id] = epic
                     all_epics.append(epic)
                     print(f"    Generated {epic_id}: {epic.title}")
 
-        print(f"  Total epics generated: {len(all_epics)}")
+        # Split oversized epics (>20 requirements)
+        all_epics = self._split_oversized_epics(all_epics)
+        print(f"  Total epics after split: {len(all_epics)}")
         return all_epics
+
+    def _split_oversized_epics(self, epics: List[Epic], max_size: int = 20) -> List[Epic]:
+        """Split epics that cover too many requirements into smaller focused epics."""
+        result = []
+        for epic in epics:
+            if len(epic.parent_requirements) <= max_size:
+                result.append(epic)
+                continue
+
+            # Split into chunks of max_size
+            reqs = epic.parent_requirements
+            num_parts = (len(reqs) + max_size - 1) // max_size
+            print(f"  Splitting {epic.id} ({len(reqs)} reqs) into {num_parts} sub-epics")
+
+            for part_idx in range(num_parts):
+                chunk = reqs[part_idx * max_size : (part_idx + 1) * max_size]
+                new_id = self._generate_epic_id()
+                suffix = f" (Part {part_idx + 1})" if num_parts > 1 else ""
+                sub_epic = Epic(
+                    id=new_id,
+                    title=f"{epic.title}{suffix}",
+                    description=epic.description,
+                    parent_requirements=chunk,
+                    acceptance_criteria=epic.acceptance_criteria,
+                    definition_of_done=epic.definition_of_done,
+                    story_points=max(1, epic.story_points // num_parts),
+                    business_value=epic.business_value,
+                    priority=epic.priority,
+                    owner_role=epic.owner_role,
+                    dependencies=[epic.title] if part_idx > 0 else epic.dependencies,
+                )
+                self.epics[new_id] = sub_epic
+                result.append(sub_epic)
+                print(f"    Created {new_id}: {sub_epic.title} ({len(chunk)} reqs)")
+
+            # Remove the original oversized epic from self.epics
+            self.epics.pop(epic.id, None)
+
+        return result
 
     def _find_similar_epic(self, title: str, epics: List[Epic]) -> Optional[Epic]:
         """Find an epic with a similar title (for merging across batches)."""
@@ -1030,6 +1140,22 @@ Return ONLY valid JSON."""
             if len(common) >= len(title_words) * 0.5:
                 return epic
         return None
+
+    def _create_epic_from_data(self, epic_id: str, epic_data: dict) -> Epic:
+        """Create an Epic instance from LLM-generated JSON data."""
+        return Epic(
+            id=epic_id,
+            title=epic_data.get("title", "Unnamed Epic"),
+            description=epic_data.get("description", ""),
+            parent_requirements=epic_data.get("requirement_ids", []),
+            acceptance_criteria=epic_data.get("acceptance_criteria", []),
+            definition_of_done=epic_data.get("definition_of_done", []),
+            story_points=epic_data.get("story_points", 0),
+            business_value=epic_data.get("business_value", ""),
+            priority=epic_data.get("priority", "should"),
+            owner_role=epic_data.get("owner_role", ""),
+            dependencies=epic_data.get("dependencies", []),
+        )
 
     def link_stories_to_epics(self):
         """Link User Stories to their parent Epics based on requirements."""

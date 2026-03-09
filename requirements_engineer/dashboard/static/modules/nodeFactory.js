@@ -53,10 +53,11 @@ function createNode(type, id, data) {
  * @returns {Object|null} Found node or null
  */
 export function findNodeByPartialId(type, partialId) {
+    const needle = partialId.toUpperCase();
     return Object.values(state.nodes).find(n =>
-        n.type === type && n.element.dataset.nodeId.includes(partialId)
+        n.type === type && n.element.dataset.nodeId.toUpperCase().includes(needle)
     ) || Object.values(state.nodes).find(n =>
-        n.element.dataset.nodeId.includes(partialId)
+        n.element.dataset.nodeId.toUpperCase().includes(needle)
     );
 }
 
@@ -409,15 +410,116 @@ export function createFeatureFromBreakdown(feature) {
  * Create API endpoint node
  */
 export function createApiEndpointNode(endpoint) {
-    const apiId = `API-${endpoint.method}-${endpoint.path.replace(/\//g, '-').replace(/\{|\}/g, '')}`;
+    const apiId = endpoint.id || `API-${endpoint.method}-${endpoint.path.replace(/\//g, '-').replace(/[{}]/g, '')}`.replace(/-+/g, '-');
     const data = {
         method: endpoint.method,
         path: endpoint.path,
-        description: endpoint.description
+        description: endpoint.description,
+        parent_requirement_id: endpoint.parent_requirement_id || ''
     };
 
     createNode('api', apiId, data);
     addSidebarItem('api-list', apiId, `${endpoint.method} ${endpoint.path}`, endpoint.method);
+}
+
+/**
+ * Create API package node (stacked endpoints by resource)
+ */
+export function createApiPackageNode(pkg) {
+    const nodeId = `API-PKG-${pkg.tag.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+    const data = {
+        tag: pkg.tag,
+        endpoint_count: pkg.endpoints.length,
+        method_counts: pkg.method_counts || {},
+        endpoints: pkg.endpoints
+    };
+    createNode('api-package', nodeId, data);
+    addSidebarItem('api-list', nodeId, `${pkg.tag} (${pkg.endpoints.length})`, 'PKG');
+}
+
+/**
+ * Create task group node (stacked tasks by feature)
+ */
+export function createTaskGroupNode(featureId, featureName, tasks) {
+    const nodeId = `TASK-GRP-${featureId}`;
+    const totalHours = tasks.reduce((s, t) => s + (t.estimated_hours || 0), 0);
+    const data = {
+        title: featureName || featureId,
+        feature_id: featureId,
+        task_count: tasks.length,
+        total_hours: totalHours,
+        tasks: tasks
+    };
+    createNode('task-group', nodeId, data);
+    addSidebarItem('tasks-list', nodeId, `${data.title} (${tasks.length})`, `${totalHours}h`);
+}
+
+/**
+ * Create architecture service node
+ */
+export function createServiceNode(service) {
+    const nodeId = service.id || `SVC-${(service.name || 'unknown').replace(/[^a-zA-Z0-9]/g, '-')}`;
+    const data = {
+        name: service.name,
+        type: service.type,
+        technology: service.technology,
+        responsibilities: service.responsibilities || [],
+        dependencies: service.dependencies || [],
+        ports: service.ports || []
+    };
+    createNode('service', nodeId, data);
+    addSidebarItem('services-list', nodeId, data.name, data.type || '');
+}
+
+/**
+ * Create state machine node
+ */
+export function createStateMachineNode(sm) {
+    const entity = sm.entity || sm.name || 'unknown';
+    const nodeId = `SM-${entity.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+    const data = {
+        entity: entity,
+        name: sm.name || entity,
+        state_count: (sm.states || []).length,
+        transition_count: (sm.transitions || []).length,
+        initial_state: sm.initial_state || (sm.states || [])[0] || '',
+        states: sm.states || [],
+        transitions: sm.transitions || [],
+        mermaid_code: sm.mermaid_code || ''
+    };
+    createNode('state-machine', nodeId, data);
+    addSidebarItem('state-machines-list', nodeId, data.name, `${data.state_count} states`);
+}
+
+/**
+ * Create infrastructure summary node
+ */
+export function createInfrastructureNode(infra) {
+    const nodeId = 'INFRASTRUCTURE';
+    const data = {
+        architecture_style: infra.architecture_style || infra.cloud_provider || '',
+        has_dockerfile: infra.has_dockerfile || false,
+        has_k8s: infra.has_k8s || false,
+        has_ci: infra.has_ci || false,
+        service_count: infra.service_count || 0,
+        services: infra.services || [],
+        env_vars: infra.env_vars || []
+    };
+    createNode('infrastructure', nodeId, data);
+}
+
+/**
+ * Create design tokens summary node
+ */
+export function createDesignTokensNode(tokens) {
+    const nodeId = 'DESIGN-TOKENS';
+    const data = {
+        colors: tokens.colors || {},
+        typography: tokens.typography || {},
+        spacing: tokens.spacing || {},
+        breakpoints: tokens.breakpoints || {}
+    };
+    createNode('design-tokens', nodeId, data);
 }
 
 // ============================================

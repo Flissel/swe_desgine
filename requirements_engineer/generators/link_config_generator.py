@@ -84,6 +84,7 @@ DEFAULT_LINK_TYPES = [
     # Core traceability chain: REQ → US → Test
     LinkType('req-story', 'requirement', 'user-story', 'implements', '#1d9bf0', 'implementiert', 'implements'),
     LinkType('epic-story', 'epic', 'user-story', 'derives', '#7856ff', 'leitet ab', 'derives'),
+    LinkType('epic-req', 'epic', 'requirement', 'covers', '#7856ff', 'umfasst', 'covers'),
     LinkType('story-test', 'user-story', 'test', 'verified_by', '#00ba7c', 'getestet durch', 'tested by'),
     LinkType('req-diagram', 'requirement', 'diagram', 'visualized_by', '#ffd400', 'visualisiert', 'visualized by'),
     # Persona & Flow

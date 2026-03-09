@@ -1,0 +1,641 @@
+/* ============================================
+   Trace Explorer — Three-Pane Artifact Browser
+   ============================================ */
+
+#trace-container {
+    display: grid;
+    grid-template-columns: 240px 1fr 280px;
+    height: calc(100vh - 48px);
+    background: var(--bg-primary, #0d1117);
+    color: var(--text-primary, #e6edf3);
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* ── Left: Tree Navigation Pane ──────────── */
+
+.trace-tree-pane {
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color, #30363d);
+    padding: 12px 0;
+    background: var(--bg-secondary, #161b22);
+}
+
+.trace-tree-header {
+    padding: 8px 16px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary, #8b949e);
+    border-bottom: 1px solid var(--border-color, #30363d);
+    margin-bottom: 4px;
+}
+
+.trace-tree-search {
+    padding: 6px 12px;
+    margin: 0 8px 8px;
+}
+
+.trace-tree-search input {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--bg-primary, #0d1117);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 4px;
+    color: var(--text-primary, #e6edf3);
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.trace-tree-search input:focus {
+    border-color: var(--accent, #58a6ff);
+}
+
+.trace-tree-search input::placeholder {
+    color: var(--text-secondary, #8b949e);
+}
+
+.trace-tree-item {
+    display: flex;
+    align-items: center;
+    padding: 7px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-primary, #e6edf3);
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+    gap: 8px;
+}
+
+.trace-tree-item:hover {
+    background: rgba(88, 166, 255, 0.06);
+}
+
+.trace-tree-item.active {
+    background: rgba(88, 166, 255, 0.1);
+    border-left-color: var(--accent, #58a6ff);
+}
+
+.trace-tree-item .tree-icon {
+    width: 18px;
+    font-size: 12px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.trace-tree-item .tree-label {
+    flex: 1;
+    font-weight: 500;
+}
+
+.trace-tree-item .tree-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary, #8b949e);
+    background: var(--bg-primary, #0d1117);
+    padding: 1px 7px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.trace-tree-stats {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-color, #30363d);
+    font-size: 11px;
+    color: var(--text-secondary, #8b949e);
+}
+
+.trace-tree-stats .stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.trace-tree-stats .stat-value {
+    font-weight: 600;
+    color: var(--text-primary, #e6edf3);
+}
+
+/* ── Center: Table Pane ──────────────────── */
+
+.trace-table-pane {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.trace-table-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color, #30363d);
+    background: var(--bg-secondary, #161b22);
+    flex-shrink: 0;
+}
+
+.trace-table-toolbar .toolbar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary, #e6edf3);
+    margin-right: auto;
+}
+
+.trace-search-input {
+    padding: 5px 10px;
+    background: var(--bg-primary, #0d1117);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 4px;
+    color: var(--text-primary, #e6edf3);
+    font-size: 12px;
+    width: 200px;
+    outline: none;
+}
+
+.trace-search-input:focus {
+    border-color: var(--accent, #58a6ff);
+}
+
+.trace-search-input::placeholder {
+    color: var(--text-secondary, #8b949e);
+}
+
+.trace-table-wrap {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* ── Table ───────────────────────────────── */
+
+.trace-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.trace-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.trace-table th {
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary, #8b949e);
+    background: var(--bg-secondary, #161b22);
+    border-bottom: 1px solid var(--border-color, #30363d);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.trace-table th:hover {
+    color: var(--accent, #58a6ff);
+}
+
+.trace-table th .sort-indicator {
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0.4;
+}
+
+.trace-table th .sort-indicator.active {
+    opacity: 1;
+    color: var(--accent, #58a6ff);
+}
+
+.trace-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+    color: var(--text-primary, #e6edf3);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trace-table tbody tr {
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.trace-table tbody tr:hover {
+    background: rgba(88, 166, 255, 0.04);
+}
+
+.trace-table tbody tr.selected {
+    background: rgba(88, 166, 255, 0.1);
+}
+
+/* Cell variants */
+.trace-table .cell-id {
+    font-family: 'SFMono-Regular', monospace;
+    font-size: 12px;
+    color: var(--accent, #58a6ff);
+    font-weight: 500;
+}
+
+.trace-table .cell-priority {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.cell-priority.must { background: rgba(248, 81, 73, 0.15); color: #f85149; }
+.cell-priority.should { background: rgba(210, 153, 34, 0.15); color: #d29922; }
+.cell-priority.could { background: rgba(63, 185, 80, 0.15); color: #3fb950; }
+.cell-priority.wont { background: rgba(72, 79, 88, 0.3); color: #8b949e; }
+
+.trace-table .cell-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary, #8b949e);
+}
+
+/* ── Pagination ──────────────────────────── */
+
+.trace-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    gap: 8px;
+    border-top: 1px solid var(--border-color, #30363d);
+    background: var(--bg-secondary, #161b22);
+    font-size: 12px;
+    color: var(--text-secondary, #8b949e);
+    flex-shrink: 0;
+}
+
+.trace-pagination button {
+    padding: 4px 12px;
+    background: var(--bg-primary, #0d1117);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 4px;
+    color: var(--text-primary, #e6edf3);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.trace-pagination button:hover:not(:disabled) {
+    border-color: var(--accent, #58a6ff);
+    color: var(--accent, #58a6ff);
+}
+
+.trace-pagination button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.trace-pagination .page-info {
+    font-weight: 500;
+}
+
+/* ── Detail Panel (below table) ──────────── */
+
+.trace-detail-panel {
+    border-top: 1px solid var(--border-color, #30363d);
+    padding: 16px;
+    background: var(--bg-secondary, #161b22);
+    overflow-y: auto;
+    max-height: 40vh;
+    flex-shrink: 0;
+}
+
+.trace-detail-panel .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.trace-detail-panel .detail-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary, #e6edf3);
+}
+
+.trace-detail-panel .detail-type-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(88, 166, 255, 0.12);
+    color: var(--accent, #58a6ff);
+    text-transform: uppercase;
+}
+
+.trace-detail-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.trace-detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.trace-detail-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.trace-detail-field label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-secondary, #8b949e);
+}
+
+.trace-detail-field .field-value {
+    font-size: 13px;
+    padding: 6px 10px;
+    background: var(--bg-primary, #0d1117);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 4px;
+    color: var(--text-primary, #e6edf3);
+    min-height: 28px;
+    line-height: 1.4;
+}
+
+.trace-detail-field .field-value[contenteditable="true"] {
+    cursor: text;
+    outline: none;
+}
+
+.trace-detail-field .field-value[contenteditable="true"]:focus {
+    border-color: var(--accent, #58a6ff);
+    box-shadow: 0 0 0 1px var(--accent, #58a6ff);
+}
+
+.trace-detail-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color, #30363d);
+}
+
+.trace-detail-actions button {
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border-color, #30363d);
+    background: var(--bg-primary, #0d1117);
+    color: var(--text-primary, #e6edf3);
+    transition: border-color 0.15s;
+}
+
+.trace-detail-actions button:hover {
+    border-color: var(--accent, #58a6ff);
+}
+
+.trace-detail-actions button.primary {
+    background: rgba(88, 166, 255, 0.12);
+    border-color: var(--accent, #58a6ff);
+    color: var(--accent, #58a6ff);
+}
+
+/* ── Right: Trace Chain Pane ─────────────── */
+
+.trace-chain-pane {
+    overflow-y: auto;
+    border-left: 1px solid var(--border-color, #30363d);
+    padding: 0;
+    background: var(--bg-secondary, #161b22);
+}
+
+.trace-chain-header {
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary, #8b949e);
+    border-bottom: 1px solid var(--border-color, #30363d);
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary, #161b22);
+    z-index: 1;
+}
+
+.trace-chain-empty {
+    padding: 32px 16px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary, #8b949e);
+}
+
+.trace-chain-section {
+    padding: 8px 0;
+}
+
+.trace-chain-section-title {
+    padding: 6px 16px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary, #8b949e);
+}
+
+.trace-chain-section-title.upstream { color: #79c0ff; }
+.trace-chain-section-title.downstream { color: #3fb950; }
+
+/* The selected artifact in the chain */
+.trace-chain-focus {
+    margin: 4px 12px;
+    padding: 8px 12px;
+    background: rgba(88, 166, 255, 0.1);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent, #58a6ff);
+}
+
+.trace-chain-focus .focus-type {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Chain nodes */
+.trace-chain-node {
+    display: flex;
+    align-items: flex-start;
+    padding: 5px 16px 5px calc(16px + var(--depth, 0) * 12px);
+    cursor: pointer;
+    font-size: 12px;
+    gap: 6px;
+    transition: background 0.1s;
+}
+
+.trace-chain-node:hover {
+    background: rgba(88, 166, 255, 0.04);
+}
+
+.trace-chain-node.impacted {
+    background: rgba(210, 153, 34, 0.06);
+}
+
+.trace-chain-node .chain-connector {
+    color: var(--border-color, #30363d);
+    font-size: 10px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    width: 12px;
+    text-align: center;
+}
+
+.trace-chain-node .chain-type-icon {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary, #8b949e);
+    min-width: 36px;
+    flex-shrink: 0;
+}
+
+.trace-chain-node .chain-title {
+    color: var(--text-primary, #e6edf3);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trace-chain-node .chain-edge-type {
+    font-size: 10px;
+    color: var(--text-secondary, #8b949e);
+    opacity: 0.6;
+}
+
+/* Impact summary */
+.trace-impact-summary {
+    margin: 8px 12px;
+    padding: 10px 12px;
+    background: var(--bg-primary, #0d1117);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.trace-impact-summary .impact-title {
+    font-weight: 600;
+    color: var(--text-secondary, #8b949e);
+    margin-bottom: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.trace-impact-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    color: var(--text-primary, #e6edf3);
+}
+
+.trace-impact-row .impact-count {
+    font-weight: 600;
+    color: #d29922;
+}
+
+/* ── Empty state ─────────────────────────── */
+
+.trace-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    grid-column: 1 / -1;
+    color: var(--text-secondary, #8b949e);
+    padding: 40px;
+}
+
+.trace-empty .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+.trace-empty h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: var(--text-primary, #e6edf3);
+}
+
+.trace-empty p {
+    font-size: 13px;
+    max-width: 360px;
+    line-height: 1.5;
+}
+
+/* ── Loading spinner ─────────────────────── */
+
+.trace-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    color: var(--text-secondary, #8b949e);
+    font-size: 13px;
+    gap: 8px;
+}
+
+.trace-loading .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border-color, #30363d);
+    border-top-color: var(--accent, #58a6ff);
+    border-radius: 50%;
+    animation: trace-spin 0.6s linear infinite;
+}
+
+@keyframes trace-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ──────────────────────────── */
+
+@media (max-width: 1100px) {
+    #trace-container {
+        grid-template-columns: 200px 1fr 240px;
+    }
+}
+
+@media (max-width: 800px) {
+    #trace-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+    .trace-tree-pane {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color, #30363d);
+        max-height: 150px;
+    }
+    .trace-chain-pane {
+        border-left: none;
+        border-top: 1px solid var(--border-color, #30363d);
+        max-height: 200px;
+    }
+}

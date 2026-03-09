@@ -11,6 +11,11 @@ This package contains LLM-powered generators for:
 - UX Design Artifacts
 - UI Design Specifications
 - Realtime/WebSocket Specifications (AsyncAPI 2.6)
+- Architecture Design (C4 Diagrams)
+- State Machines (Entity Lifecycle)
+- Component Compositions (Screen-Component Mapping)
+- Config & Environment (Docker, K8s, CI/CD)
+- Test Data Factories (factory_boy + Seed SQL)
 """
 
 from .user_story_generator import UserStoryGenerator, UserStory, Epic
@@ -24,6 +29,12 @@ from .ui_design_generator import UIDesignGenerator, UIDesignSpec, UIComponent, S
 from .presentation_generator import PresentationGenerator, PresentationAnalyzer, HTMLPage
 from .link_config_generator import LinkConfigGenerator, LinkConfig, generate_link_config
 from .realtime_spec_generator import RealtimeSpecGenerator, RealtimeSpec
+from .architecture_generator import ArchitectureGenerator, ArchitectureSpec, save_architecture
+from .state_machine_generator import StateMachineGenerator, StateMachine, save_state_machines
+from .component_composition_generator import ComponentCompositionGenerator, ComponentMatrix, save_compositions
+from .config_generator import ConfigGenerator, InfraConfig, save_config
+from .test_factory_generator import TestFactoryGenerator, EntityFactory, save_test_factories
+from .nfr_generator import NFRGenerator
 
 __all__ = [
     "UserStoryGenerator",
@@ -65,4 +76,26 @@ __all__ = [
     # Realtime Spec Generator
     "RealtimeSpecGenerator",
     "RealtimeSpec",
+    # Architecture Generator
+    "ArchitectureGenerator",
+    "ArchitectureSpec",
+    "save_architecture",
+    # State Machine Generator
+    "StateMachineGenerator",
+    "StateMachine",
+    "save_state_machines",
+    # Component Composition Generator
+    "ComponentCompositionGenerator",
+    "ComponentMatrix",
+    "save_compositions",
+    # Config & Environment Generator
+    "ConfigGenerator",
+    "InfraConfig",
+    "save_config",
+    # Test Data Factory Generator
+    "TestFactoryGenerator",
+    "EntityFactory",
+    "save_test_factories",
+    # NFR Generator
+    "NFRGenerator",
 ]

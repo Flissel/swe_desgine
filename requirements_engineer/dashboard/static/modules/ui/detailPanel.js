@@ -16,14 +16,20 @@ const TYPE_LABELS = {
     'user-story': 'US',
     'test': 'TEST',
     'api': 'API',
+    'api-package': 'PKG',
     'persona': 'PERS',
     'user-flow': 'FLOW',
     'screen': 'SCR',
     'component': 'COMP',
     'task': 'TASK',
+    'task-group': 'TASKS',
     'diagram': 'DIAG',
     'entity': 'ENT',
-    'tech-stack': 'TECH'
+    'tech-stack': 'TECH',
+    'service': 'SVC',
+    'state-machine': 'SM',
+    'infrastructure': 'INFRA',
+    'design-tokens': 'TOKEN'
 };
 
 const TYPE_COLORS = {
@@ -32,14 +38,20 @@ const TYPE_COLORS = {
     'user-story': '#00ba7c',
     'test': '#f4212e',
     'api': '#ff7a00',
+    'api-package': '#ff7a00',
     'persona': '#f97316',
     'user-flow': '#ec4899',
     'screen': '#8b5cf6',
     'component': '#84cc16',
     'task': '#f59e0b',
+    'task-group': '#f59e0b',
     'diagram': '#ffd400',
     'entity': '#14b8a6',
-    'tech-stack': '#06b6d4'
+    'tech-stack': '#06b6d4',
+    'service': '#0ea5e9',
+    'state-machine': '#a855f7',
+    'infrastructure': '#64748b',
+    'design-tokens': '#ec4899'
 };
 
 /**
@@ -374,6 +386,90 @@ function buildTypeSpecificContent(nodeData) {
                 content += `<div class="detail-link"><b>Feature:</b> <span class="detail-chip">${escapeHtml(d.parent_feature_id)}</span></div>`;
             }
             break;
+
+        case 'api-package': {
+            content = `<div class="detail-api-pkg"><p><b>Resource:</b> ${escapeHtml(d.tag || '')}</p><p><b>Endpoints:</b> ${d.endpoint_count || 0}</p></div>`;
+            const mc = d.method_counts || {};
+            if (Object.keys(mc).length) {
+                content += `<div class="detail-section"><h4>Methods</h4><div class="detail-chip-list">${Object.entries(mc).map(([m, c]) => `<span class="method-chip method-${m.toLowerCase()}">${m}: ${c}</span>`).join(' ')}</div></div>`;
+            }
+            if (d.endpoints?.length) {
+                content += `<div class="detail-section"><h4>Endpoints (preview)</h4><ul class="detail-ep-list">`;
+                d.endpoints.slice(0, 8).forEach(ep => {
+                    content += `<li><span class="method-chip method-${(ep.method||'GET').toLowerCase()}">${ep.method}</span> <code>${escapeHtml(ep.path)}</code></li>`;
+                });
+                if (d.endpoints.length > 8) content += `<li class="detail-more">+${d.endpoints.length - 8} more...</li>`;
+                content += `</ul></div>`;
+            }
+            break;
+        }
+
+        case 'task-group': {
+            content = `<div class="detail-task-group"><p><b>Feature:</b> ${escapeHtml(d.title || d.feature_id || '')}</p><p><b>Tasks:</b> ${d.task_count || 0}</p><p><b>Total Hours:</b> ${d.total_hours || 0}h</p></div>`;
+            if (d.tasks?.length) {
+                content += `<div class="detail-section"><h4>Tasks (preview)</h4><ul>`;
+                d.tasks.slice(0, 6).forEach(t => {
+                    content += `<li><code>${escapeHtml(t.id || '')}</code> ${escapeHtml(t.title || '')} <span class="detail-chip">${t.estimated_hours || 0}h</span></li>`;
+                });
+                if (d.tasks.length > 6) content += `<li class="detail-more">+${d.tasks.length - 6} more...</li>`;
+                content += `</ul></div>`;
+            }
+            break;
+        }
+
+        case 'service': {
+            content = `<div class="detail-service">`;
+            if (d.technology) content += `<p><b>Technology:</b> <span class="detail-chip">${escapeHtml(d.technology)}</span></p>`;
+            if (d.type) content += `<p><b>Type:</b> ${escapeHtml(d.type)}</p>`;
+            if (d.ports?.length) content += `<p><b>Ports:</b> ${d.ports.join(', ')}</p>`;
+            content += `</div>`;
+            if (d.responsibilities?.length) {
+                content += `<div class="detail-section"><h4>Responsibilities</h4><ul>${d.responsibilities.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul></div>`;
+            }
+            if (d.dependencies?.length) {
+                content += `<div class="detail-section"><h4>Dependencies</h4><div class="detail-chip-list">${d.dependencies.map(dep => `<span class="detail-chip">${escapeHtml(dep)}</span>`).join('')}</div></div>`;
+            }
+            break;
+        }
+
+        case 'state-machine': {
+            content = `<div class="detail-sm"><p><b>Entity:</b> ${escapeHtml(d.entity || '')}</p><p><b>States:</b> ${d.state_count || 0}</p><p><b>Transitions:</b> ${d.transition_count || 0}</p></div>`;
+            if (d.states?.length) {
+                content += `<div class="detail-section"><h4>States</h4><div class="detail-chip-list">${d.states.map(s => `<span class="detail-chip">${escapeHtml(typeof s === 'string' ? s : s.name || s.id || '')}</span>`).join('')}</div></div>`;
+            }
+            break;
+        }
+
+        case 'infrastructure': {
+            content = `<div class="detail-infra">`;
+            if (d.architecture_style) content += `<p><b>Style:</b> ${escapeHtml(d.architecture_style)}</p>`;
+            if (d.service_count) content += `<p><b>Services:</b> ${d.service_count}</p>`;
+            const infraFlags = [];
+            if (d.has_dockerfile) infraFlags.push('Dockerfile');
+            if (d.has_k8s) infraFlags.push('Kubernetes');
+            if (d.has_ci) infraFlags.push('CI/CD');
+            if (infraFlags.length) content += `<p><b>Features:</b> ${infraFlags.join(', ')}</p>`;
+            if (d.services?.length) {
+                content += `<div class="detail-section"><h4>Services</h4><div class="detail-chip-list">${d.services.map(s => `<span class="detail-chip">${escapeHtml(s.name || s.id || '')}</span>`).join('')}</div></div>`;
+            }
+            content += `</div>`;
+            break;
+        }
+
+        case 'design-tokens': {
+            content = '<div class="detail-tokens">';
+            const colors = d.colors || {};
+            if (Object.keys(colors).length) {
+                content += `<div class="detail-section"><h4>Colors</h4><div class="detail-color-grid">`;
+                Object.entries(colors).forEach(([name, val]) => {
+                    const hex = typeof val === 'string' ? val : val.value || '';
+                    content += `<div class="detail-color-swatch"><span style="background:${hex};width:16px;height:16px;display:inline-block;border-radius:3px;border:1px solid rgba(0,0,0,0.2);"></span> <code>${escapeHtml(name)}</code></div>`;
+                });
+                content += `</div></div>`;
+            }
+            content += '</div>';
+            break;
+        }
     }
 
     return content;
@@ -407,13 +503,20 @@ export function addNodeClickHandler(nodeElement, nodeId) {
         }
     });
 
-    // Double-click opens full modal for screen nodes (wireframe view)
+    // Double-click opens full modal for expandable node types
     nodeElement.addEventListener('dblclick', (e) => {
         const nodeData = state.nodes[nodeId];
-        if (nodeData && nodeData.type === 'screen' && typeof window.openScreenWireframeModal === 'function') {
-            e.preventDefault();
-            e.stopPropagation();
+        if (!nodeData) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (nodeData.type === 'screen' && typeof window.openScreenWireframeModal === 'function') {
             window.openScreenWireframeModal(nodeId);
+        } else if (nodeData.type === 'api-package' && typeof window.openApiPackageModal === 'function') {
+            window.openApiPackageModal(nodeId);
+        } else if (nodeData.type === 'task-group' && typeof window.openTaskGroupModal === 'function') {
+            window.openTaskGroupModal(nodeId);
+        } else if (nodeData.type === 'state-machine' && typeof window.openStateMachineModal === 'function') {
+            window.openStateMachineModal(nodeId);
         }
     });
 }

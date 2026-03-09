@@ -282,6 +282,18 @@ function renderModalContent(config, modalRef) {
             debugLog('Rendering tasks...');
             renderTasks(body, config);
             break;
+        case 'api-package':
+            debugLog('Rendering api-package...');
+            renderApiPackage(body, tabs, config);
+            break;
+        case 'task-group':
+            debugLog('Rendering task-group...');
+            renderTaskGroup(body, config);
+            break;
+        case 'state-machine':
+            debugLog('Rendering state-machine...');
+            renderStateMachine(body, config);
+            break;
         case 'single-diagram':
             debugLog('Rendering single-diagram...', { diagramId: config.diagramId });
             renderSingleDiagram(body, config);
@@ -1979,4 +1991,195 @@ if (typeof window !== 'undefined') {
     window.openUserStoriesModal = openUserStoriesModal;
     window.openTasksModal = openTasksModal;
     window.openScreenWireframeModal = openScreenWireframeModal;
+    window.openApiPackageModal = openApiPackageModal;
+    window.openTaskGroupModal = openTaskGroupModal;
+    window.openStateMachineModal = openStateMachineModal;
+}
+
+// ============================================
+// API Package Modal
+// ============================================
+
+export function openApiPackageModal(nodeId) {
+    const node = state.nodes[nodeId];
+    if (!node || !node.data) return;
+    const d = node.data;
+    openModal({
+        type: 'api-package',
+        title: `API: ${d.tag} (${d.endpoint_count} endpoints)`,
+        size: 'xl',
+        data: d
+    });
+}
+
+function renderApiPackage(body, tabs, config) {
+    const d = config.data || {};
+    const endpoints = d.endpoints || [];
+    const mc = d.method_counts || {};
+
+    // Method filter tabs
+    const methods = Object.keys(mc);
+    if (tabs && methods.length > 1) {
+        let tabHtml = `<button class="modal-tab active" data-filter="all">All (${endpoints.length})</button>`;
+        methods.forEach(m => {
+            tabHtml += `<button class="modal-tab" data-filter="${m}">${m} (${mc[m]})</button>`;
+        });
+        tabs.innerHTML = tabHtml;
+    }
+
+    // Summary bar
+    const summaryHtml = `<div class="api-pkg-summary">
+        ${methods.map(m => `<span class="method-chip method-${m.toLowerCase()}">${m}: ${mc[m]}</span>`).join(' ')}
+    </div>`;
+
+    // Search
+    const searchHtml = `<div class="api-pkg-search">
+        <input type="text" id="api-pkg-filter" placeholder="Filter by path or description..." class="modal-search-input" />
+    </div>`;
+
+    // Table
+    let tableHtml = `<div class="api-pkg-table-wrap"><table class="api-pkg-table" id="api-pkg-table">
+        <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+        <tbody>`;
+    endpoints.forEach(ep => {
+        const m = (ep.method || 'GET').toUpperCase();
+        tableHtml += `<tr data-method="${m}">
+            <td><span class="method-chip method-${m.toLowerCase()}">${escapeHtml(m)}</span></td>
+            <td class="api-path"><code>${escapeHtml(ep.path || '')}</code></td>
+            <td>${escapeHtml(ep.description || ep.summary || '')}</td>
+        </tr>`;
+    });
+    tableHtml += `</tbody></table></div>`;
+
+    body.innerHTML = summaryHtml + searchHtml + tableHtml;
+
+    // Filter functionality
+    const filterInput = body.querySelector('#api-pkg-filter');
+    const table = body.querySelector('#api-pkg-table');
+    if (filterInput && table) {
+        addModalEventListener(filterInput, 'input', () => {
+            const q = filterInput.value.toLowerCase();
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            });
+        });
+    }
+
+    // Tab filtering
+    if (tabs) {
+        tabs.querySelectorAll('.modal-tab').forEach(tab => {
+            addModalEventListener(tab, 'click', () => {
+                tabs.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const filter = tab.dataset.filter;
+                if (table) {
+                    table.querySelectorAll('tbody tr').forEach(row => {
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = row.dataset.method === filter ? '' : 'none';
+                        }
+                    });
+                }
+            });
+        });
+    }
+}
+
+// ============================================
+// Task Group Modal
+// ============================================
+
+export function openTaskGroupModal(nodeId) {
+    const node = state.nodes[nodeId];
+    if (!node || !node.data) return;
+    const d = node.data;
+    openModal({
+        type: 'task-group',
+        title: `Tasks: ${d.title} (${d.task_count} tasks, ${d.total_hours}h)`,
+        size: 'large',
+        data: d
+    });
+}
+
+function renderTaskGroup(body, config) {
+    const d = config.data || {};
+    const tasks = d.tasks || [];
+
+    let tableHtml = `<table class="api-pkg-table">
+        <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Hours</th><th>Complexity</th></tr></thead>
+        <tbody>`;
+    tasks.forEach(t => {
+        const typeClass = (t.task_type || '').toLowerCase();
+        tableHtml += `<tr>
+            <td><code>${escapeHtml(t.id || '')}</code></td>
+            <td>${escapeHtml(t.title || '')}</td>
+            <td><span class="task-type-chip task-${typeClass}">${escapeHtml(t.task_type || 'N/A')}</span></td>
+            <td>${t.estimated_hours || '-'}</td>
+            <td>${escapeHtml(t.complexity || '-')}</td>
+        </tr>`;
+    });
+    tableHtml += `</tbody></table>`;
+
+    body.innerHTML = tableHtml;
+}
+
+// ============================================
+// State Machine Modal
+// ============================================
+
+export function openStateMachineModal(nodeId) {
+    const node = state.nodes[nodeId];
+    if (!node || !node.data) return;
+    const d = node.data;
+    openModal({
+        type: 'state-machine',
+        title: `State Machine: ${d.name || d.entity}`,
+        size: 'xl',
+        data: d
+    });
+}
+
+function renderStateMachine(body, config) {
+    const d = config.data || {};
+    const transitions = d.transitions || [];
+
+    // Mermaid diagram
+    let mermaidHtml = '';
+    if (d.mermaid_code) {
+        mermaidHtml = `<div class="sm-diagram" id="sm-mermaid-container">
+            <pre class="mermaid">${escapeHtml(d.mermaid_code)}</pre>
+        </div>`;
+    }
+
+    // Transition table
+    let tableHtml = `<div class="sm-transitions"><h3>Transitions (${transitions.length})</h3>
+        <table class="api-pkg-table">
+        <thead><tr><th>From</th><th>To</th><th>Trigger</th><th>Guard</th><th>Action</th></tr></thead>
+        <tbody>`;
+    transitions.forEach(tr => {
+        tableHtml += `<tr>
+            <td><code>${escapeHtml(tr.from_state || tr.from || '')}</code></td>
+            <td><code>${escapeHtml(tr.to_state || tr.to || '')}</code></td>
+            <td>${escapeHtml(tr.trigger || tr.event || '')}</td>
+            <td>${escapeHtml(tr.guard || '')}</td>
+            <td>${escapeHtml(tr.action || '')}</td>
+        </tr>`;
+    });
+    tableHtml += `</tbody></table></div>`;
+
+    body.innerHTML = mermaidHtml + tableHtml;
+
+    // Render mermaid if present
+    if (d.mermaid_code && typeof mermaid !== 'undefined') {
+        try {
+            const container = body.querySelector('#sm-mermaid-container');
+            if (container) {
+                mermaid.run({ nodes: container.querySelectorAll('.mermaid') });
+            }
+        } catch (e) {
+            debugWarn('Mermaid render failed for state machine:', e);
+        }
+    }
 }

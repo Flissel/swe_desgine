@@ -10,6 +10,62 @@ import { addConnection, updateConnections } from './connections.js';
 import { findNodeByPartialId } from './nodeFactory.js';
 
 // ============================================
+// API Package Helpers
+// ============================================
+
+const COMMON_API_PREFIXES = new Set(['api', 'v1', 'v2', 'v3', 'rest', 'graphql']);
+
+/**
+ * Extract the resource name from an API path, skipping common prefixes.
+ */
+function extractResource(path) {
+    const segments = path.replace(/^ws:\/\//, '/').split('/').filter(s => s && !s.startsWith('{'));
+    // Skip common API prefixes to get the actual resource name
+    while (segments.length && COMMON_API_PREFIXES.has(segments[0].toLowerCase())) {
+        segments.shift();
+    }
+    const resource = segments[0] || 'root';
+    if (resource.startsWith('ws:')) return 'websocket';
+    return resource;
+}
+
+/**
+ * Find the canvas node for an API endpoint.
+ * Checks for individual 'api' nodes first, then falls back to 'api-package' nodes.
+ * Returns the nodeId string or null.
+ */
+function findApiNode(ep) {
+    const epId = ep.id || ep.path;
+    // Try individual node first
+    let node = state.nodes[epId] || findNodeByPartialId('api', epId);
+    if (node) return node.element?.dataset?.nodeId || epId;
+
+    // Fall back to package node: derive resource from path
+    const resource = extractResource(ep.path || '');
+    const pkgId = `API-PKG-${resource.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+    node = state.nodes[pkgId];
+    if (node) return pkgId;
+
+    return null;
+}
+
+/**
+ * Find package node for an endpoint path string.
+ */
+function findApiNodeByPath(path) {
+    const resource = extractResource(path);
+    const pkgId = `API-PKG-${resource.toUpperCase().replace(/[^A-Z0-9]/g, '_')}`;
+    const node = state.nodes[pkgId];
+    if (node) return pkgId;
+
+    // Try individual node
+    const indNode = findNodeByPartialId('api', path);
+    if (indNode) return indNode.element?.dataset?.nodeId || path;
+
+    return null;
+}
+
+// ============================================
 // Traceability Links
 // ============================================
 
@@ -610,12 +666,11 @@ export function applyTestStoryLinks(tests, userStories) {
 export function applyApiRequirementLinks(apiEndpoints) {
     if (!apiEndpoints || apiEndpoints.length === 0) return;
 
+    const linked = new Set();
     let linkCount = 0;
     apiEndpoints.forEach(ep => {
-        const epId = ep.id || ep.path;
-        const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
-        if (!epNode) return;
-        const epNodeId = epNode.element?.dataset?.nodeId || epId;
+        const epNodeId = findApiNode(ep);
+        if (!epNodeId) return;
 
         // Primary: parent_requirement_id
         const parentReq = ep.parent_requirement_id || ep.requirement_id;
@@ -623,8 +678,12 @@ export function applyApiRequirementLinks(apiEndpoints) {
             const reqNode = state.nodes[parentReq] || findNodeByPartialId('requirement', parentReq);
             if (reqNode) {
                 const reqNodeId = reqNode.element?.dataset?.nodeId || parentReq;
-                addConnection(reqNodeId, epNodeId);
-                linkCount++;
+                const key = `${reqNodeId}->${epNodeId}`;
+                if (!linked.has(key)) {
+                    addConnection(reqNodeId, epNodeId);
+                    linked.add(key);
+                    linkCount++;
+                }
             }
         }
 
@@ -634,8 +693,12 @@ export function applyApiRequirementLinks(apiEndpoints) {
             const reqNode = state.nodes[reqId] || findNodeByPartialId('requirement', reqId);
             if (reqNode) {
                 const reqNodeId = reqNode.element?.dataset?.nodeId || reqId;
-                addConnection(reqNodeId, epNodeId);
-                linkCount++;
+                const key = `${reqNodeId}->${epNodeId}`;
+                if (!linked.has(key)) {
+                    addConnection(reqNodeId, epNodeId);
+                    linked.add(key);
+                    linkCount++;
+                }
             }
         });
     });
@@ -652,13 +715,7 @@ export function applyApiRequirementLinks(apiEndpoints) {
 export function applyApiScreenLinks(apiEndpoints, screens) {
     if (!apiEndpoints || !screens) return;
 
-    // Build path lookup
-    const pathToEpId = {};
-    apiEndpoints.forEach(ep => {
-        const path = ep.path || '';
-        if (path) pathToEpId[path.toLowerCase()] = ep.id || ep.path;
-    });
-
+    const linked = new Set();
     let linkCount = 0;
     screens.forEach(screen => {
         const screenId = screen.id;
@@ -668,14 +725,13 @@ export function applyApiScreenLinks(apiEndpoints, screens) {
 
         const dataReqs = screen.data_requirements || [];
         dataReqs.forEach(apiRef => {
-            // apiRef is like "GET /api/users" or "/api/users"
             const pathPart = apiRef.replace(/^(GET|POST|PUT|DELETE|PATCH|WS)\s+/i, '').trim().toLowerCase();
-            const epId = pathToEpId[pathPart];
-            if (epId) {
-                const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
-                if (epNode) {
-                    const epNodeId = epNode.element?.dataset?.nodeId || epId;
-                    addConnection(epNodeId, screenNodeId);
+            const apiNodeId = findApiNodeByPath(pathPart);
+            if (apiNodeId) {
+                const key = `${apiNodeId}->${screenNodeId}`;
+                if (!linked.has(key)) {
+                    addConnection(apiNodeId, screenNodeId);
+                    linked.add(key);
                     linkCount++;
                 }
             }
@@ -700,30 +756,31 @@ export function applyEntityApiLinks(entities, apiEndpoints) {
         const name = ent.name || ent.id || '';
         if (name) {
             entityMap[name.toLowerCase()] = ent.id || ent.name;
-            // Also register singular form (strip trailing 's')
             if (name.toLowerCase().endsWith('s')) {
                 entityMap[name.toLowerCase().slice(0, -1)] = ent.id || ent.name;
             }
         }
     });
 
+    const linked = new Set();
     let linkCount = 0;
     apiEndpoints.forEach(ep => {
         const path = ep.path || '';
-        // Extract resource name from path: /api/users/{id} -> "users", "user"
         const segments = path.split('/').filter(s => s && !s.startsWith('{'));
         segments.forEach(seg => {
             const segLower = seg.toLowerCase();
             const entId = entityMap[segLower] || entityMap[segLower.replace(/s$/, '')];
             if (entId) {
                 const entNode = state.nodes[entId] || findNodeByPartialId('entity', entId);
-                const epId = ep.id || ep.path;
-                const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
-                if (entNode && epNode) {
+                const epNodeId = findApiNode(ep);
+                if (entNode && epNodeId) {
                     const entNodeId = entNode.element?.dataset?.nodeId || entId;
-                    const epNodeId = epNode.element?.dataset?.nodeId || epId;
-                    addConnection(entNodeId, epNodeId);
-                    linkCount++;
+                    const key = `${entNodeId}->${epNodeId}`;
+                    if (!linked.has(key)) {
+                        addConnection(entNodeId, epNodeId);
+                        linked.add(key);
+                        linkCount++;
+                    }
                 }
             }
         });
@@ -793,13 +850,7 @@ export function applyScreenEntityLinks(screens, entities) {
 export function applyTestApiLinks(tests, apiEndpoints) {
     if (!tests || !apiEndpoints) return;
 
-    const pathToEpId = {};
-    apiEndpoints.forEach(ep => {
-        const path = ep.path || '';
-        if (path) pathToEpId[path.toLowerCase()] = ep.id || ep.path;
-    });
-    const apiPaths = Object.keys(pathToEpId);
-
+    const linked = new Set();
     let linkCount = 0;
     tests.forEach(test => {
         const testId = test.id;
@@ -807,17 +858,19 @@ export function applyTestApiLinks(tests, apiEndpoints) {
         if (!testNode) return;
         const testNodeId = testNode.element?.dataset?.nodeId || testId;
 
-        // Search in gherkin content or title for API paths
         const content = (test.gherkin_content || test.title || '').toLowerCase();
 
-        apiPaths.forEach(path => {
-            if (content.includes(path)) {
-                const epId = pathToEpId[path];
-                const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
-                if (epNode) {
-                    const epNodeId = epNode.element?.dataset?.nodeId || epId;
-                    addConnection(testNodeId, epNodeId);
-                    linkCount++;
+        apiEndpoints.forEach(ep => {
+            const path = (ep.path || '').toLowerCase();
+            if (path && content.includes(path)) {
+                const apiNodeId = findApiNode(ep);
+                if (apiNodeId) {
+                    const key = `${testNodeId}->${apiNodeId}`;
+                    if (!linked.has(key)) {
+                        addConnection(testNodeId, apiNodeId);
+                        linked.add(key);
+                        linkCount++;
+                    }
                 }
             }
         });
@@ -916,15 +969,11 @@ export function applyComponentApiLinks(components, screens, apiEndpoints) {
             const dataReqs = screen.data_requirements || [];
             dataReqs.forEach(apiRef => {
                 const pathPart = apiRef.replace(/^(GET|POST|PUT|DELETE|PATCH|WS)\s+/i, '').trim().toLowerCase();
-                const epId = pathToEpId[pathPart];
-                if (epId && !linkedApis.has(epId)) {
-                    linkedApis.add(epId);
-                    const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
-                    if (epNode) {
-                        const epNodeId = epNode.element?.dataset?.nodeId || epId;
-                        addConnection(compNodeId, epNodeId);
-                        linkCount++;
-                    }
+                const apiNodeId = findApiNodeByPath(pathPart);
+                if (apiNodeId && !linkedApis.has(apiNodeId)) {
+                    linkedApis.add(apiNodeId);
+                    addConnection(compNodeId, apiNodeId);
+                    linkCount++;
                 }
             });
         });
@@ -942,7 +991,6 @@ export function applyComponentApiLinks(components, screens, apiEndpoints) {
 export function applyApiEntityLinks(apiEndpoints, entities) {
     if (!apiEndpoints || !entities) return;
 
-    // Build entity name lookup
     const entityMap = {};
     entities.forEach(ent => {
         const name = ent.name || ent.id || '';
@@ -954,13 +1002,12 @@ export function applyApiEntityLinks(apiEndpoints, entities) {
         }
     });
 
+    const linked = new Set();
     let linkCount = 0;
     apiEndpoints.forEach(ep => {
         const path = ep.path || '';
-        const epId = ep.id || ep.path;
-        const epNode = state.nodes[epId] || findNodeByPartialId('api', epId);
-        if (!epNode) return;
-        const epNodeId = epNode.element?.dataset?.nodeId || epId;
+        const epNodeId = findApiNode(ep);
+        if (!epNodeId) return;
 
         const segments = path.split('/').filter(s => s && !s.startsWith('{'));
         segments.forEach(seg => {
@@ -970,8 +1017,12 @@ export function applyApiEntityLinks(apiEndpoints, entities) {
                 const entNode = state.nodes[entId] || findNodeByPartialId('entity', entId);
                 if (entNode) {
                     const entNodeId = entNode.element?.dataset?.nodeId || entId;
-                    addConnection(epNodeId, entNodeId);
-                    linkCount++;
+                    const key = `${epNodeId}->${entNodeId}`;
+                    if (!linked.has(key)) {
+                        addConnection(epNodeId, entNodeId);
+                        linked.add(key);
+                        linkCount++;
+                    }
                 }
             }
         });
@@ -1128,7 +1179,7 @@ export function applyTechComponentLinks(techStack, components) {
     if (!techStack || !components) return;
 
     // Find tech-stack node (could be single global or by ID)
-    const techId = techStack.id || 'tech-stack';
+    const techId = techStack.id || 'TECH-STACK';
     const techNode = state.nodes[techId] || findNodeByPartialId('tech-stack', techId);
     if (!techNode) return;
     const techNodeId = techNode.element?.dataset?.nodeId || techId;

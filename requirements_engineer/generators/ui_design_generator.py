@@ -210,7 +210,11 @@ Erstelle UI-Komponenten im folgenden JSON-Format:
     ]
 }}
 
-Erstelle 8-12 wichtige Komponenten die fuer die Screens benoetigt werden.
+Erstelle 20-30 wichtige Komponenten die fuer die Screens benoetigt werden.
+- Fuer Messaging/Chat-Apps MUSS enthalten: ChatBubble, MessageInput (mit Attachment, Emoji, Voice), VoiceRecorder, MediaViewer, EmojiPicker, ContactCard, StatusIndicator, TypingIndicator, ReadReceipts, CallControls, GroupAvatar, LinkPreview, ReactionPicker, ForwardDialog, SearchBar (mit Filtern)
+- Jede Komponente MUSS States definieren: default, hover, active, disabled, loading, error
+- Jede Komponente MUSS Accessibility haben: ARIA roles, labels, keyboard navigation
+- Jede Komponente MUSS responsive Varianten haben: mobile, tablet, desktop
 Antworte NUR mit dem JSON-Objekt."""
 
     SCREEN_PROMPT = """Du bist ein UI Designer. Erstelle Screen-Spezifikationen basierend auf den User Stories und IA.
@@ -379,16 +383,18 @@ Antworte NUR mit dem JSON-Objekt."""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="ui_design_generator",
                 model=self.model,
                 response=response,
                 latency_ms=latency_ms,
-                metadata={"method": "generate_design_tokens"}
+                metadata={"method": "generate_design_tokens"},
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON
             if "```json" in content:
@@ -450,16 +456,18 @@ Antworte NUR mit dem JSON-Objekt."""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="ui_design_generator",
                 model=self.model,
                 response=response,
                 latency_ms=latency_ms,
-                metadata={"method": "generate_components"}
+                metadata={"method": "generate_components"},
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON
             if "```json" in content:
@@ -570,16 +578,18 @@ Antworte NUR mit dem JSON-Objekt."""
                 )
                 latency_ms = int((time.time() - start_time) * 1000)
 
+                content = response.choices[0].message.content.strip()
+
                 # Log the LLM call
                 log_llm_call(
                     component="ui_design_generator",
                     model=self.screen_model,
                     response=response,
                     latency_ms=latency_ms,
-                    metadata={"method": "generate_screen", "attempt": attempt + 1}
+                    metadata={"method": "generate_screen", "attempt": attempt + 1},
+                    user_message=prompt,
+                    response_text=content,
                 )
-
-                content = response.choices[0].message.content.strip()
 
                 # Extract JSON
                 if "```json" in content:
@@ -605,7 +615,7 @@ Antworte NUR mit dem JSON-Objekt."""
                     components=data.get("components", []),
                     component_layout=data.get("component_layout", []),
                     data_requirements=data.get("data_requirements", []),
-                    parent_user_story=getattr(user_story, 'id', user_story.get('id', '')) if hasattr(user_story, 'id') or isinstance(user_story, dict) else "",
+                    parent_user_story=getattr(user_story, 'id', '') if not isinstance(user_story, dict) else user_story.get('id', ''),
                     wireframe_mermaid=self._generate_wireframe(data.get("name", "Screen"), data.get("wireframe_description", "")),
                     wireframe_ascii=ascii_wireframe,
                     # Gap #11: State bindings

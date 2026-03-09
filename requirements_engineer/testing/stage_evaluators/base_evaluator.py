@@ -31,7 +31,7 @@ from pathlib import Path
 import time
 import logging
 
-from ai_scientist.training.schemas import StageEvaluationResult, ErrorContext
+from requirements_engineer.training.schemas import StageEvaluationResult, ErrorContext
 
 logger = logging.getLogger(__name__)
 

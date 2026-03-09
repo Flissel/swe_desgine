@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from ai_scientist.treesearch.backend import query
 from ai_scientist.treesearch.backend.utils import FunctionSpec
-from ai_scientist.tools.mermaid_output_handler import MermaidOutputHandler
+from requirements_engineer.tools.mermaid_output_handler import MermaidOutputHandler
 from ..prompts.diagram_prompts import (
     DIAGRAM_SELECTION_PROMPT,
     DIAGRAM_SELECTION_SYSTEM_PROMPT
@@ -812,8 +812,10 @@ class REAgentManager:
         print(f"  Created: final_journal.json")
 
 
-def load_config(config_path: str = "re_config.yaml") -> DictConfig:
+def load_config(config_path: str = None) -> DictConfig:
     """Load configuration from YAML file."""
+    if config_path is None:
+        config_path = str(Path(__file__).parent.parent / "re_config.yaml")
     return OmegaConf.load(config_path)
 
 

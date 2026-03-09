@@ -21,13 +21,23 @@ const wizardState = {
         autonomy_level: 'medium',
         target_users: []
     },
+    context: {
+        summary: '',
+        business: '',
+        technical: '',
+        user: ''
+    },
+    stakeholders: [],
     files: [],
     requirements: [],
     constraints: {
         technical: [],
         regulatory: [],
-        timeline: ''
-    }
+        budget: '',
+        timeline: '',
+        team_size: ''
+    },
+    workDivision: 'per_feature'
 };
 
 const validationState = {
@@ -80,9 +90,12 @@ export function initWizard(containerEl) {
 export function resetWizard() {
     wizardState.currentStep = 1;
     wizardState.project = { name: '', description: '', domain: 'custom', autonomy_level: 'medium', target_users: [] };
+    wizardState.context = { summary: '', business: '', technical: '', user: '' };
+    wizardState.stakeholders = [];
     wizardState.files = [];
     wizardState.requirements = [];
-    wizardState.constraints = { technical: [], regulatory: [], timeline: '' };
+    wizardState.constraints = { technical: [], regulatory: [], budget: '', timeline: '', team_size: '' };
+    wizardState.workDivision = 'per_feature';
     validationState.mode = 'AUTO';
     validationState.isRunning = false;
     validationState.results = [];
@@ -164,6 +177,24 @@ function buildWizardHTML() {
                 <div class="tag-input" id="wiz-target-users-input">
                     <input type="text" placeholder="Eingabe + Enter..." id="wiz-target-user-text">
                 </div>
+            </div>
+            <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+            <h3 style="margin-bottom: 1rem;">Kontext (optional)</h3>
+            <div class="form-group">
+                <label for="wiz-context-summary">Zusammenfassung</label>
+                <textarea id="wiz-context-summary" rows="2" placeholder="Kurze Zusammenfassung des Projektkontexts..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="wiz-context-business">Business-Kontext</label>
+                <input type="text" id="wiz-context-business" placeholder="z.B. Online retail, B2C market in DACH region">
+            </div>
+            <div class="form-group">
+                <label for="wiz-context-technical">Technischer Kontext</label>
+                <input type="text" id="wiz-context-technical" placeholder="z.B. Cloud-native, microservices, REST APIs">
+            </div>
+            <div class="form-group">
+                <label for="wiz-context-user">Nutzer-Kontext</label>
+                <input type="text" id="wiz-context-user" placeholder="z.B. 10k+ daily active users, internal admin staff">
             </div>
             <div class="wizard-nav">
                 <div></div>
@@ -286,7 +317,7 @@ function buildWizardHTML() {
 
         <!-- Step 5: Constraints -->
         <div class="wizard-step" data-step="5">
-            <h2>Constraints</h2>
+            <h2>Constraints & Rahmenbedingungen</h2>
             <div class="form-group">
                 <label>Technische Constraints</label>
                 <div class="tag-input" id="wiz-tech-constraints-input">
@@ -300,8 +331,25 @@ function buildWizardHTML() {
                 </div>
             </div>
             <div class="form-group">
+                <label for="wiz-budget">Budget</label>
+                <input type="text" id="wiz-budget" placeholder="z.B. 200k EUR">
+            </div>
+            <div class="form-group">
                 <label for="wiz-timeline">Timeline</label>
                 <input type="text" id="wiz-timeline" placeholder="z.B. 6 Monate MVP">
+            </div>
+            <div class="form-group">
+                <label for="wiz-team-size">Team-Groesse</label>
+                <input type="text" id="wiz-team-size" placeholder="z.B. 5 Entwickler, 1 QA, 1 DevOps">
+            </div>
+            <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+            <div class="form-group">
+                <label for="wiz-work-division">Arbeitsaufteilung</label>
+                <select id="wiz-work-division">
+                    <option value="per_feature" selected>Per Feature</option>
+                    <option value="per_service">Per Service (Microservices)</option>
+                    <option value="per_application">Per Application</option>
+                </select>
             </div>
             <div class="wizard-nav">
                 <button class="wiz-btn wiz-btn-secondary" data-action="prev">&larr; Zurueck</button>
@@ -427,6 +475,11 @@ function showStep(step) {
     wizardState.currentStep = step;
 
     if (step === 6) generateJSONPreview();
+
+    // Trigger auto-enrichment for steps that support it
+    if (step === 1 || step === 3 || step === 5) {
+        triggerAutoEnrichment(step);
+    }
 }
 
 function nextStep() {
@@ -442,6 +495,134 @@ function prevStep() {
     }
 }
 
+// ============================================
+// Auto-Enrichment (AutoGen Agent Teams)
+// ============================================
+
+let _enrichmentRunning = false;
+
+async function triggerAutoEnrichment(step) {
+    // Only trigger if we have enough data
+    if (step === 1 && !wizardState.project.name && !wizardState.project.description) return;
+    if (step === 3 && wizardState.requirements.length === 0) return;
+    if (step === 5 && wizardState.requirements.length === 0) return;
+
+    // Debounce - don't run if already running
+    if (_enrichmentRunning) return;
+    _enrichmentRunning = true;
+
+    // Save current step data first
+    saveCurrentStep();
+
+    const body = { step };
+    if (step === 1) {
+        body.project_name = wizardState.project.name;
+        body.description = wizardState.project.description;
+        body.domain = wizardState.project.domain;
+        body.target_users = wizardState.project.target_users;
+    } else if (step === 3) {
+        body.requirements = wizardState.requirements.map(r =>
+            typeof r === 'string' ? r : (r.title || r.text || r.description || '')
+        );
+        body.description = wizardState.project.description;
+        body.domain = wizardState.project.domain;
+    } else if (step === 5) {
+        body.requirements = wizardState.requirements.map(r =>
+            typeof r === 'string' ? r : (r.title || r.text || r.description || '')
+        );
+        body.constraints = wizardState.constraints;
+        body.description = wizardState.project.description;
+    }
+
+    try {
+        const resp = await fetch('/api/wizard/auto-enrich', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        const result = await resp.json();
+        if (result.success) {
+            applyAutoSuggestions(step, result.auto_applied || []);
+        }
+        if (result.errors && result.errors.length > 0) {
+            console.warn('[Wizard] Enrichment errors:', result.errors);
+        }
+    } catch (err) {
+        console.warn('[Wizard] Auto-enrich failed:', err);
+    } finally {
+        _enrichmentRunning = false;
+    }
+}
+
+function applyAutoSuggestions(step, autoApplied) {
+    for (const suggestion of autoApplied) {
+        const content = suggestion.content || {};
+        switch (suggestion.type) {
+            case 'stakeholder':
+                if (content.role || content.name) {
+                    const exists = wizardState.stakeholders.some(s =>
+                        (s.role || s.name) === (content.role || content.name)
+                    );
+                    if (!exists) {
+                        wizardState.stakeholders.push(content);
+                    }
+                }
+                break;
+            case 'context':
+                // Merge context fields (don't overwrite user input)
+                if (content.summary && !wizardState.context.summary) {
+                    wizardState.context.summary = content.summary;
+                    const el = q('#wiz-context-summary');
+                    if (el) el.value = content.summary;
+                }
+                if (content.business && !wizardState.context.business) {
+                    wizardState.context.business = content.business;
+                    const el = q('#wiz-context-business');
+                    if (el) el.value = content.business;
+                }
+                if (content.technical && !wizardState.context.technical) {
+                    wizardState.context.technical = content.technical;
+                    const el = q('#wiz-context-technical');
+                    if (el) el.value = content.technical;
+                }
+                if (content.user && !wizardState.context.user) {
+                    wizardState.context.user = content.user;
+                    const el = q('#wiz-context-user');
+                    if (el) el.value = content.user;
+                }
+                break;
+            case 'requirement':
+                if (content.title || content.text) {
+                    const title = content.title || content.text;
+                    const exists = wizardState.requirements.some(r =>
+                        (typeof r === 'string' ? r : (r.title || '')) === title
+                    );
+                    if (!exists) {
+                        wizardState.requirements.push({
+                            title: title,
+                            description: content.description || title,
+                            priority: content.priority || 'should',
+                            category: content.category || 'functional',
+                            _auto_generated: true,
+                        });
+                    }
+                }
+                break;
+            case 'constraint':
+                if (content.description || content.title) {
+                    const cat = content.category || 'technical';
+                    const text = content.description || content.title;
+                    if (Array.isArray(wizardState.constraints[cat])) {
+                        if (!wizardState.constraints[cat].includes(text)) {
+                            wizardState.constraints[cat].push(text);
+                        }
+                    }
+                }
+                break;
+        }
+    }
+}
+
 function saveCurrentStep() {
     switch (wizardState.currentStep) {
         case 1:
@@ -449,9 +630,16 @@ function saveCurrentStep() {
             wizardState.project.description = q('#wiz-project-description')?.value || '';
             wizardState.project.domain = q('#wiz-project-domain')?.value || 'custom';
             wizardState.project.autonomy_level = q('#wiz-autonomy-level')?.value || 'medium';
+            wizardState.context.summary = q('#wiz-context-summary')?.value || '';
+            wizardState.context.business = q('#wiz-context-business')?.value || '';
+            wizardState.context.technical = q('#wiz-context-technical')?.value || '';
+            wizardState.context.user = q('#wiz-context-user')?.value || '';
             break;
         case 5:
+            wizardState.constraints.budget = q('#wiz-budget')?.value || '';
             wizardState.constraints.timeline = q('#wiz-timeline')?.value || '';
+            wizardState.constraints.team_size = q('#wiz-team-size')?.value || '';
+            wizardState.workDivision = q('#wiz-work-division')?.value || 'per_feature';
             break;
     }
 }
@@ -670,24 +858,80 @@ function generateJSONPreview() {
 }
 
 function buildJSON() {
-    return {
-        project: {
-            name: wizardState.project.name,
-            version: '1.0.0',
-            description: wizardState.project.description,
-            domain: wizardState.project.domain,
-            autonomy_level: wizardState.project.autonomy_level,
-            target_users: wizardState.project.target_users
-        },
-        requirements: wizardState.requirements,
-        constraints: {
-            technical: wizardState.constraints.technical,
-            regulatory: wizardState.constraints.regulatory,
-            timeline: wizardState.constraints.timeline
-        },
-        agents: [],
-        integrations: []
+    // Build Context object (use description as summary fallback)
+    const context = {};
+    const summary = wizardState.context.summary || wizardState.project.description;
+    if (summary) context.summary = summary;
+    if (wizardState.context.business) context.business = wizardState.context.business;
+    if (wizardState.project.domain) context.domain = wizardState.project.domain;
+    if (wizardState.context.technical) context.technical = wizardState.context.technical;
+    if (wizardState.context.user) context.user = wizardState.context.user;
+
+    // Build Initial Requirements as string array (RE-System format)
+    const initialRequirements = wizardState.requirements.map(r => {
+        if (typeof r === 'string') return r;
+        // Requirement objects: combine title + description
+        const title = r.title || r.name || '';
+        const desc = r.description || '';
+        return desc ? `${title}: ${desc}` : title;
+    }).filter(r => r.length > 0);
+
+    // Build Constraints object
+    const constraints = {};
+    if (wizardState.constraints.technical.length > 0) {
+        constraints.technical = wizardState.constraints.technical;
+    }
+    if (wizardState.constraints.regulatory.length > 0) {
+        constraints.regulatory = wizardState.constraints.regulatory;
+    }
+    if (wizardState.constraints.budget) constraints.budget = wizardState.constraints.budget;
+    if (wizardState.constraints.timeline) constraints.timeline = wizardState.constraints.timeline;
+    if (wizardState.constraints.team_size) constraints.team_size = wizardState.constraints.team_size;
+
+    // Build Stakeholders from target_users
+    const stakeholders = wizardState.stakeholders.length > 0
+        ? wizardState.stakeholders
+        : wizardState.project.target_users.map(user => ({
+            role: "End User",
+            persona: user,
+            concerns: [],
+            goals: []
+        }));
+
+    // RE-System compatible format (matches sample_project.json)
+    const output = {
+        Name: (wizardState.project.name || 'unnamed_project').replace(/\s+/g, '_').toLowerCase(),
+        Title: wizardState.project.name || 'Unnamed Project',
+        Domain: wizardState.project.domain || 'custom',
+        Context: context,
+        Stakeholders: stakeholders,
+        "Initial Requirements": initialRequirements,
+        Constraints: constraints,
+        "Work Division": wizardState.workDivision || 'per_feature',
+        "Enterprise Options": {
+            generate_user_stories: true,
+            generate_api_spec: true,
+            generate_data_dictionary: true,
+            generate_gherkin: true,
+            enable_self_critique: true,
+            max_passes: 5,
+            output_format: "markdown"
+        }
     };
+
+    // Also keep _imported_requirements for pre-parsed requirement objects
+    if (wizardState.requirements.length > 0 && typeof wizardState.requirements[0] === 'object') {
+        output._imported_requirements = wizardState.requirements.map((r, i) => ({
+            requirement_id: r.id || `REQ-${String(i + 1).padStart(3, '0')}`,
+            title: r.title || r.name || `Requirement ${i + 1}`,
+            description: r.description || '',
+            type: r.type || 'functional',
+            priority: r.priority || 'should',
+            source: 'wizard'
+        }));
+    }
+
+    return output;
 }
 
 function downloadJSON() {
@@ -711,31 +955,60 @@ async function startAnalysis() {
     const json = buildJSON();
 
     try {
+        // Step 1: Save JSON
         const response = await fetch('/api/wizard/generate-json', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                ...json.project,
-                requirements: json.requirements,
-                technical_constraints: json.constraints.technical,
-                regulatory_constraints: json.constraints.regulatory,
-                timeline: json.constraints.timeline,
+                ...json,
                 save_path: true
             })
         });
 
         const result = await response.json();
-        if (result.success) {
-            // Callback to app.js for canvas integration
-            if (onAnalysisComplete) {
-                onAnalysisComplete({
-                    requirements: wizardState.requirements,
-                    project: wizardState.project,
-                    constraints: wizardState.constraints
-                });
-            }
-        } else {
+        if (!result.success) {
             alert('Fehler: ' + (result.error || 'Unbekannt'));
+            return;
+        }
+
+        const savedPath = result.file_path || null;
+
+        // Step 2: Validate config
+        const configResp = await fetch('/api/config/validate');
+        const configResult = await configResp.json();
+
+        if (!configResult.valid) {
+            const issues = configResult.issues.join('\n- ');
+            alert('Konfiguration unvollstaendig:\n- ' + issues);
+            return;
+        }
+
+        // Step 3: Start pipeline
+        if (savedPath) {
+            const pipeResp = await fetch('/api/pipeline/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_path: savedPath
+                })
+            });
+            const pipeResult = await pipeResp.json();
+
+            if (pipeResult.error) {
+                alert('Pipeline-Fehler: ' + pipeResult.error);
+                return;
+            }
+        }
+
+        // Step 4: Callback to app.js (switch to canvas + show progress)
+        if (onAnalysisComplete) {
+            onAnalysisComplete({
+                requirements: wizardState.requirements,
+                project: wizardState.project,
+                constraints: wizardState.constraints,
+                savedPath: savedPath,
+                pipelineStarted: !!savedPath
+            });
         }
     } catch (error) {
         alert('Fehler: ' + error.message);

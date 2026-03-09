@@ -40,6 +40,14 @@
     --node-screen: #3b0764;
     --node-task: #78350f;
 
+    /* Node Colors for Dashboard Completeness */
+    --node-api-package: #4a2600;
+    --node-task-group: #78350f;
+    --node-service: #0c4a6e;
+    --node-state-machine: #3b0764;
+    --node-infrastructure: #1e293b;
+    --node-design-tokens: #701a4e;
+
     /* Priority Colors */
     --priority-must: #f4212e;
     --priority-should: #ffd400;
@@ -1115,16 +1123,28 @@ html, body {
 }
 
 .legend-line.epic-story { background: #7856ff; }
+.legend-line.epic-req { background: #9333ea; }
 .legend-line.req-story { background: #1d9bf0; }
 .legend-line.story-test { background: #00ba7c; }
 .legend-line.req-diagram { background: #ffd400; }
-.legend-line.default { background: #536471; }
 .legend-line.persona-story { background: #f97316; }
+.legend-line.persona-screen { background: #f97316; }
 .legend-line.flow-screen { background: #ec4899; }
 .legend-line.screen-component { background: #84cc16; }
 .legend-line.story-screen { background: #8b5cf6; }
 .legend-line.feature-task { background: #f59e0b; }
-.legend-line.epic-req { background: #9333ea; }
+.legend-line.feature-story { background: #10b981; }
+.legend-line.req-api { background: #ff7a00; }
+.legend-line.api-screen { background: #8b5cf6; }
+.legend-line.comp-api { background: #ff7a00; }
+.legend-line.test-api { background: #f4212e; }
+.legend-line.api-entity { background: #6366f1; }
+.legend-line.entity-api { background: #6366f1; }
+.legend-line.req-entity { background: #6366f1; }
+.legend-line.screen-entity { background: #84cc16; }
+.legend-line.diagram-entity { background: #ffd400; }
+.legend-line.tech-comp { background: #06b6d4; }
+.legend-line.default { background: #536471; }
 
 /* ============================================
    Cluster Layout Mode
@@ -1846,6 +1866,319 @@ html, body {
 .task-complexity.medium { color: #fcd34d; }
 .task-complexity.complex { color: #fb923c; }
 .task-complexity.epic { color: #f87171; }
+
+/* ============================================
+   Node Type: API Package (stacked endpoints)
+   ============================================ */
+
+.node-api-package {
+    border-left: 4px solid #ff7a00;
+    background: linear-gradient(135deg, #4a2600 0%, var(--bg-secondary) 100%);
+}
+
+.node-api-package .node-id { color: #ff7a00; }
+.node-api-package .node-type { color: #ff9a40; }
+
+.node-method-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.method-chip {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Monaco', monospace;
+}
+.method-chip.method-get { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+.method-chip.method-post { background: rgba(59, 130, 246, 0.25); color: #60a5fa; }
+.method-chip.method-put { background: rgba(245, 158, 11, 0.25); color: #fbbf24; }
+.method-chip.method-delete { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+.method-chip.method-patch { background: rgba(139, 92, 246, 0.25); color: #a78bfa; }
+.method-chip.method-ws { background: rgba(236, 72, 153, 0.25); color: #f472b6; }
+
+.node-endpoint-count {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: Task Group (stacked tasks)
+   ============================================ */
+
+.node-task-group {
+    border-left: 4px solid #f59e0b;
+    background: linear-gradient(135deg, #78350f 0%, var(--bg-secondary) 100%);
+}
+
+.node-task-group .node-id { color: #f59e0b; }
+.node-task-group .node-type { color: #fbbf24; }
+
+.node-task-summary {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: Service (architecture)
+   ============================================ */
+
+.node-service {
+    border-left: 4px solid #0ea5e9;
+    background: linear-gradient(135deg, #0c4a6e 0%, var(--bg-secondary) 100%);
+}
+
+.node-service .node-id { color: #0ea5e9; }
+.node-service .node-type { color: #38bdf8; }
+
+.node-service-tech {
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: State Machine
+   ============================================ */
+
+.node-state-machine {
+    border-left: 4px solid #a855f7;
+    background: linear-gradient(135deg, #3b0764 0%, var(--bg-secondary) 100%);
+}
+
+.node-state-machine .node-id { color: #a855f7; }
+.node-state-machine .node-type { color: #c084fc; }
+
+.node-sm-summary {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: Infrastructure
+   ============================================ */
+
+.node-infrastructure {
+    border-left: 4px solid #64748b;
+    background: linear-gradient(135deg, #1e293b 0%, var(--bg-secondary) 100%);
+}
+
+.node-infrastructure .node-id { color: #64748b; }
+.node-infrastructure .node-type { color: #94a3b8; }
+
+.node-infra-summary {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ============================================
+   Node Type: Design Tokens
+   ============================================ */
+
+.node-design-tokens {
+    border-left: 4px solid #ec4899;
+    background: linear-gradient(135deg, #701a4e 0%, var(--bg-secondary) 100%);
+}
+
+.node-design-tokens .node-id { color: #ec4899; }
+.node-design-tokens .node-type { color: #f472b6; }
+
+.node-token-preview {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ============================================
+   API Package Modal Styles
+   ============================================ */
+
+.api-pkg-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.api-pkg-summary .method-chip {
+    font-size: 12px;
+    padding: 3px 8px;
+}
+
+.api-pkg-search {
+    margin-bottom: 12px;
+}
+
+.modal-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+}
+
+.modal-search-input:focus {
+    border-color: var(--accent-blue);
+}
+
+.api-pkg-table-wrap {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.api-pkg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.api-pkg-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    padding: 8px 10px;
+    text-align: left;
+    color: var(--text-secondary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    z-index: 1;
+}
+
+.api-pkg-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.api-pkg-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.api-pkg-table td {
+    padding: 6px 10px;
+    color: var(--text-primary);
+}
+
+.api-pkg-table .api-path code {
+    font-family: 'SF Mono', 'Monaco', monospace;
+    font-size: 12px;
+    color: #38bdf8;
+}
+
+/* Task type chips in modal */
+.task-type-chip {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.task-type-chip.task-development { background: rgba(59, 130, 246, 0.25); color: #60a5fa; }
+.task-type-chip.task-testing { background: rgba(239, 68, 68, 0.25); color: #f87171; }
+.task-type-chip.task-documentation { background: rgba(16, 185, 129, 0.25); color: #34d399; }
+
+/* Project stats badges in header */
+.project-stats-badges {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 10px;
+}
+
+.stats-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* Detail panel additions */
+.detail-ep-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.detail-ep-list li {
+    padding: 4px 0;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detail-ep-list code {
+    font-family: 'SF Mono', 'Monaco', monospace;
+    font-size: 11px;
+    color: #38bdf8;
+}
+
+.detail-more {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.detail-color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.detail-color-swatch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+}
+
+/* Modal tabs for API package */
+.modal-tabs .modal-tab {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    margin-right: 4px;
+}
+
+.modal-tabs .modal-tab.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: #fff;
+}
+
+.modal-tabs .modal-tab:hover:not(.active) {
+    background: var(--bg-hover);
+}
+
+/* State machine modal */
+.sm-diagram {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.sm-transitions h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: var(--text-primary);
+}
 
 /* ============================================
    Node Type: Aggregation

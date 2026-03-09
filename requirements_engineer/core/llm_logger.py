@@ -203,7 +203,11 @@ class LLMLogger:
         latency_ms: int = 0,
         success: bool = True,
         error: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
+        # Prompt context for training data collection
+        system_message: str = "",
+        user_message: str = "",
+        response_text: str = ""
     ) -> LLMCallLog:
         """
         Log an LLM call.
@@ -270,6 +274,21 @@ class LLMLogger:
             f"${cost:.4f} | {latency_ms}ms"
         )
 
+        # Bridge to TrainingDataCollector (if active)
+        self._record_training_data(
+            component=component,
+            model=model,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cost_usd=cost,
+            latency_ms=latency_ms,
+            success=success,
+            error=error,
+            system_message=system_message,
+            user_message=user_message,
+            response_text=response_text,
+        )
+
         return entry
 
     def _update_component_stats(self, entry: LLMCallLog):
@@ -292,6 +311,40 @@ class LLMLogger:
 
         model_count = stats.models_used.get(entry.model, 0)
         stats.models_used[entry.model] = model_count + 1
+
+    def _record_training_data(
+        self,
+        component: str,
+        model: str,
+        input_tokens: int,
+        output_tokens: int,
+        cost_usd: float,
+        latency_ms: int,
+        success: bool,
+        error: Optional[str],
+        system_message: str = "",
+        user_message: str = "",
+        response_text: str = "",
+    ):
+        """Bridge to TrainingDataCollector for fine-tuning data capture."""
+        try:
+            from requirements_engineer.training.collector import TrainingDataCollector
+            collector = TrainingDataCollector.get_instance()
+            if collector and collector.run_record:
+                collector.record_llm_call(
+                    system_message=system_message,
+                    user_message=user_message,
+                    response=response_text,
+                    model=model,
+                    component=component,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    cost_usd=cost_usd,
+                    latency_ms=latency_ms,
+                    success=success,
+                )
+        except Exception:
+            pass  # Graceful degradation — don't break cost tracking
 
     def _write_to_file(self, entry: LLMCallLog):
         """Write entry to JSONL file."""
@@ -400,6 +453,8 @@ class LLMLogger:
                 name: {
                     "calls": stats.total_calls,
                     "tokens": stats.total_input_tokens + stats.total_output_tokens,
+                    "input_tokens": stats.total_input_tokens,
+                    "output_tokens": stats.total_output_tokens,
                     "cost_usd": round(stats.total_cost_usd, 4),
                     "models": stats.models_used
                 }
@@ -461,14 +516,21 @@ def log_llm_call(
     output_tokens: Optional[int] = None,
     latency_ms: int = 0,
     success: bool = True,
-    error: Optional[str] = None
+    error: Optional[str] = None,
+    metadata: Optional[Dict[str, Any]] = None,
+    # Prompt context for training data collection
+    system_message: str = "",
+    user_message: str = "",
+    response_text: str = "",
 ) -> Optional[LLMCallLog]:
     """
     Convenience function to log an LLM call.
 
     Example:
         response = await client.chat.completions.create(...)
-        log_llm_call("user_story_generator", "openai/gpt-5.2-codex", response)
+        log_llm_call("user_story_generator", "openai/gpt-5.2-codex", response,
+                     system_message="You are...", user_message=prompt,
+                     response_text=response.choices[0].message.content)
     """
     logger = get_llm_logger()
     return logger.log_call(
@@ -479,5 +541,9 @@ def log_llm_call(
         output_tokens=output_tokens,
         latency_ms=latency_ms,
         success=success,
-        error=error
+        error=error,
+        metadata=metadata,
+        system_message=system_message,
+        user_message=user_message,
+        response_text=response_text,
     )

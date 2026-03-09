@@ -28,10 +28,14 @@ from requirements_engineer.core.llm_logger import get_llm_logger, log_llm_call
 
 # Keywords that indicate real-time requirements
 RT_KEYWORDS = [
+    # English
     "real-time", "realtime", "real time", "live", "instant", "push",
     "notification", "typing", "online", "presence", "message", "chat",
     "call", "stream", "websocket", "socket", "event", "broadcast",
     "sync", "update in real", "status update",
+    # German
+    "echtzeit", "benachrichtigung", "nachricht", "anruf", "sofort",
+    "tippen", "zustellung", "gelesen", "status", "verbindung",
 ]
 
 
@@ -124,9 +128,14 @@ Guidelines:
 - Use hierarchical channel names (e.g., "chat/messages", "user/presence", "call/signal")
 - subscribe = events FROM server TO client (receiving)
 - publish = events FROM client TO server (sending)
-- Include all necessary fields with types
+- Include all necessary fields with types and descriptions
 - Consider acknowledgment events where needed
-- Only include channels directly related to the requirement
+- Generate a comprehensive event catalog — include ALL events the requirement implies, not just the obvious ones
+- For messaging/communication domains MUST include: message.sent, message.delivered, message.read, message.deleted, message.edited, typing.start, typing.stop, presence.online, presence.offline, presence.away, group.member.joined, group.member.left, group.updated, call.initiated, call.answered, call.ended, call.rejected, notification.push
+- Include error/disconnect events: connection.error, connection.reconnect, message.failed
+- Include payload schemas with ALL required fields (id, timestamp, sender_id, etc.)
+- Generate at least 8-12 channels per requirement for complex domains (messaging, collaboration, social)
+- Include acknowledgment channels (e.g., message/ack) for delivery confirmation
 
 Return ONLY valid JSON."""
 
@@ -167,13 +176,17 @@ Return ONLY valid JSON."""
             max_tokens=self.max_tokens,
         )
         latency_ms = int((time.time() - start_time) * 1000)
+        response_text = response.choices[0].message.content.strip()
         log_llm_call(
             component="realtime_spec_generator",
             model=self.model_name,
             response=response,
             latency_ms=latency_ms,
+            system_message="You are a real-time systems architect. Return ONLY valid JSON.",
+            user_message=prompt,
+            response_text=response_text,
         )
-        return response.choices[0].message.content.strip()
+        return response_text
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         """Extract JSON from LLM response."""

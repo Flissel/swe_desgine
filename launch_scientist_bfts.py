@@ -7,6 +7,21 @@ import os
 import re
 import sys
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load .env file (API keys etc.) before any LLM imports
+load_dotenv()
+
+# Fix Windows console encoding (cp1252 can't handle Unicode chars used by Rich)
+if sys.platform == "win32":
+    # Set console code page to UTF-8
+    os.system("chcp 65001 > nul 2>&1")
+    # Reconfigure Python streams to UTF-8
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    # Tell Rich to not use legacy Windows console renderer
+    os.environ["TERM"] = "xterm-256color"
+
 from ai_scientist.llm import create_client
 
 from contextlib import contextmanager
@@ -85,19 +100,19 @@ def parse_arguments():
     parser.add_argument(
         "--model_agg_plots",
         type=str,
-        default="o3-mini-2025-01-31",
+        default="openrouter/google/gemini-3-flash-preview",
         help="Model to use for plot aggregation",
     )
     parser.add_argument(
         "--model_writeup",
         type=str,
-        default="o1-preview-2024-09-12",
+        default="openrouter/anthropic/claude-sonnet-4",
         help="Model to use for writeup",
     )
     parser.add_argument(
         "--model_citation",
         type=str,
-        default="gpt-4o-2024-11-20",
+        default="openrouter/google/gemini-3-flash-preview",
         help="Model to use for citation gathering",
     )
     parser.add_argument(
@@ -109,13 +124,13 @@ def parse_arguments():
     parser.add_argument(
         "--model_writeup_small",
         type=str,
-        default="gpt-4o-2024-05-13",
+        default="openrouter/google/gemini-3-flash-preview",
         help="Smaller model to use for writeup",
     )
     parser.add_argument(
         "--model_review",
         type=str,
-        default="gpt-4o-2024-11-20",
+        default="openrouter/anthropic/claude-sonnet-4",
         help="Model to use for review main text and captions",
     )
     parser.add_argument(

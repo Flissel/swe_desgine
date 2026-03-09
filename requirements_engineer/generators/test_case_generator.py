@@ -247,6 +247,92 @@ Guidelines:
 
 Return ONLY valid JSON, no other text."""
 
+    SECURITY_TEST_PROMPT = """You are a Security Engineer specializing in application security testing (OWASP Top 10).
+
+Given these API endpoints and requirements:
+
+## API Endpoints:
+{api_endpoints_text}
+
+## Requirements:
+{requirements_text}
+
+Generate security test cases covering OWASP Top 10 vulnerabilities.
+
+Return JSON format:
+{{
+    "test_cases": [
+        {{
+            "title": "SQL Injection on login endpoint",
+            "description": "Verify login endpoint rejects SQL injection payloads",
+            "category": "security",
+            "subcategory": "injection|broken_auth|sensitive_data|broken_access_control|security_misconfiguration|xss|csrf|rate_limiting",
+            "severity": "critical|high|medium|low",
+            "preconditions": ["Application is deployed", "Test user account exists"],
+            "steps": [
+                {{"description": "Send SQL injection payload in username field", "expected_result": "Request is rejected with 400"}},
+                {{"description": "Send NoSQL injection payload", "expected_result": "Request is rejected"}}
+            ],
+            "expected_result": "All injection attempts are blocked"
+        }}
+    ]
+}}
+
+Test categories to cover:
+- Injection: SQL, NoSQL, command injection, LDAP injection
+- Broken Authentication: brute force, credential stuffing, session fixation, weak password policies
+- Sensitive Data Exposure: PII leak detection, encryption validation, insecure data transfer
+- Broken Access Control: IDOR, privilege escalation, missing function-level access control, CORS
+- Security Misconfiguration: missing headers (CSP, HSTS, X-Frame), TLS validation, default credentials
+- XSS: stored, reflected, DOM-based cross-site scripting
+- CSRF: cross-site request forgery protection validation
+- Rate Limiting: API rate limit enforcement, brute force protection
+
+Generate at least 15-20 security test cases. Return ONLY valid JSON."""
+
+    LOAD_TEST_PROMPT = """You are a Performance Engineer specializing in load and stress testing.
+
+Given these API endpoints:
+
+## API Endpoints:
+{api_endpoints_text}
+
+## System Requirements:
+{requirements_text}
+
+Generate load/performance test scenarios.
+
+Return JSON format:
+{{
+    "test_cases": [
+        {{
+            "title": "Baseline - Message sending latency",
+            "description": "Measure single-user message sending response time",
+            "category": "performance",
+            "subcategory": "baseline|load|stress|spike|soak|data_volume",
+            "target_metric": "p99_response_time_ms",
+            "threshold": "< 200ms",
+            "concurrent_users": 1,
+            "duration_seconds": 60,
+            "tool": "k6|locust|jmeter|gatling",
+            "steps": [
+                {{"description": "Run baseline test with 1 user for 60s", "expected_result": "p99 < 200ms"}}
+            ],
+            "expected_result": "All response times within SLA"
+        }}
+    ]
+}}
+
+Test scenarios to cover:
+- Baseline: Single user response times for each critical endpoint (target: <200ms p99)
+- Load: 1000 concurrent users, sustained for 10 minutes (target: <500ms p95, <1% error rate)
+- Stress: 5000 concurrent users, find breaking point (target: graceful degradation, no crashes)
+- Spike: 0 to 3000 users in 10 seconds (target: recovery within 30s after spike)
+- Soak: 500 concurrent users for 8 hours (target: no memory leaks, stable response times)
+- Data Volume: Queries with 10M+ records, large file uploads (target: pagination works, no timeouts)
+
+Generate at least 10-15 performance test cases. Return ONLY valid JSON."""
+
     TEST_CASE_PROMPT = """You are a QA Engineer expert in test case design.
 
 Given this User Story:
@@ -360,15 +446,20 @@ Return ONLY valid JSON, no other text."""
                 )
                 latency_ms = int((time.time() - start_time) * 1000)
 
+                response_text = response.choices[0].message.content.strip()
+
                 # Log the LLM call
                 log_llm_call(
                     component="test_case_generator",
                     model=self.model_name,
                     response=response,
-                    latency_ms=latency_ms
+                    latency_ms=latency_ms,
+                    system_message="You are an expert QA Engineer. Always respond with valid JSON only.",
+                    user_message=prompt,
+                    response_text=response_text,
                 )
 
-                return response.choices[0].message.content.strip()
+                return response_text
             except asyncio.TimeoutError:
                 last_error = f"Timeout after {timeout}s"
                 print(f"    Warning: LLM call timed out (attempt {attempt + 1}/{retries + 1})")
@@ -378,7 +469,8 @@ Return ONLY valid JSON, no other text."""
                     model=self.model_name,
                     latency_ms=timeout * 1000,
                     success=False,
-                    error=last_error
+                    error=last_error,
+                    user_message=prompt,
                 )
                 if attempt < retries:
                     await asyncio.sleep(2)  # Brief pause before retry
@@ -391,7 +483,8 @@ Return ONLY valid JSON, no other text."""
                     model=self.model_name,
                     latency_ms=int((time.time() - start_time) * 1000) if 'start_time' in locals() else 0,
                     success=False,
-                    error=last_error
+                    error=last_error,
+                    user_message=prompt,
                 )
                 if attempt < retries:
                     await asyncio.sleep(2)
@@ -598,16 +691,31 @@ Return ONLY valid JSON, no other text."""
                 all_cases.extend(cases)
                 print(f"    [OK] Generated {len(cases)} test cases")
             except Exception as e:
-                print(f"    [FAIL] Failed to generate test cases for {story.id}: {e}")
-                # Create minimal test case on failure
-                tc_id = self._generate_tc_id()
-                all_cases.append(TestCase(
-                    id=tc_id,
-                    title=f"Test {story.title}",
-                    description=f"Verify: {story.action}",
-                    parent_user_story_id=story.id,
-                    parent_requirement_id=story.parent_requirement_id
-                ))
+                print(f"    [WARN] First attempt failed for {story.id}: {e}, retrying...")
+                try:
+                    cases = await self.generate_test_cases(story)
+                    all_cases.extend(cases)
+                    print(f"    [OK] Retry succeeded: {len(cases)} test cases")
+                except Exception as e2:
+                    print(f"    [FAIL] Retry also failed for {story.id}: {e2}")
+                    # Create stub with acceptance criteria as test steps
+                    tc_id = self._generate_tc_id()
+                    steps = []
+                    if story.acceptance_criteria:
+                        for ac in story.acceptance_criteria:
+                            steps.append(TestStep(
+                                step_type="When",
+                                description=f"Given {ac.given}, When {ac.when}",
+                                expected_result=f"Then {ac.then}"
+                            ))
+                    all_cases.append(TestCase(
+                        id=tc_id,
+                        title=f"Test {story.title}",
+                        description=f"Verify: {story.action}",
+                        steps=steps,
+                        parent_user_story_id=story.id,
+                        parent_requirement_id=story.parent_requirement_id
+                    ))
         return all_cases
 
     def get_coverage_matrix(self) -> Dict[str, Any]:
@@ -662,6 +770,486 @@ Return ONLY valid JSON, no other text."""
             md += "---\n\n"
 
         return md
+
+    async def generate_security_tests(
+        self,
+        requirements: List[Any] = None,
+        api_endpoints: List[Any] = None,
+    ) -> List[TestCase]:
+        """Generate security test cases covering OWASP Top 10."""
+        # Build API endpoints text
+        ep_lines = []
+        if api_endpoints:
+            for ep in api_endpoints[:30]:
+                if isinstance(ep, dict):
+                    ep_lines.append(f"- {ep.get('method', 'GET')} {ep.get('path', '/')}: {ep.get('summary', '')}")
+                elif hasattr(ep, 'path'):
+                    ep_lines.append(f"- {getattr(ep, 'method', 'GET')} {ep.path}: {getattr(ep, 'summary', '')}")
+        api_text = "\n".join(ep_lines) if ep_lines else "No API endpoints provided"
+
+        # Build requirements text
+        req_lines = []
+        if requirements:
+            for req in requirements[:15]:
+                if hasattr(req, 'title'):
+                    req_lines.append(f"- {req.requirement_id}: {req.title}")
+                elif isinstance(req, dict):
+                    req_lines.append(f"- {req.get('id', 'REQ')}: {req.get('title', '')}")
+        req_text = "\n".join(req_lines) if req_lines else "No requirements provided"
+
+        prompt = self.SECURITY_TEST_PROMPT.format(
+            api_endpoints_text=api_text,
+            requirements_text=req_text,
+        )
+
+        response = await self._call_llm(prompt, timeout=90)
+        data = self._extract_json(response)
+        test_cases = []
+
+        for tc_data in data.get("test_cases", []):
+            self._tc_counter += 1
+            tc_id = f"SEC-{str(self._tc_counter).zfill(3)}"
+            steps = [
+                TestStep(
+                    step_type="When",
+                    description=s.get("description", ""),
+                    expected_result=s.get("expected_result", ""),
+                )
+                for s in tc_data.get("steps", [])
+            ]
+            tc = TestCase(
+                id=tc_id,
+                title=tc_data.get("title", "Security Test"),
+                description=tc_data.get("description", ""),
+                preconditions=tc_data.get("preconditions", []),
+                steps=steps,
+                expected_result=tc_data.get("expected_result", ""),
+                priority=tc_data.get("severity", "high"),
+                test_type="security",
+            )
+            self.test_cases[tc_id] = tc
+            test_cases.append(tc)
+
+        return test_cases
+
+    async def generate_load_tests(
+        self,
+        requirements: List[Any] = None,
+        api_endpoints: List[Any] = None,
+    ) -> List[TestCase]:
+        """Generate load/performance test cases."""
+        # Build API endpoints text
+        ep_lines = []
+        if api_endpoints:
+            for ep in api_endpoints[:30]:
+                if isinstance(ep, dict):
+                    ep_lines.append(f"- {ep.get('method', 'GET')} {ep.get('path', '/')}: {ep.get('summary', '')}")
+                elif hasattr(ep, 'path'):
+                    ep_lines.append(f"- {getattr(ep, 'method', 'GET')} {ep.path}: {getattr(ep, 'summary', '')}")
+        api_text = "\n".join(ep_lines) if ep_lines else "No API endpoints provided"
+
+        # Build requirements text
+        req_lines = []
+        if requirements:
+            for req in requirements[:15]:
+                if hasattr(req, 'title'):
+                    req_lines.append(f"- {req.requirement_id}: {req.title}")
+                elif isinstance(req, dict):
+                    req_lines.append(f"- {req.get('id', 'REQ')}: {req.get('title', '')}")
+        req_text = "\n".join(req_lines) if req_lines else "No requirements provided"
+
+        prompt = self.LOAD_TEST_PROMPT.format(
+            api_endpoints_text=api_text,
+            requirements_text=req_text,
+        )
+
+        response = await self._call_llm(prompt, timeout=90)
+        data = self._extract_json(response)
+        test_cases = []
+
+        for tc_data in data.get("test_cases", []):
+            self._tc_counter += 1
+            tc_id = f"PERF-{str(self._tc_counter).zfill(3)}"
+            steps = [
+                TestStep(
+                    step_type="When",
+                    description=s.get("description", ""),
+                    expected_result=s.get("expected_result", ""),
+                )
+                for s in tc_data.get("steps", [])
+            ]
+            tc = TestCase(
+                id=tc_id,
+                title=tc_data.get("title", "Performance Test"),
+                description=tc_data.get("description", ""),
+                preconditions=tc_data.get("preconditions", []),
+                steps=steps,
+                expected_result=tc_data.get("expected_result", ""),
+                priority="high",
+                test_type="performance",
+            )
+            self.test_cases[tc_id] = tc
+            test_cases.append(tc)
+
+        return test_cases
+
+    def to_step_definitions(self) -> Dict[str, str]:
+        """Generate step definition stubs for all Gherkin features.
+
+        Dispatches by detected test_framework to generate language-appropriate stubs:
+        - pytest-bdd (default for Python)
+        - @cucumber/cucumber (for JS/TS)
+        - io.cucumber (for Java)
+
+        Returns:
+            Dict mapping filename -> source code
+        """
+        framework = self._detect_step_framework()
+
+        if framework in ("jest", "vitest", "cucumber-js", "mocha"):
+            return self._generate_js_step_defs()
+        elif framework in ("junit", "cucumber-java", "testng"):
+            return self._generate_java_step_defs()
+        else:
+            return self._generate_pytest_step_defs()
+
+    def _detect_step_framework(self) -> str:
+        """Detect step definition framework from features or config."""
+        # Check features for test_framework set by LLM
+        for feature in self.features.values():
+            if feature.test_framework:
+                return feature.test_framework.lower().strip()
+        # Check config
+        gen_config = self.config.get("generators", {}).get("test_case", {})
+        return gen_config.get("step_framework", "pytest-bdd").lower().strip()
+
+    # ── Python / pytest-bdd ───────────────────────────────────────────────────
+
+    def _generate_pytest_step_defs(self) -> Dict[str, str]:
+        """Generate pytest-bdd step definition stubs."""
+        files = {}
+        files["conftest.py"] = self._generate_conftest_python()
+
+        all_steps = {}
+        for story_id, feature in self.features.items():
+            feature_slug = story_id.replace('-', '_').lower()
+            feature_steps = []
+
+            for scenario in feature.scenarios:
+                current_context = "given"
+                for step in scenario.steps:
+                    st = step.step_type.strip().lower()
+                    if st in ("given", "when", "then"):
+                        current_context = st
+                        decorator = st
+                    elif st in ("and", "but"):
+                        decorator = current_context
+                    else:
+                        decorator = "given"
+
+                    func_name = self._step_to_func_name(decorator, step.description)
+                    if func_name not in all_steps:
+                        all_steps[func_name] = (decorator, step.description)
+                        feature_steps.append((decorator, step.description, func_name))
+
+            if feature_steps:
+                content = self._generate_step_file_python(
+                    feature_slug, feature.name, feature_steps
+                )
+                files[f"test_{feature_slug}_steps.py"] = content
+
+        return files
+
+    def _step_to_func_name(self, step_type: str, description: str) -> str:
+        """Convert step description to a valid Python function name."""
+        slug = re.sub(r'[^a-z0-9]+', '_', description.lower()).strip('_')
+        slug = slug[:60].rstrip('_')
+        prefix = step_type.lower()
+        if prefix in ("and", "but"):
+            prefix = "step"
+        return f"{prefix}_{slug}"
+
+    def _generate_step_file_python(self, feature_slug: str, feature_name: str,
+                                   steps: list) -> str:
+        """Generate a pytest-bdd step definition file for one feature."""
+        lines = [
+            f'"""Step definitions for: {feature_name}',
+            f'',
+            f'Auto-generated by requirements_engineer pipeline.',
+            f'Each step raises NotImplementedError until implemented.',
+            f'"""',
+            f'from pytest_bdd import given, when, then, scenario',
+            f'',
+            f'',
+            f'FEATURE_FILE = "{feature_slug}.feature"',
+            f'',
+        ]
+
+        seen = set()
+        for decorator, description, func_name in steps:
+            if func_name in seen:
+                continue
+            seen.add(func_name)
+            desc_escaped = description.replace('"', '\\"')
+            lines.append(f'')
+            lines.append(f'@{decorator}("{desc_escaped}")')
+            lines.append(f'def {func_name}():')
+            lines.append(f'    """TODO: Implement - {desc_escaped}"""')
+            lines.append(f'    raise NotImplementedError("Step not implemented")')
+
+        lines.append('')
+        return '\n'.join(lines)
+
+    def _generate_conftest_python(self) -> str:
+        """Generate shared conftest.py with common fixtures."""
+        return '''"""Shared fixtures for BDD test step definitions.
+
+Auto-generated by requirements_engineer pipeline.
+"""
+import pytest
+
+
+@pytest.fixture
+def app_context():
+    """TODO: Set up application context for testing."""
+    pass
+
+
+@pytest.fixture
+def authenticated_user():
+    """TODO: Set up an authenticated user session."""
+    pass
+
+
+@pytest.fixture
+def database():
+    """TODO: Set up test database connection with rollback."""
+    pass
+
+
+@pytest.fixture
+def api_client():
+    """TODO: Set up HTTP test client."""
+    pass
+
+
+@pytest.fixture
+def websocket_client():
+    """TODO: Set up WebSocket test client."""
+    pass
+'''
+
+    # ── JavaScript / @cucumber/cucumber ───────────────────────────────────────
+
+    def _generate_js_step_defs(self) -> Dict[str, str]:
+        """Generate @cucumber/cucumber step definition stubs (JS/TS)."""
+        files = {}
+        files["support/world.js"] = self._generate_js_world()
+
+        all_steps = {}
+        for story_id, feature in self.features.items():
+            feature_slug = story_id.replace('-', '_').lower()
+            feature_steps = []
+
+            for scenario in feature.scenarios:
+                current_context = "Given"
+                for step in scenario.steps:
+                    st = step.step_type.strip()
+                    cap = st.capitalize()
+                    if cap in ("Given", "When", "Then"):
+                        current_context = cap
+                        kw = cap
+                    elif cap in ("And", "But"):
+                        kw = current_context
+                    else:
+                        kw = "Given"
+
+                    key = f"{kw}:{step.description}"
+                    if key not in all_steps:
+                        all_steps[key] = True
+                        feature_steps.append((kw, step.description))
+
+            if feature_steps:
+                content = self._generate_step_file_js(
+                    feature_slug, feature.name, feature_steps
+                )
+                files[f"steps/{feature_slug}.steps.js"] = content
+
+        return files
+
+    def _generate_step_file_js(self, feature_slug: str, feature_name: str,
+                                steps: list) -> str:
+        """Generate a @cucumber/cucumber step file for one feature."""
+        # Collect unique keywords used
+        keywords = sorted(set(kw for kw, _ in steps))
+        imports = ", ".join(keywords)
+
+        lines = [
+            f"// Step definitions for: {feature_name}",
+            f"//",
+            f"// Auto-generated by requirements_engineer pipeline.",
+            f"// Each step throws until implemented.",
+            f"const {{ {imports} }} = require('@cucumber/cucumber');",
+            "",
+        ]
+
+        seen = set()
+        for kw, description in steps:
+            key = f"{kw}:{description}"
+            if key in seen:
+                continue
+            seen.add(key)
+            desc_escaped = description.replace("'", "\\'")
+            lines.append("")
+            lines.append(f"{kw}('{desc_escaped}', function () {{")
+            lines.append(f"  // TODO: Implement")
+            lines.append(f"  throw new Error('Not implemented');")
+            lines.append("});")
+
+        lines.append("")
+        return "\n".join(lines)
+
+    def _generate_js_world(self) -> str:
+        """Generate Cucumber.js World class with shared context."""
+        return """// Cucumber.js World — shared test context
+//
+// Auto-generated by requirements_engineer pipeline.
+const { setWorldConstructor, Before, After } = require('@cucumber/cucumber');
+
+class CustomWorld {
+  constructor({ attach, parameters }) {
+    this.attach = attach;
+    this.parameters = parameters;
+    this.context = {};
+  }
+}
+
+setWorldConstructor(CustomWorld);
+
+Before(function () {
+  // TODO: Set up test context (DB, auth, etc.)
+});
+
+After(function () {
+  // TODO: Tear down test context
+});
+"""
+
+    # ── Java / io.cucumber ────────────────────────────────────────────────────
+
+    def _generate_java_step_defs(self) -> Dict[str, str]:
+        """Generate io.cucumber step definition stubs (Java)."""
+        files = {}
+
+        all_steps = {}
+        for story_id, feature in self.features.items():
+            feature_slug = story_id.replace('-', '_').lower()
+            feature_steps = []
+
+            for scenario in feature.scenarios:
+                current_context = "Given"
+                for step in scenario.steps:
+                    st = step.step_type.strip()
+                    cap = st.capitalize()
+                    if cap in ("Given", "When", "Then"):
+                        current_context = cap
+                        kw = cap
+                    elif cap in ("And", "But"):
+                        kw = current_context
+                    else:
+                        kw = "Given"
+
+                    key = f"{kw}:{step.description}"
+                    if key not in all_steps:
+                        all_steps[key] = True
+                        feature_steps.append((kw, step.description))
+
+            if feature_steps:
+                class_name = self._slug_to_java_class(feature_slug)
+                content = self._generate_step_file_java(
+                    class_name, feature.name, feature_steps
+                )
+                files[f"{class_name}Steps.java"] = content
+
+        # Runner class
+        files["CucumberTestRunner.java"] = self._generate_java_runner()
+
+        return files
+
+    def _slug_to_java_class(self, slug: str) -> str:
+        """Convert slug to Java class name (PascalCase)."""
+        return ''.join(w.capitalize() for w in slug.split('_'))
+
+    def _generate_step_file_java(self, class_name: str, feature_name: str,
+                                  steps: list) -> str:
+        """Generate a Java step definition class."""
+        # Collect unique annotations
+        annotations = sorted(set(kw for kw, _ in steps))
+        imports = "\n".join(f"import io.cucumber.java.en.{a};" for a in annotations)
+
+        lines = [
+            f"/**",
+            f" * Step definitions for: {feature_name}",
+            f" *",
+            f" * Auto-generated by requirements_engineer pipeline.",
+            f" * Each step throws until implemented.",
+            f" */",
+            f"package stepdefs;",
+            f"",
+            imports,
+            f"",
+            f"public class {class_name}Steps {{",
+        ]
+
+        seen = set()
+        for kw, description in steps:
+            key = f"{kw}:{description}"
+            if key in seen:
+                continue
+            seen.add(key)
+            desc_escaped = description.replace('"', '\\"')
+            method = self._desc_to_java_method(kw, description)
+            lines.append(f"")
+            lines.append(f'    @{kw}("{desc_escaped}")')
+            lines.append(f"    public void {method}() {{")
+            lines.append(f'        // TODO: Implement')
+            lines.append(f'        throw new UnsupportedOperationException("Not implemented");')
+            lines.append(f"    }}")
+
+        lines.append("}")
+        lines.append("")
+        return "\n".join(lines)
+
+    def _desc_to_java_method(self, kw: str, description: str) -> str:
+        """Convert step description to a Java method name (camelCase)."""
+        slug = re.sub(r'[^a-zA-Z0-9]+', ' ', description).strip()
+        words = slug.split()[:8]  # Limit length
+        if not words:
+            return f"{kw.lower()}Step"
+        return words[0].lower() + ''.join(w.capitalize() for w in words[1:])
+
+    def _generate_java_runner(self) -> str:
+        """Generate Cucumber JUnit runner class."""
+        return """/**
+ * Cucumber test runner — entry point for BDD tests.
+ *
+ * Auto-generated by requirements_engineer pipeline.
+ */
+package stepdefs;
+
+import org.junit.runner.RunWith;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+    features = "src/test/resources/features",
+    glue = "stepdefs",
+    plugin = {"pretty", "json:target/cucumber-report.json"}
+)
+public class CucumberTestRunner {
+}
+"""
 
 
 # Test function

@@ -172,6 +172,30 @@ Antworte NUR mit dem JSON-Objekt, keine zusätzlichen Erklärungen."""
 
         requirements_text = "\n".join(req_lines) if req_lines else "Keine Requirements angegeben"
 
+        # Extract infrastructure capability keywords from ALL requirements
+        capability_keywords = set()
+        CAPABILITY_MAP = {
+            "search": ["search", "find", "query", "full-text", "volltextsuche"],
+            "realtime/websocket": ["real-time", "realtime", "websocket", "live", "push", "notification"],
+            "encryption": ["encrypt", "e2e", "end-to-end", "crypto", "security", "ssl", "tls"],
+            "media/storage": ["upload", "media", "image", "video", "file", "storage", "s3"],
+            "messaging/queue": ["queue", "async", "event", "stream", "kafka", "pubsub"],
+            "caching": ["cache", "session", "redis", "performance", "latency"],
+            "auth/identity": ["auth", "oauth", "jwt", "sso", "2fa", "biometric", "passkey"],
+            "analytics": ["analytics", "dashboard", "report", "metric", "monitor"],
+            "i18n": ["language", "locale", "i18n", "translation", "localization"],
+        }
+        for req in requirements:
+            text = (getattr(req, 'title', '') + " " + getattr(req, 'description', '')).lower()
+            for cap, keywords in CAPABILITY_MAP.items():
+                if any(kw in text for kw in keywords):
+                    capability_keywords.add(cap)
+        if capability_keywords:
+            requirements_text += f"\n\n## Erkannte Infrastruktur-Anforderungen:\n"
+            for cap in sorted(capability_keywords):
+                requirements_text += f"- {cap}\n"
+            requirements_text += "\nBitte wähle für JEDE dieser Anforderungen passende Technologien aus. Z.B. Elasticsearch für Search, Redis für Caching, Signal Protocol für E2E-Encryption."
+
         # Build constraints text
         constraints_text = json.dumps(constraints, indent=2, ensure_ascii=False) if constraints else "Keine Constraints"
 
@@ -208,15 +232,17 @@ Antworte NUR mit dem JSON-Objekt, keine zusätzlichen Erklärungen."""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="tech_stack_generator",
                 model=self.model,
                 response=response,
-                latency_ms=latency_ms
+                latency_ms=latency_ms,
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON from response
             if "```json" in content:

@@ -197,21 +197,27 @@ class AutoLinker:
 
     async def discover_all(self) -> Dict[str, List[LinkSuggestion]]:
         """
-        Run auto-discovery for all orphan nodes.
+        Run auto-discovery for all orphan nodes in parallel.
 
         Returns:
             Dict mapping orphan IDs to their suggestions
         """
         orphans = await self.find_orphans()
+        if not orphans:
+            return {}
+
+        # Process all orphans in parallel via asyncio.gather
+        tasks = [self.suggest_links_for_orphan(oid) for oid in orphans]
+        all_results = await asyncio.gather(*tasks, return_exceptions=True)
+
         results = {}
-
-        for orphan_id in orphans:
-            suggestions = await self.suggest_links_for_orphan(orphan_id)
-            if suggestions:
-                results[orphan_id] = suggestions
-
-                # Emit suggestion events
-                for suggestion in suggestions:
+        for orphan_id, result in zip(orphans, all_results):
+            if isinstance(result, Exception):
+                print(f"[AutoLinker] Error for {orphan_id}: {result}")
+                continue
+            if result:
+                results[orphan_id] = result
+                for suggestion in result:
                     await self._emit_event("link_suggestion", suggestion.to_event_dict())
 
         return results

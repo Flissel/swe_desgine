@@ -141,6 +141,8 @@ export function initElements() {
     elements.personasList = document.getElementById('personas-list');
     elements.componentsList = document.getElementById('components-list');
     elements.tasksList = document.getElementById('tasks-list');
+    elements.servicesList = document.getElementById('services-list');
+    elements.stateMachinesList = document.getElementById('state-machines-list');
     elements.reqCount = document.getElementById('req-count');
     elements.usCount = document.getElementById('us-count');
     elements.epicCount = document.getElementById('epic-count');
@@ -151,6 +153,8 @@ export function initElements() {
     elements.personaCount = document.getElementById('persona-count');
     elements.componentCount = document.getElementById('component-count');
     elements.taskCount = document.getElementById('task-count');
+    elements.serviceCount = document.getElementById('service-count');
+    elements.stateMachineCount = document.getElementById('state-machine-count');
     elements.projectList = document.getElementById('project-list');
     elements.detailPanel = document.getElementById('detail-panel');
     elements.sidebar = document.getElementById('sidebar');

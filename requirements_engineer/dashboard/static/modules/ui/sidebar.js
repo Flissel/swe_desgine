@@ -84,6 +84,8 @@ export function updateCounts() {
         [elements.personaCount, elements.personasList],
         [elements.componentCount, elements.componentsList],
         [elements.taskCount, elements.tasksList],
+        [elements.serviceCount, elements.servicesList],
+        [elements.stateMachineCount, elements.stateMachinesList],
     ];
     pairs.forEach(([badge, list]) => {
         if (!badge || !list) return;
@@ -111,5 +113,7 @@ export function clearSidebar() {
     if (elements.personasList) elements.personasList.innerHTML = '';
     if (elements.componentsList) elements.componentsList.innerHTML = '';
     if (elements.tasksList) elements.tasksList.innerHTML = '';
+    if (elements.servicesList) elements.servicesList.innerHTML = '';
+    if (elements.stateMachinesList) elements.stateMachinesList.innerHTML = '';
     updateCounts();
 }

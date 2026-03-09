@@ -304,12 +304,14 @@ class BasePresentationAgent(ABC):
         start_time = time.time()
         success = True
         error_msg = None
+        in_tokens = 0
+        out_tokens = 0
 
         try:
-            # Import the backend query function
-            from ai_scientist.treesearch.backend import query
+            # Use query_with_full_response to capture token counts for cost tracking
+            from ai_scientist.treesearch.backend import query_with_full_response
 
-            response = query(
+            output, req_time, in_tokens, out_tokens, info = query_with_full_response(
                 system_message=system_prompt,
                 user_message=user_prompt,
                 model=self.model,
@@ -318,7 +320,7 @@ class BasePresentationAgent(ABC):
                 func_spec=json_schema
             )
 
-            return response
+            return output
 
         except Exception as e:
             success = False
@@ -332,6 +334,8 @@ class BasePresentationAgent(ABC):
                 log_llm_call(
                     component=f"presentation_agent_{self.name}",
                     model=self.model,
+                    input_tokens=in_tokens,
+                    output_tokens=out_tokens,
                     latency_ms=latency_ms,
                     success=success,
                     error=error_msg

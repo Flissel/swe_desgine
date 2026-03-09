@@ -5,8 +5,12 @@ import time
 
 from .utils import FunctionSpec, OutputType, opt_messages_to_list, backoff_create
 from funcy import notnone, once, select_values
+import httpx
 import openai
 from rich import print
+
+# Timeout for LLM API calls: 120s connect, 120s read, 120s write, 300s total pool
+LLM_TIMEOUT = httpx.Timeout(120.0, connect=30.0, pool=300.0)
 
 logger = logging.getLogger("ai-scientist")
 
@@ -32,16 +36,18 @@ def get_ai_client(model: str, max_retries=2) -> openai.OpenAI:
     if model.startswith("ollama/"):
         client = openai.OpenAI(
             base_url="http://localhost:11434/v1",
-            max_retries=max_retries
+            max_retries=max_retries,
+            timeout=LLM_TIMEOUT,
         )
     elif model.startswith("openrouter/") or _is_openrouter_model(model):
         client = openai.OpenAI(
             api_key=os.environ.get("OPENROUTER_API_KEY", ""),
             base_url=os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
-            max_retries=max_retries
+            max_retries=max_retries,
+            timeout=LLM_TIMEOUT,
         )
     else:
-        client = openai.OpenAI(max_retries=max_retries)
+        client = openai.OpenAI(max_retries=max_retries, timeout=LLM_TIMEOUT)
     return client
 
 
@@ -74,6 +80,9 @@ def query(
         **filtered_kwargs,
     )
     req_time = time.time() - t0
+
+    if completion is False:
+        raise openai.APITimeoutError(request=None)
 
     choice = completion.choices[0]
 

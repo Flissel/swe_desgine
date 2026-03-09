@@ -95,8 +95,8 @@ class PropagationWorker:
         # Try to import Kilo tools
         if self.kilo_config.get("enabled", True):
             try:
-                from ai_scientist.tools.kilocli_tool import KilocodeCliTool
-                from ai_scientist.tools.kilo_conversation import KiloConversationManager
+                from requirements_engineer.tools.kilocli_tool import KilocodeCliTool
+                from requirements_engineer.tools.kilo_conversation import KiloConversationManager
 
                 self._kilo_tool = KilocodeCliTool()
                 self._conversation_manager = KiloConversationManager()

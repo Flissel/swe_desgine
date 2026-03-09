@@ -40,12 +40,18 @@ import {
     createEntityFromDictionary,
     createFeatureFromBreakdown,
     createApiEndpointNode,
+    createApiPackageNode,
     createTechStackNode,
     createPersonaNode,
     createUserFlowNode,
     createUIComponentNode,
     createScreenNode,
     createTaskNode,
+    createTaskGroupNode,
+    createServiceNode,
+    createStateMachineNode,
+    createInfrastructureNode,
+    createDesignTokensNode,
     findNodeByPartialId,
     setSidebarCallback,
     setCreateNodeFunction
@@ -129,6 +135,17 @@ import { initChangeTracker, trackChange, CHANGE_TYPES } from './modules/core/cha
 // Wizard module
 import { initWizard, setOnAnalysisComplete } from './modules/ui/wizard.js';
 import { initKiloBridge } from './modules/agents/kilo_bridge.js';
+
+// Pipeline View module
+import { initPipelineView, onStageEvent, onPipelineComplete, refreshPipelineView } from './modules/ui/pipeline_view.js';
+import { initTraceExplorer, onTraceEvent, refreshTraceView } from './modules/ui/traceExplorer.js';
+
+// Link Discovery module (orphan node auto-linking)
+import {
+    discoverLinks, approveLink, rejectLink,
+    updateOrphanCount, getOrphanCount,
+    handleLinkSuggestion, handleLinkCreated, handleLinkRejected
+} from './modules/ui/linkDiscovery.js';
 
 // ============================================
 // Performance: RAF Throttling for Mouse Events
@@ -336,6 +353,89 @@ const NODE_TEMPLATES = {
         <div class="node-connectors">
             <div class="connector connector-in"></div>
             <div class="connector connector-out"></div>
+        </div>
+    `,
+    'api-package': `
+        <div class="node-header">
+            <span class="node-type">API Package</span>
+            <span class="node-id"></span>
+        </div>
+        <div class="node-content">
+            <div class="node-title"></div>
+            <div class="node-method-chips"></div>
+            <div class="node-endpoint-count"></div>
+        </div>
+        <div class="node-connectors">
+            <div class="connector connector-in"></div>
+            <div class="connector connector-out"></div>
+        </div>
+    `,
+    'task-group': `
+        <div class="node-header">
+            <span class="node-type">Task Group</span>
+            <span class="node-id"></span>
+        </div>
+        <div class="node-content">
+            <div class="node-title"></div>
+            <div class="node-task-summary"></div>
+        </div>
+        <div class="node-connectors">
+            <div class="connector connector-in"></div>
+            <div class="connector connector-out"></div>
+        </div>
+    `,
+    service: `
+        <div class="node-header">
+            <span class="node-type">Service</span>
+            <span class="node-id"></span>
+        </div>
+        <div class="node-content">
+            <div class="node-title"></div>
+            <div class="node-service-tech"></div>
+        </div>
+        <div class="node-connectors">
+            <div class="connector connector-in"></div>
+            <div class="connector connector-out"></div>
+        </div>
+    `,
+    'state-machine': `
+        <div class="node-header">
+            <span class="node-type">State Machine</span>
+            <span class="node-id"></span>
+        </div>
+        <div class="node-content">
+            <div class="node-title"></div>
+            <div class="node-sm-summary"></div>
+        </div>
+        <div class="node-connectors">
+            <div class="connector connector-in"></div>
+            <div class="connector connector-out"></div>
+        </div>
+    `,
+    infrastructure: `
+        <div class="node-header">
+            <span class="node-type">Infrastructure</span>
+            <span class="node-id"></span>
+        </div>
+        <div class="node-content">
+            <div class="node-title"></div>
+            <div class="node-infra-summary"></div>
+        </div>
+        <div class="node-connectors">
+            <div class="connector connector-in"></div>
+        </div>
+    `,
+    'design-tokens': `
+        <div class="node-header">
+            <span class="node-type">Design Tokens</span>
+            <span class="node-id"></span>
+        </div>
+        <div class="node-content">
+            <div class="node-title"></div>
+            <div class="node-token-preview"></div>
+        </div>
+        <div class="node-connectors">
+            <div class="connector connector-in"></div>
         </div>
     `
 };
@@ -596,6 +696,75 @@ function populateNodeContent(node, type, id, data) {
                 attrsEl.textContent = `${attrCount} Attribute${attrCount !== 1 ? 's' : ''}`;
             }
             break;
+
+        case 'api-package': {
+            node.querySelector('.node-title').textContent = data.tag || 'Package';
+            const mcEl = node.querySelector('.node-method-chips');
+            if (mcEl) {
+                const mc = data.method_counts || {};
+                mcEl.innerHTML = Object.entries(mc)
+                    .map(([m, c]) => `<span class="method-chip method-${m.toLowerCase()}">${m}:${c}</span>`)
+                    .join(' ');
+            }
+            const countEl = node.querySelector('.node-endpoint-count');
+            if (countEl) countEl.textContent = `${data.endpoint_count || 0} endpoints`;
+            break;
+        }
+
+        case 'task-group': {
+            node.querySelector('.node-title').textContent = data.title || 'Tasks';
+            const summEl = node.querySelector('.node-task-summary');
+            if (summEl) {
+                summEl.textContent = `${data.task_count || 0} tasks | ${data.total_hours || 0}h`;
+            }
+            break;
+        }
+
+        case 'service': {
+            node.querySelector('.node-title').textContent = data.name || 'Service';
+            const techEl = node.querySelector('.node-service-tech');
+            if (techEl && data.technology) {
+                techEl.innerHTML = `<span class="tech-item tech-be">${data.technology}</span>`;
+            }
+            break;
+        }
+
+        case 'state-machine': {
+            node.querySelector('.node-title').textContent = data.name || data.entity || 'State Machine';
+            const smSumm = node.querySelector('.node-sm-summary');
+            if (smSumm) {
+                smSumm.textContent = `${data.state_count || 0} states | ${data.transition_count || 0} transitions`;
+            }
+            break;
+        }
+
+        case 'infrastructure': {
+            node.querySelector('.node-title').textContent = 'Infrastructure';
+            const infraSumm = node.querySelector('.node-infra-summary');
+            if (infraSumm) {
+                const parts = [];
+                if (data.architecture_style) parts.push(data.architecture_style);
+                if (data.service_count) parts.push(`${data.service_count} services`);
+                const flags = [];
+                if (data.has_dockerfile) flags.push('Docker');
+                if (data.has_k8s) flags.push('K8s');
+                if (data.has_ci) flags.push('CI/CD');
+                if (flags.length) parts.push(flags.join('+'));
+                infraSumm.textContent = parts.join(' | ') || 'N/A';
+            }
+            break;
+        }
+
+        case 'design-tokens': {
+            node.querySelector('.node-title').textContent = 'Design Tokens';
+            const tokenPrev = node.querySelector('.node-token-preview');
+            if (tokenPrev) {
+                const colorCount = Object.keys(data.colors || {}).length;
+                const typoCount = Object.keys(data.typography || {}).length;
+                tokenPrev.textContent = `${colorCount} colors | ${typoCount} typography`;
+            }
+            break;
+        }
     }
 }
 
@@ -1005,7 +1174,13 @@ async function loadProject(projectId) {
             data.features.forEach(feature => { createFeatureFromBreakdown(feature); totalItems++; });
         }
 
-        if (data.api_endpoints?.length) {
+        // API: use packages (stacked) if available, fallback to individual endpoints
+        if (data.api_packages && Object.keys(data.api_packages).length) {
+            Object.values(data.api_packages).forEach(pkg => {
+                createApiPackageNode(pkg);
+                totalItems++;
+            });
+        } else if (data.api_endpoints?.length) {
             data.api_endpoints.forEach(endpoint => { createApiEndpointNode(endpoint); totalItems++; });
         }
 
@@ -1030,16 +1205,67 @@ async function loadProject(projectId) {
             data.screens.forEach(screen => { createScreenNode(screen); totalItems++; });
         }
 
-        if (data.tasks) {
+        // Tasks: use groups (stacked by feature) if structured, fallback to individual
+        if (data.tasks && typeof data.tasks === 'object' && !Array.isArray(data.tasks)) {
             Object.entries(data.tasks).forEach(([featureId, tasks]) => {
-                if (Array.isArray(tasks)) {
-                    tasks.forEach(task => {
-                        task.parent_feature_id = featureId;
-                        createTaskNode(task);
-                        totalItems++;
-                    });
+                if (Array.isArray(tasks) && tasks.length) {
+                    // Find feature name from features array
+                    const feature = (data.features || []).find(f => f.id === featureId);
+                    const featureName = feature ? feature.title : featureId;
+                    createTaskGroupNode(featureId, featureName, tasks);
+                    totalItems++;
                 }
             });
+        }
+
+        // Architecture services
+        if (data.architecture && data.architecture.services?.length) {
+            data.architecture.services.forEach(svc => {
+                createServiceNode(svc);
+                totalItems++;
+            });
+        }
+
+        // State machines
+        if (data.state_machines?.length) {
+            data.state_machines.forEach(sm => {
+                createStateMachineNode(sm);
+                totalItems++;
+            });
+        }
+
+        // Infrastructure (single node)
+        if (data.infrastructure) {
+            createInfrastructureNode(data.infrastructure);
+            totalItems++;
+        }
+
+        // Design tokens (single node)
+        if (data.design_tokens) {
+            createDesignTokensNode(data.design_tokens);
+            totalItems++;
+        }
+
+        // Project stats bar (LLM usage + pipeline info)
+        if (data.project_stats) {
+            const statsEl = document.getElementById('project-info');
+            if (statsEl) {
+                const s = data.project_stats;
+                let statsHtml = `<span class="project-name">${data.project_name || 'Project'}</span>`;
+                const badges = [];
+                if (s.llm_total_calls) badges.push(`${s.llm_total_calls} LLM calls`);
+                if (s.llm_total_cost) badges.push(`$${s.llm_total_cost.toFixed(2)}`);
+                if (s.pipeline_duration_ms) {
+                    const secs = Math.round(s.pipeline_duration_ms / 1000);
+                    const mins = Math.floor(secs / 60);
+                    const remSecs = secs % 60;
+                    badges.push(`${mins}m ${remSecs}s`);
+                }
+                if (badges.length) {
+                    statsHtml += `<span class="project-stats-badges">${badges.map(b => `<span class="stats-badge">${b}</span>`).join('')}</span>`;
+                }
+                statsEl.innerHTML = statsHtml;
+            }
         }
 
         updateCounts();
@@ -1091,6 +1317,10 @@ async function loadProject(projectId) {
             updateConnections();
             // Update user stories to show linked tests as metadata
             updateLinkedTestsDisplay();
+            // Build legend from active connections
+            buildLegend();
+            // Update orphan count badge after all auto-linkers finish
+            updateOrphanCount(getOrphanCount());
         }, 200);
 
         log('success', `Loaded "${projectName}" with ${totalItems} items`);
@@ -1129,6 +1359,76 @@ async function loadProject(projectId) {
         console.error('Failed to load project:', error);
         log('error', `Failed to load project: ${error.message}`);
     }
+}
+
+// ============================================
+// Dynamic Legend Builder
+// ============================================
+
+const LEGEND_LABELS = {
+    'epic-story': 'Epic \u2192 User Story',
+    'epic-req': 'Epic \u2192 Requirement',
+    'req-story': 'Requirement \u2192 Story',
+    'story-test': 'Story \u2192 Test',
+    'req-diagram': 'Requirement \u2192 Diagram',
+    'persona-story': 'Persona \u2192 Story',
+    'persona-screen': 'Persona \u2192 Screen',
+    'flow-screen': 'Flow \u2192 Screen',
+    'screen-component': 'Screen \u2192 Component',
+    'story-screen': 'Story \u2192 Screen',
+    'feature-task': 'Feature \u2192 Task',
+    'feature-story': 'Feature \u2192 Story',
+    'req-api': 'Requirement \u2192 API',
+    'api-screen': 'API \u2192 Screen',
+    'comp-api': 'Component \u2192 API',
+    'test-api': 'Test \u2192 API',
+    'api-entity': 'API \u2192 Entity',
+    'entity-api': 'Entity \u2192 API',
+    'req-entity': 'Requirement \u2192 Entity',
+    'screen-entity': 'Screen \u2192 Entity',
+    'diagram-entity': 'Diagram \u2192 Entity',
+    'tech-comp': 'Tech Stack \u2192 Component',
+    'default': 'Andere Verbindung'
+};
+
+function buildLegend() {
+    const container = document.getElementById('legend-items');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Collect active connection types from rendered SVG paths
+    const activePaths = document.querySelectorAll('.connection-path');
+    const activeTypes = new Set();
+    activePaths.forEach(path => {
+        const marker = path.getAttribute('marker-end') || '';
+        const match = marker.match(/arrow-([a-z-]+)/);
+        if (match) activeTypes.add(match[1]);
+    });
+
+    // Build legend items for active types (excluding default)
+    const sortedTypes = [...activeTypes].filter(t => t !== 'default').sort((a, b) => {
+        const labelA = LEGEND_LABELS[a] || a;
+        const labelB = LEGEND_LABELS[b] || b;
+        return labelA.localeCompare(labelB);
+    });
+
+    sortedTypes.forEach(type => {
+        const label = LEGEND_LABELS[type] || type;
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `<span class="legend-line ${type}"></span><span>${label}</span>`;
+        container.appendChild(item);
+    });
+
+    // Always add "Andere Verbindung" at end if default connections exist
+    if (activeTypes.has('default')) {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `<span class="legend-line default"></span><span>Andere Verbindung</span>`;
+        container.appendChild(item);
+    }
+
+    console.log(`[Legend] Built legend with ${sortedTypes.length} active link types`);
 }
 
 function clearCanvas() {
@@ -1316,6 +1616,19 @@ function handleMessage(message) {
         case 'cascade_node_rejected':
             break;
 
+        // Pipeline Execution Events
+        case 'pipeline_progress':
+            handlePipelineProgress(data);
+            break;
+
+        case 'pipeline_complete':
+            handlePipelineComplete(data);
+            break;
+
+        case 'pipeline_error':
+            handlePipelineError(data);
+            break;
+
         // Wizard AutoGen Agent Events
         case 'wizard_suggestion_pending':
             showWizardSuggestion(data);
@@ -1340,6 +1653,35 @@ function handleMessage(message) {
 
         case 'wizard_enrichment_complete':
             handleEnrichmentComplete(data);
+            break;
+
+        // Pipeline Stage I/O Events
+        case 'stage_started':
+        case 'stage_completed':
+        case 'stage_failed':
+        case 'stage_skipped':
+            onStageEvent({ ...data, type });
+            break;
+
+        // Trace Explorer Events
+        case 'trace_edit':
+        case 'trace_impact':
+        case 'trace_kilo_complete':
+            onTraceEvent({ ...data, type });
+            break;
+
+        // Auto-Link Discovery Events
+        case 'orphans_detected':
+            updateOrphanCount(data.count);
+            break;
+        case 'link_suggestion':
+            handleLinkSuggestion(data);
+            break;
+        case 'link_created':
+            handleLinkCreated(data);
+            break;
+        case 'link_rejected':
+            handleLinkRejected(data);
             break;
 
         default:
@@ -1572,7 +1914,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// Tab Switching (Canvas / Wizard)
+// Tab Switching (Canvas / Wizard / Pipeline)
 // ============================================
 
 function switchTab(tabName) {
@@ -1594,7 +1936,23 @@ function switchTab(tabName) {
     });
 
     const wizardContainer = document.getElementById('wizard-container');
-    if (wizardContainer) wizardContainer.style.display = isCanvas ? 'none' : '';
+    if (wizardContainer) wizardContainer.style.display = tabName === 'wizard' ? '' : 'none';
+
+    const pipelineContainer = document.getElementById('pipeline-container');
+    if (pipelineContainer) pipelineContainer.style.display = tabName === 'pipeline' ? '' : 'none';
+
+    const traceContainer = document.getElementById('trace-container');
+    if (traceContainer) traceContainer.style.display = tabName === 'trace' ? '' : 'none';
+
+    // Refresh pipeline data when switching to it
+    if (tabName === 'pipeline') {
+        refreshPipelineView();
+    }
+
+    // Refresh trace explorer when switching to it
+    if (tabName === 'trace') {
+        refreshTraceView();
+    }
 }
 
 function initWizardTab() {
@@ -1603,13 +1961,25 @@ function initWizardTab() {
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
 
+    // Initialize pipeline view
+    const pipelineContainer = document.getElementById('pipeline-container');
+    if (pipelineContainer) {
+        initPipelineView(pipelineContainer);
+    }
+
+    // Initialize trace explorer
+    const traceContainer = document.getElementById('trace-container');
+    if (traceContainer) {
+        initTraceExplorer(traceContainer);
+    }
+
     // Initialize wizard content
     const wizardContainer = document.getElementById('wizard-container');
     if (wizardContainer) {
         initWizard(wizardContainer);
 
-        // Callback: when wizard completes, create nodes on canvas
-        setOnAnalysisComplete(({ requirements, project }) => {
+        // Callback: when wizard completes, create nodes on canvas + start pipeline
+        setOnAnalysisComplete(({ requirements, project, pipelineStarted }) => {
             let created = 0;
             requirements.forEach(req => {
                 createRequirementFromArray(req);
@@ -1619,11 +1989,153 @@ function initWizardTab() {
             // Switch back to canvas
             switchTab('canvas');
 
-            showNotification(`${created} Requirements aus Wizard geladen`, 'success');
-            log('info', `[Wizard] ${created} Requirements aus Projekt "${project.name}" erstellt`);
+            if (pipelineStarted) {
+                showPipelineProgressBar();
+                showNotification(`Pipeline gestartet mit ${created} Requirements`, 'success');
+                log('info', `[Pipeline] Gestartet fuer "${project.name}" (${created} Requirements)`);
+            } else {
+                showNotification(`${created} Requirements aus Wizard geladen`, 'success');
+                log('info', `[Wizard] ${created} Requirements aus Projekt "${project.name}" erstellt`);
+            }
         });
     }
 }
+
+// ============================================
+// Pipeline Progress UI
+// ============================================
+
+function showPipelineProgressBar() {
+    // Remove existing bar if any
+    let bar = document.getElementById('pipeline-progress-bar');
+    if (bar) bar.remove();
+
+    bar = document.createElement('div');
+    bar.id = 'pipeline-progress-bar';
+    bar.style.cssText = `
+        position: fixed; top: 48px; left: 0; right: 0; z-index: 9999;
+        background: #1a1a2e; border-bottom: 1px solid #333;
+        padding: 8px 20px; display: flex; align-items: center; gap: 12px;
+        font-family: monospace; font-size: 13px; color: #e0e0e0;
+    `;
+    bar.innerHTML = `
+        <span id="pipeline-project-label" style="color: #4fc3f7;">Pipeline</span>
+        <div style="flex:1; height:6px; background:#333; border-radius:3px; overflow:hidden;">
+            <div id="pipeline-fill" style="height:100%; width:0%; background:linear-gradient(90deg,#4fc3f7,#29b6f6);
+                 border-radius:3px; transition:width 0.5s ease;"></div>
+        </div>
+        <span id="pipeline-step-text" style="min-width:140px;">Starting...</span>
+        <span id="pipeline-cost-text" style="color: #aaa; min-width:80px;"></span>
+        <button id="pipeline-stop-btn" style="background:#c62828; color:#fff; border:none;
+                padding:4px 10px; border-radius:3px; cursor:pointer; font-size:12px;"
+                onclick="window.stopPipeline()">Stop</button>
+    `;
+    document.body.appendChild(bar);
+}
+
+function handlePipelineProgress(data) {
+    // Auto-show progress bar if not visible
+    if (!document.getElementById('pipeline-progress-bar')) {
+        showPipelineProgressBar();
+    }
+
+    const fill = document.getElementById('pipeline-fill');
+    const text = document.getElementById('pipeline-step-text');
+    const costText = document.getElementById('pipeline-cost-text');
+    const label = document.getElementById('pipeline-project-label');
+
+    // Show project N/M for batch runs
+    const projTotal = data.project_total || 1;
+    const projIndex = data.project_index || 1;
+    const projName = data.project_name || '';
+    if (label) {
+        label.textContent = projTotal > 1
+            ? `[${projIndex}/${projTotal}] ${projName}`
+            : projName || 'Pipeline';
+    }
+
+    if (fill) fill.style.width = `${data.percent || 0}%`;
+    if (text) text.textContent = `Step ${data.step}/${data.total}: ${data.description || ''}`;
+    if (costText && data.cost_usd > 0) {
+        costText.textContent = `$${data.cost_usd.toFixed(4)}`;
+    }
+}
+
+function handlePipelineComplete(data) {
+    const fill = document.getElementById('pipeline-fill');
+    const text = document.getElementById('pipeline-step-text');
+    const costText = document.getElementById('pipeline-cost-text');
+    const stopBtn = document.getElementById('pipeline-stop-btn');
+    if (fill) fill.style.width = '100%';
+    const summary = data?.summary || {};
+    const costStr = summary.cost_usd ? ` | $${summary.cost_usd.toFixed(4)}` : '';
+
+    // Show batch results if multiple projects
+    const total = summary.projects_total || 1;
+    const completed = summary.projects_completed || total;
+    const failed = summary.projects_failed || 0;
+    if (total > 1) {
+        const batchInfo = `${completed}/${total} done` + (failed ? `, ${failed} failed` : '');
+        if (text) text.textContent = `Batch complete (${batchInfo})${costStr}`;
+        showNotification(`Batch abgeschlossen: ${batchInfo}${costStr}`, failed ? 'warning' : 'success');
+    } else {
+        if (text) text.textContent = `Pipeline complete!${costStr}`;
+        const costMsg = summary.cost_usd ? ` ($${summary.cost_usd.toFixed(4)})` : '';
+        showNotification(`Pipeline abgeschlossen!${costMsg}`, 'success');
+    }
+
+    if (costText && summary.cost_usd) costText.textContent = `$${summary.cost_usd.toFixed(4)}`;
+    if (stopBtn) stopBtn.style.display = 'none';
+
+    log('info', `[Pipeline] Complete: ${total} project(s)${costStr}`);
+
+    // Notify pipeline view tab to refresh manifest
+    onPipelineComplete();
+
+    // Auto-hide after 8s (longer for batch)
+    setTimeout(() => {
+        const bar = document.getElementById('pipeline-progress-bar');
+        if (bar) bar.remove();
+    }, total > 1 ? 10000 : 5000);
+
+    // Reload project data if output_dir is available
+    const outputDir = summary?.output_dir;
+    if (outputDir) {
+        log('info', `[Pipeline] Output: ${outputDir}`);
+    }
+}
+
+function handlePipelineError(data) {
+    const fill = document.getElementById('pipeline-fill');
+    const text = document.getElementById('pipeline-step-text');
+    const stopBtn = document.getElementById('pipeline-stop-btn');
+
+    // If batch continues, just show warning — don't kill the progress bar
+    if (data.continues) {
+        showNotification(`Projekt-Fehler: ${data.error} — weiter mit nächstem`, 'warning');
+        log('error', `[Pipeline] Error (continuing): ${data.error}`);
+        return;
+    }
+
+    if (fill) { fill.style.width = '100%'; fill.style.background = '#c62828'; }
+    if (text) text.textContent = `Error: ${data.error || 'Unknown'}`;
+    if (stopBtn) stopBtn.style.display = 'none';
+
+    showNotification(`Pipeline-Fehler: ${data.error}`, 'error');
+    log('error', `[Pipeline] Error: ${data.error}`);
+}
+
+window.stopPipeline = async function() {
+    try {
+        const resp = await fetch('/api/pipeline/stop', { method: 'POST' });
+        const result = await resp.json();
+        if (result.status === 'cancelled') {
+            showNotification('Pipeline gestoppt', 'info');
+        }
+    } catch (e) {
+        console.error('Failed to stop pipeline:', e);
+    }
+};
 
 // ============================================
 // Global Exports (for HTML onclick handlers)
@@ -1650,6 +2162,11 @@ window.togglePackageMatrix = togglePackageMatrix;
 
 // Tab switching
 window.switchTab = switchTab;
+
+// Auto-Link Discovery exports
+window.discoverLinks = discoverLinks;
+window.approveLink = approveLink;
+window.rejectLink = rejectLink;
 
 // Modal system exports
 window.openModal = openModal;

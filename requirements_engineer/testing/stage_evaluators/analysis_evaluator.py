@@ -9,6 +9,7 @@ Evaluates the requirements analysis stage:
 """
 
 from typing import Dict, List, Any
+from pathlib import Path
 import logging
 
 from .base_evaluator import BaseStageEvaluator, EvaluatorConfig
@@ -50,7 +51,7 @@ class AnalysisEvaluator(BaseStageEvaluator):
             from omegaconf import OmegaConf
             from requirements_engineer.core.re_agent_manager import REAgentManager
 
-            config = OmegaConf.load("re_config.yaml")
+            config = OmegaConf.load(str(Path(__file__).parent.parent.parent / "re_config.yaml"))
 
             manager = REAgentManager(
                 config=config,

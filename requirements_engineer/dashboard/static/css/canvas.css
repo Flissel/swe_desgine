@@ -207,16 +207,28 @@ body.is-dragging .canvas-node:not(.dragging) {
 }
 
 .legend-line.epic-story { background: #7856ff; }
+.legend-line.epic-req { background: #9333ea; }
 .legend-line.req-story { background: #1d9bf0; }
 .legend-line.story-test { background: #00ba7c; }
 .legend-line.req-diagram { background: #ffd400; }
-.legend-line.default { background: #536471; }
 .legend-line.persona-story { background: #f97316; }
+.legend-line.persona-screen { background: #f97316; }
 .legend-line.flow-screen { background: #ec4899; }
 .legend-line.screen-component { background: #84cc16; }
 .legend-line.story-screen { background: #8b5cf6; }
 .legend-line.feature-task { background: #f59e0b; }
-.legend-line.epic-req { background: #9333ea; }
+.legend-line.feature-story { background: #10b981; }
+.legend-line.req-api { background: #ff7a00; }
+.legend-line.api-screen { background: #8b5cf6; }
+.legend-line.comp-api { background: #ff7a00; }
+.legend-line.test-api { background: #f4212e; }
+.legend-line.api-entity { background: #6366f1; }
+.legend-line.entity-api { background: #6366f1; }
+.legend-line.req-entity { background: #6366f1; }
+.legend-line.screen-entity { background: #84cc16; }
+.legend-line.diagram-entity { background: #ffd400; }
+.legend-line.tech-comp { background: #06b6d4; }
+.legend-line.default { background: #536471; }
 
 /* ============================================
    Cluster Layout Mode

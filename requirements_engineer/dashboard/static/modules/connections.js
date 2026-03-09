@@ -302,7 +302,7 @@ function updateConnectionsInternal() {
 
     const connectionColors = {
         'epic-story': '#7856ff',
-        'epic-req': '#9333ea',       // Purple for epic → requirement
+        'epic-req': '#9333ea',
         'req-story': '#1d9bf0',
         'story-test': '#00ba7c',
         'req-diagram': '#ffd400',
@@ -311,6 +311,19 @@ function updateConnectionsInternal() {
         'screen-component': '#84cc16',
         'story-screen': '#8b5cf6',
         'feature-task': '#f59e0b',
+        // Phase 4: All link types with distinct colors
+        'persona-screen': '#f97316',
+        'req-api': '#ff7a00',
+        'api-screen': '#8b5cf6',
+        'comp-api': '#ff7a00',
+        'test-api': '#f4212e',
+        'api-entity': '#6366f1',
+        'req-entity': '#6366f1',
+        'screen-entity': '#84cc16',
+        'entity-api': '#6366f1',
+        'diagram-entity': '#ffd400',
+        'tech-comp': '#06b6d4',
+        'feature-story': '#10b981',
         'default': '#536471'
     };
 
@@ -511,14 +524,30 @@ function updateConnectionsInternal() {
             let colorKey = 'default';
             if (fromNode.type === 'epic' && toNode.type === 'user-story') colorKey = 'epic-story';
             else if (fromNode.type === 'epic' && toNode.type === 'requirement') colorKey = 'epic-req';
+            else if (fromNode.type === 'requirement' && toNode.type === 'epic') colorKey = 'epic-req';
             else if (fromNode.type === 'requirement' && toNode.type === 'user-story') colorKey = 'req-story';
             else if (fromNode.type === 'user-story' && toNode.type === 'test') colorKey = 'story-test';
             else if (fromNode.type === 'requirement' && toNode.type === 'diagram') colorKey = 'req-diagram';
             else if (fromNode.type === 'persona' && toNode.type === 'user-story') colorKey = 'persona-story';
+            else if (fromNode.type === 'persona' && toNode.type === 'screen') colorKey = 'persona-screen';
             else if (fromNode.type === 'user-flow' && toNode.type === 'screen') colorKey = 'flow-screen';
             else if (fromNode.type === 'screen' && toNode.type === 'component') colorKey = 'screen-component';
             else if (fromNode.type === 'user-story' && toNode.type === 'screen') colorKey = 'story-screen';
             else if ((fromNode.type === 'feature' || fromNode.type === 'epic') && toNode.type === 'task') colorKey = 'feature-task';
+            // API links
+            else if (fromNode.type === 'requirement' && toNode.type === 'api') colorKey = 'req-api';
+            else if (fromNode.type === 'api' && toNode.type === 'requirement') colorKey = 'req-api';
+            else if (fromNode.type === 'api' && toNode.type === 'screen') colorKey = 'api-screen';
+            else if (fromNode.type === 'component' && toNode.type === 'api') colorKey = 'comp-api';
+            else if (fromNode.type === 'test' && toNode.type === 'api') colorKey = 'test-api';
+            // Entity links
+            else if (fromNode.type === 'api' && toNode.type === 'entity') colorKey = 'api-entity';
+            else if (fromNode.type === 'entity' && toNode.type === 'api') colorKey = 'entity-api';
+            else if (fromNode.type === 'requirement' && toNode.type === 'entity') colorKey = 'req-entity';
+            else if (fromNode.type === 'screen' && toNode.type === 'entity') colorKey = 'screen-entity';
+            else if (fromNode.type === 'diagram' && toNode.type === 'entity') colorKey = 'diagram-entity';
+            // Tech & Feature
+            else if (fromNode.type === 'tech-stack' && toNode.type === 'component') colorKey = 'tech-comp';
 
             const color = connectionColors[colorKey];
 
@@ -1049,6 +1078,7 @@ function addArrowMarkers() {
 
     const colors = {
         'epic-story': '#7856ff',
+        'epic-req': '#9333ea',
         'req-story': '#1d9bf0',
         'story-test': '#00ba7c',
         'req-diagram': '#ffd400',
@@ -1057,6 +1087,18 @@ function addArrowMarkers() {
         'screen-component': '#84cc16',
         'story-screen': '#8b5cf6',
         'feature-task': '#f59e0b',
+        'persona-screen': '#f97316',
+        'req-api': '#ff7a00',
+        'api-screen': '#8b5cf6',
+        'comp-api': '#ff7a00',
+        'test-api': '#f4212e',
+        'api-entity': '#6366f1',
+        'req-entity': '#6366f1',
+        'screen-entity': '#84cc16',
+        'entity-api': '#6366f1',
+        'diagram-entity': '#ffd400',
+        'tech-comp': '#06b6d4',
+        'feature-story': '#10b981',
         'default': '#536471'
     };
 

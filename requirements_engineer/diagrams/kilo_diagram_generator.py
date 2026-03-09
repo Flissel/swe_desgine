@@ -19,8 +19,8 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from ai_scientist.tools.mermaid_output_handler import MermaidOutputHandler
-from ai_scientist.tools.mermaid_validator import MermaidValidator, ValidationResult
+from requirements_engineer.tools.mermaid_output_handler import MermaidOutputHandler
+from requirements_engineer.tools.mermaid_validator import MermaidValidator, ValidationResult
 
 
 # Prompt templates for each diagram type

@@ -47,18 +47,19 @@ class ImporterRegistry:
     @classmethod
     def get_importer(cls, file_path: str) -> Optional['BaseImporter']:
         """
-        Get the appropriate importer for a file.
+        Get the appropriate importer for a file or URL.
 
         Tries each registered importer in order until one
         reports it can handle the file.
 
         Args:
-            file_path: Path to the file to import
+            file_path: Path to the file to import, or a URL
 
         Returns:
             Importer instance or None if no importer found
         """
-        if not os.path.exists(file_path):
+        is_url = file_path.startswith("http://") or file_path.startswith("https://")
+        if not is_url and not os.path.exists(file_path):
             print(f"  Warning: File not found: {file_path}")
             return None
 
@@ -120,6 +121,14 @@ def _register_default_importers():
         ImporterRegistry.register(ArchTeamImporter)
     except ImportError as e:
         # arch_team not available - this is fine, it's optional
+        pass
+
+    # Register GitHub importer (URL-based, registered last so file-based
+    # importers get first pick on local paths)
+    try:
+        from .github_importer import GitHubImporter
+        ImporterRegistry.register(GitHubImporter)
+    except ImportError as e:
         pass
 
 

@@ -19,6 +19,7 @@ class EventType(Enum):
     PIPELINE_STARTED = "pipeline_started"
     PIPELINE_COMPLETE = "pipeline_complete"
     PIPELINE_ERROR = "pipeline_error"
+    PIPELINE_PROGRESS = "pipeline_progress"
 
     # Pass events
     PASS_STARTED = "pass_started"
@@ -125,6 +126,24 @@ class EventType(Enum):
     IMPACT_ANALYSIS_STARTED = "impact_analysis_started"
     IMPACT_ANALYSIS_COMPLETE = "impact_analysis_complete"
 
+    # Wizard Agent Enrichment Events
+    WIZARD_SUGGESTION_PENDING = "wizard_suggestion_pending"
+    WIZARD_SUGGESTION_AUTO_APPLIED = "wizard_suggestion_auto_applied"
+    WIZARD_SUGGESTION_APPROVED = "wizard_suggestion_approved"
+    WIZARD_SUGGESTION_REJECTED = "wizard_suggestion_rejected"
+    WIZARD_ENRICHMENT_STARTED = "wizard_enrichment_started"
+    WIZARD_ENRICHMENT_COMPLETE = "wizard_enrichment_complete"
+
+    # Pipeline Stage I/O Events
+    STAGE_STARTED = "stage_started"
+    STAGE_COMPLETED = "stage_completed"
+    STAGE_FAILED = "stage_failed"
+    STAGE_SKIPPED = "stage_skipped"
+
+    # Trace Explorer Events
+    TRACE_EDIT = "trace_edit"
+    TRACE_IMPACT = "trace_impact"
+
 
 @dataclass
 class DashboardEvent:
@@ -176,6 +195,13 @@ class DashboardEventEmitter:
     def add_callback(self, callback: Callable):
         """Add a callback for local event handling."""
         self._callbacks.append(callback)
+
+    def remove_callback(self, callback: Callable):
+        """Remove a previously added callback."""
+        try:
+            self._callbacks.remove(callback)
+        except ValueError:
+            pass
 
     async def emit(self, event_type: EventType, data: Dict[str, Any]):
         """
@@ -243,6 +269,18 @@ class DashboardEventEmitter:
     async def pipeline_complete(self, summary: Dict[str, Any]):
         """Emit pipeline complete event."""
         await self.emit(EventType.PIPELINE_COMPLETE, {"summary": summary})
+
+    async def pipeline_progress(self, step: int, total: int, description: str,
+                                cost_usd: float = 0.0, total_tokens: int = 0):
+        """Emit pipeline progress event for step-by-step tracking."""
+        await self.emit(EventType.PIPELINE_PROGRESS, {
+            "step": step,
+            "total": total,
+            "description": description,
+            "percent": int((step / total) * 100) if total > 0 else 0,
+            "cost_usd": round(cost_usd, 4),
+            "total_tokens": total_tokens
+        })
 
     async def pass_started(self, pass_name: str, pass_number: int):
         """Emit pass started event."""
@@ -653,4 +691,91 @@ class DashboardEventEmitter:
             "layout_type": layout_type,
             "aggregations": aggregations,
             "columns": columns
+        })
+
+    # ============ Raw Emit (for dynamic event types) ============
+
+    async def emit_raw(self, event_type_str: str, data: Dict[str, Any]):
+        """Emit an event using a string type name (for dynamic/plugin events)."""
+        # Try to find matching EventType enum
+        try:
+            event_type = EventType(event_type_str)
+        except ValueError:
+            # Not in enum - emit directly as raw string
+            event_type = None
+
+        if event_type:
+            await self.emit(event_type, data)
+        else:
+            # Fallback: broadcast raw without enum
+            import json as _json
+            message = _json.dumps({
+                "type": event_type_str,
+                "data": data,
+                "timestamp": datetime.now().isoformat()
+            })
+            disconnected = []
+            for client in self.clients:
+                try:
+                    await client.send_str(message)
+                except Exception:
+                    disconnected.append(client)
+            for client in disconnected:
+                self.remove_client(client)
+
+    # ============ Wizard Agent Enrichment Methods ============
+
+    async def wizard_enrichment_started(self, step: int, team_name: str):
+        """Emit wizard enrichment started event."""
+        await self.emit(EventType.WIZARD_ENRICHMENT_STARTED, {
+            "step": step,
+            "team": team_name
+        })
+
+    async def wizard_enrichment_complete(self, step: int, auto_applied: int, pending: int):
+        """Emit wizard enrichment complete event."""
+        await self.emit(EventType.WIZARD_ENRICHMENT_COMPLETE, {
+            "step": step,
+            "auto_applied": auto_applied,
+            "pending": pending
+        })
+
+    # ============ Pipeline Stage I/O Methods ============
+
+    async def stage_started(self, step, name: str, description: str,
+                            inputs: List[Dict[str, Any]] = None):
+        """Emit stage started event with inputs."""
+        await self.emit(EventType.STAGE_STARTED, {
+            "step": step,
+            "name": name,
+            "description": description,
+            "inputs": inputs or [],
+        })
+
+    async def stage_completed(self, step, name: str,
+                              outputs: List[Dict[str, Any]] = None,
+                              duration_ms: int = 0, cost_usd: float = 0.0):
+        """Emit stage completed event with outputs."""
+        await self.emit(EventType.STAGE_COMPLETED, {
+            "step": step,
+            "name": name,
+            "outputs": outputs or [],
+            "duration_ms": duration_ms,
+            "cost_usd": round(cost_usd, 4),
+        })
+
+    async def stage_failed(self, step, name: str, error: str):
+        """Emit stage failed event."""
+        await self.emit(EventType.STAGE_FAILED, {
+            "step": step,
+            "name": name,
+            "error": error,
+        })
+
+    async def stage_skipped(self, step, name: str, reason: str = ""):
+        """Emit stage skipped event."""
+        await self.emit(EventType.STAGE_SKIPPED, {
+            "step": step,
+            "name": name,
+            "reason": reason,
         })

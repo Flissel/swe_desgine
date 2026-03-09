@@ -24,7 +24,7 @@ from .base_presentation_agent import (
 
 # Import the Kilocode CLI wrapper
 try:
-    from ai_scientist.tools.kilocli_tool import KilocodeCliTool
+    from requirements_engineer.tools.kilocli_tool import KilocodeCliTool
     KILO_AVAILABLE = True
 except ImportError:
     KILO_AVAILABLE = False

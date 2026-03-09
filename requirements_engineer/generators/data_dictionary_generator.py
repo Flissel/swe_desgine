@@ -204,6 +204,203 @@ class DataDictionary:
 
         return "\n".join(lines)
 
+    def to_sql(self) -> str:
+        """Generate PostgreSQL DDL from the data dictionary.
+
+        Produces CREATE TYPE, CREATE TABLE, FOREIGN KEY, CREATE INDEX statements
+        with proper dependency ordering (topological sort).
+        """
+        sql_parts = []
+        sql_parts.append(f"-- PostgreSQL Schema: {self.title}")
+        sql_parts.append(f"-- Generated: {datetime.now().isoformat()}")
+        sql_parts.append(f"-- Entities: {len(self.entities)}, Relationships: {len(self.relationships)}")
+        sql_parts.append("")
+
+        # Type mapping
+        def _sql_type(attr: Attribute) -> str:
+            t = attr.data_type.lower()
+            if t == "enum" and attr.enum_values:
+                return f"{_enum_type_name(attr.name)}"
+            type_map = {
+                "string": f"VARCHAR({attr.max_length or 255})",
+                "varchar": f"VARCHAR({attr.max_length or 255})",
+                "text": "TEXT",
+                "integer": "INTEGER",
+                "int": "INTEGER",
+                "bigint": "BIGINT",
+                "decimal": "DECIMAL(10, 2)",
+                "float": "DOUBLE PRECISION",
+                "boolean": "BOOLEAN",
+                "bool": "BOOLEAN",
+                "date": "DATE",
+                "datetime": "TIMESTAMP WITH TIME ZONE",
+                "timestamp": "TIMESTAMP WITH TIME ZONE",
+                "uuid": "UUID",
+                "json": "JSONB",
+                "jsonb": "JSONB",
+                "bytea": "BYTEA",
+            }
+            return type_map.get(t, f"VARCHAR({attr.max_length or 255})")
+
+        def _table_name(entity_name: str) -> str:
+            s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', entity_name)
+            s2 = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1)
+            return s2.lower().replace(' ', '_').replace('-', '_')
+
+        def _enum_type_name(attr_name: str) -> str:
+            return f"{attr_name}_type"
+
+        # Collect all enum types
+        enum_types = {}  # {type_name: [values]}
+        for entity in self.entities.values():
+            for attr in entity.attributes:
+                if attr.data_type.lower() == "enum" and attr.enum_values:
+                    tn = _enum_type_name(attr.name)
+                    if tn not in enum_types:
+                        enum_types[tn] = attr.enum_values
+
+        # CREATE TYPE for enums
+        if enum_types:
+            sql_parts.append("-- ============================================")
+            sql_parts.append("-- ENUM TYPES")
+            sql_parts.append("-- ============================================")
+            sql_parts.append("")
+            for type_name, values in sorted(enum_types.items()):
+                vals = ", ".join(f"'{v}'" for v in values)
+                sql_parts.append(f"CREATE TYPE {type_name} AS ENUM ({vals});")
+            sql_parts.append("")
+
+        # Topological sort: entities ordered so referenced tables come first
+        entity_names = list(self.entities.keys())
+        # Build dependency graph: entity -> set of entities it depends on (via FK)
+        deps = {name: set() for name in entity_names}
+        for entity in self.entities.values():
+            for attr in entity.attributes:
+                if attr.is_foreign_key and attr.foreign_key_target:
+                    target_entity = attr.foreign_key_target.split(".")[0]
+                    if target_entity in deps and target_entity != entity.name:
+                        deps[entity.name].add(target_entity)
+
+        # Kahn's algorithm
+        sorted_entities = []
+        in_degree = {name: len(d) for name, d in deps.items()}
+        queue = [name for name, deg in in_degree.items() if deg == 0]
+        while queue:
+            node = queue.pop(0)
+            sorted_entities.append(node)
+            for name, d in deps.items():
+                if node in d:
+                    d.remove(node)
+                    in_degree[name] -= 1
+                    if in_degree[name] == 0:
+                        queue.append(name)
+        # Add any remaining (circular deps) at the end
+        for name in entity_names:
+            if name not in sorted_entities:
+                sorted_entities.append(name)
+
+        # CREATE TABLE statements
+        sql_parts.append("-- ============================================")
+        sql_parts.append("-- TABLES")
+        sql_parts.append("-- ============================================")
+        sql_parts.append("")
+
+        fk_constraints = []  # Deferred FK constraints
+        index_statements = []
+
+        for entity_name in sorted_entities:
+            entity = self.entities[entity_name]
+            tbl = _table_name(entity_name)
+            sql_parts.append(f"-- {entity.description}")
+            sql_parts.append(f"CREATE TABLE {tbl} (")
+
+            col_lines = []
+            for attr in entity.attributes:
+                col = f"    {attr.name} {_sql_type(attr)}"
+                if attr.name == entity.primary_key:
+                    col += " PRIMARY KEY"
+                    if attr.data_type.lower() == "uuid":
+                        col += " DEFAULT gen_random_uuid()"
+                else:
+                    if not attr.required:
+                        pass  # nullable by default
+                    else:
+                        col += " NOT NULL"
+                    if attr.unique:
+                        col += " UNIQUE"
+                    if attr.default_value and attr.name != entity.primary_key:
+                        col += f" DEFAULT {attr.default_value}"
+
+                col_lines.append(col)
+
+                # Collect FK constraints
+                if attr.is_foreign_key and attr.foreign_key_target:
+                    parts = attr.foreign_key_target.split(".")
+                    ref_table = _table_name(parts[0])
+                    ref_col = parts[1] if len(parts) > 1 else "id"
+                    on_delete = "CASCADE" if attr.required else "SET NULL"
+                    fk_constraints.append(
+                        f"ALTER TABLE {tbl} ADD CONSTRAINT fk_{tbl}_{attr.name} "
+                        f"FOREIGN KEY ({attr.name}) REFERENCES {ref_table}({ref_col}) ON DELETE {on_delete};"
+                    )
+
+                # Collect index statements
+                if attr.is_indexed and attr.name != entity.primary_key:
+                    index_statements.append(
+                        f"CREATE INDEX idx_{tbl}_{attr.name} ON {tbl}({attr.name});"
+                    )
+
+            sql_parts.append(",\n".join(col_lines))
+            sql_parts.append(");")
+            sql_parts.append("")
+
+        # Junction tables for N:M relationships
+        junction_tables = []
+        for rel in self.relationships:
+            if rel.cardinality == "N:M" and rel.junction_table:
+                jt = _table_name(rel.junction_table)
+                src_fk = rel.source_fk or f"{_table_name(rel.source_entity)}_id"
+                tgt_fk = rel.target_fk or f"{_table_name(rel.target_entity)}_id"
+                src_tbl = _table_name(rel.source_entity)
+                tgt_tbl = _table_name(rel.target_entity)
+                junction_tables.append(f"-- Junction table: {rel.source_entity} <-> {rel.target_entity}")
+                junction_tables.append(f"CREATE TABLE {jt} (")
+                junction_tables.append(f"    {src_fk} UUID NOT NULL REFERENCES {src_tbl}(id) ON DELETE CASCADE,")
+                junction_tables.append(f"    {tgt_fk} UUID NOT NULL REFERENCES {tgt_tbl}(id) ON DELETE CASCADE,")
+                junction_tables.append(f"    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),")
+                junction_tables.append(f"    PRIMARY KEY ({src_fk}, {tgt_fk})")
+                junction_tables.append(f");")
+                junction_tables.append("")
+
+        if junction_tables:
+            sql_parts.append("-- ============================================")
+            sql_parts.append("-- JUNCTION TABLES")
+            sql_parts.append("-- ============================================")
+            sql_parts.append("")
+            sql_parts.extend(junction_tables)
+
+        # Foreign key constraints (deferred to avoid ordering issues)
+        if fk_constraints:
+            sql_parts.append("-- ============================================")
+            sql_parts.append("-- FOREIGN KEY CONSTRAINTS")
+            sql_parts.append("-- ============================================")
+            sql_parts.append("")
+            for fk in fk_constraints:
+                sql_parts.append(fk)
+            sql_parts.append("")
+
+        # Indexes
+        if index_statements:
+            sql_parts.append("-- ============================================")
+            sql_parts.append("-- INDEXES")
+            sql_parts.append("-- ============================================")
+            sql_parts.append("")
+            for idx in index_statements:
+                sql_parts.append(idx)
+            sql_parts.append("")
+
+        return "\n".join(sql_parts)
+
 
 class DataDictionaryGenerator:
     """
@@ -232,6 +429,7 @@ Return COMPACT JSON:
                 {{
                     "name": "attr_name",
                     "data_type": "string",
+                    "description": "Brief purpose of this attribute",
                     "required": true,
                     "max_length": 255,
                     "enum_values": [],
@@ -267,7 +465,14 @@ Guidelines:
 - Set "is_indexed": true for fields used in queries, filters, or lookups (FKs, email, status, etc.)
 - For N:M relationships: include "junction_table" name (e.g., "user_roles"), "source_fk" and "target_fk"
 - ALWAYS include created_at (datetime) and updated_at (datetime) audit fields on every entity
-- Max 5 entities per response. Use: string, integer, decimal, boolean, date, datetime, uuid, enum, text.
+- Every attribute MUST have a non-empty "description" explaining its purpose (e.g., "Unique identifier for the user", "Timestamp of last login")
+- Every entity MUST have a primary key as first attribute (id: uuid)
+- Every entity with user ownership MUST have a user_id FK
+- Include soft-delete field (deleted_at: datetime, nullable) on all user-facing entities
+- Include version field (version: integer, default 1) on entities with concurrent update potential
+- For messaging/communication domains: MUST include encryption key entities (public_key, key_version, algorithm), delivery receipt/status tracking entities, link preview/media metadata entities, device/session tables
+- For audit trails: include a separate AuditLog entity with entity_type, entity_id, action, old_value, new_value, actor_id, timestamp
+- Max 8 entities per response. Use: string, integer, decimal, boolean, date, datetime, uuid, enum, text, jsonb.
 Return ONLY valid JSON."""
 
     def __init__(
@@ -328,15 +533,20 @@ Return ONLY valid JSON."""
         )
         latency_ms = int((time.time() - start_time) * 1000)
 
+        response_text = response.choices[0].message.content.strip()
+
         # Log the LLM call
         log_llm_call(
             component="data_dictionary_generator",
             model=self.model_name,
             response=response,
-            latency_ms=latency_ms
+            latency_ms=latency_ms,
+            system_message="You are an expert Data Architect. Always respond with valid JSON only. Keep responses concise.",
+            user_message=prompt,
+            response_text=response_text,
         )
 
-        return response.choices[0].message.content.strip()
+        return response_text
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         """Extract JSON from LLM response with robust error handling."""
@@ -429,6 +639,8 @@ Return ONLY valid JSON."""
 
         dictionary = DataDictionary(title=title)
         all_batch_results = []
+        # Track seen entity names (case-insensitive) to prevent duplicates like User/user
+        seen_entity_keys = set()
 
         # Process each batch using fixed batch size
         batch_num = 0
@@ -456,12 +668,14 @@ Return ONLY valid JSON."""
             # Parse entities from this batch
             batch_entities = 0
             for entity_data in data.get("entities", []):
-                entity_name = entity_data.get("name", "Unknown")
+                entity_name = entity_data.get("name", "Unknown").strip()
 
-                # Skip duplicates
-                if entity_name in dictionary.entities:
-                    print(f"    [Skip] Entity '{entity_name}' already exists")
+                # Skip duplicates (case-insensitive to catch User/user/USER)
+                entity_key = entity_name.lower()
+                if entity_key in seen_entity_keys or entity_name in dictionary.entities:
+                    print(f"    [Skip] Entity '{entity_name}' already exists (case-insensitive)")
                     continue
+                seen_entity_keys.add(entity_key)
 
                 attributes = []
                 for attr_data in entity_data.get("attributes", []):

@@ -41,6 +41,12 @@ from .markdown_parser import (
     parse_data_dictionary_md,
     parse_work_breakdown_md,
     parse_api_documentation_md,
+    parse_screen_markdown_files,
+    parse_state_machines_json,
+    parse_infrastructure_json,
+    parse_ui_compositions_json,
+    parse_test_factories_json,
+    parse_architecture_json,
     extract_project_name,
     extract_timestamp
 )
@@ -57,6 +63,14 @@ try:
 except ImportError:
     HAS_PROPAGATION = False
     print("[SERVER] Propagation module not available")
+
+# Import Trace Index for Trace Explorer tab
+try:
+    from .trace_index import TraceIndex
+    HAS_TRACE_INDEX = True
+except ImportError:
+    HAS_TRACE_INDEX = False
+    print("[SERVER] TraceIndex not available")
 
 
 class DashboardServer:
@@ -108,6 +122,21 @@ class DashboardServer:
         # KiloAgent Cascade Edit state
         self._cascade_results: Dict[str, Any] = {}
 
+        # Wizard Suggestion Queue (lazy-init on first use)
+        self._wizard_suggestion_queue = None
+
+        # Trace Explorer index (built on project load)
+        self._trace_index: Optional['TraceIndex'] = None
+
+        # Pipeline execution state
+        self._pipeline_task: Optional[asyncio.Task] = None
+        self._pipeline_status: Dict[str, Any] = {
+            "running": False, "step": 0, "total": 15,
+            "description": "", "error": None, "output_dir": None,
+            "project_index": 0, "project_total": 1, "project_name": ""
+        }
+        self._pipeline_queue: list = []  # list of {"project_path": ..., "config_path": ...}
+
     async def start(self):
         """Start the dashboard server."""
         self.app = web.Application()
@@ -132,6 +161,20 @@ class DashboardServer:
         self.app.router.add_post("/api/wizard/split", self._handle_wizard_split)
         self.app.router.add_post("/api/wizard/answer-clarification", self._handle_wizard_answer_clarification)
 
+        # Wizard Auto-Enrich API endpoints (AutoGen agents)
+        self.app.router.add_post("/api/wizard/auto-enrich", self._handle_wizard_auto_enrich)
+        self.app.router.add_get("/api/wizard/suggestions", self._handle_wizard_get_suggestions)
+        self.app.router.add_post("/api/wizard/suggestions/{suggestion_id}/approve", self._handle_wizard_approve_suggestion)
+        self.app.router.add_post("/api/wizard/suggestions/{suggestion_id}/reject", self._handle_wizard_reject_suggestion)
+
+        # Pipeline Execution API endpoints
+        self.app.router.add_post("/api/pipeline/run", self._handle_pipeline_run)
+        self.app.router.add_post("/api/pipeline/batch", self._handle_pipeline_batch)
+        self.app.router.add_get("/api/pipeline/status", self._handle_pipeline_status)
+        self.app.router.add_post("/api/pipeline/stop", self._handle_pipeline_stop)
+        self.app.router.add_get("/api/pipeline/manifest", self._handle_pipeline_manifest)
+        self.app.router.add_get("/api/config/validate", self._handle_config_validate)
+
         # Change Propagation API endpoints
         self.app.router.add_get("/api/propagation/pending", self._handle_get_pending_propagations)
         self.app.router.add_post("/api/propagation/approve/{suggestion_id}", self._handle_approve_propagation)
@@ -145,6 +188,17 @@ class DashboardServer:
         self.app.router.add_get("/api/links/pending", self._handle_get_pending_links)
         self.app.router.add_post("/api/links/approve/{suggestion_id}", self._handle_approve_link)
         self.app.router.add_post("/api/links/reject/{suggestion_id}", self._handle_reject_link)
+
+        # Trace Explorer API endpoints
+        self.app.router.add_get("/api/trace/stats", self._handle_trace_stats)
+        self.app.router.add_get("/api/trace/tree", self._handle_trace_tree)
+        self.app.router.add_get("/api/trace/artifacts", self._handle_trace_artifacts)
+        self.app.router.add_get("/api/trace/artifacts/{artifact_id}", self._handle_trace_detail)
+        self.app.router.add_get("/api/trace/chain/{artifact_id}", self._handle_trace_chain)
+        self.app.router.add_get("/api/trace/impact/{artifact_id}", self._handle_trace_impact)
+        self.app.router.add_get("/api/trace/search", self._handle_trace_search)
+        self.app.router.add_post("/api/trace/edit/{artifact_id}", self._handle_trace_edit)
+        self.app.router.add_post("/api/trace/kilo/{artifact_id}", self._handle_trace_kilo)
 
         self.app.router.add_static("/static", self._static_path)
 
@@ -299,6 +353,28 @@ class DashboardServer:
 
         elif msg_type == "reject_cascade_node":
             await self._handle_reject_cascade_node(ws, data)
+
+        # Wizard Suggestion WebSocket messages
+        elif msg_type == "approve_wizard_suggestion":
+            suggestion_id = data.get("suggestion_id")
+            if suggestion_id and self._wizard_suggestion_queue:
+                suggestion = await self._wizard_suggestion_queue.approve(suggestion_id)
+                if suggestion:
+                    await ws.send_json({
+                        "type": "wizard_suggestion_approved",
+                        "data": suggestion.to_dict()
+                    })
+
+        elif msg_type == "reject_wizard_suggestion":
+            suggestion_id = data.get("suggestion_id")
+            reason = data.get("reason", "")
+            if suggestion_id and self._wizard_suggestion_queue:
+                suggestion = await self._wizard_suggestion_queue.reject(suggestion_id, reason)
+                if suggestion:
+                    await ws.send_json({
+                        "type": "wizard_suggestion_rejected",
+                        "data": suggestion.to_dict()
+                    })
 
     async def _handle_edit_node(self, ws: web.WebSocketResponse, data: Dict[str, Any]):
         """Handle node edit from modal."""
@@ -845,6 +921,15 @@ WICHTIG:
                 result["format"] = "hybrid"  # Indicates both sources were used
                 print(f"  [INFO] Merged journal.json with folder data for {project_id}")
 
+            # Build Trace Explorer index from loaded project data
+            if HAS_TRACE_INDEX:
+                try:
+                    self._trace_index = TraceIndex()
+                    self._trace_index.build(project_dir, result)
+                except Exception as e:
+                    print(f"  [WARN] TraceIndex build failed: {e}")
+                    self._trace_index = None
+
             return web.json_response(result)
 
         except (json.JSONDecodeError, IOError) as e:
@@ -873,7 +958,12 @@ WICHTIG:
             "screens": [],
             "design_tokens": {},
             "tasks": {},
-            "task_summary": {"total_tasks": 0, "total_hours": 0}
+            "task_summary": {"total_tasks": 0, "total_hours": 0},
+            "state_machines": [],
+            "infrastructure": None,
+            "ui_compositions": [],
+            "test_factories": [],
+            "architecture": None
         }
 
         # ========== LOAD REQUIREMENTS FROM JOURNAL.JSON ==========
@@ -1115,9 +1205,25 @@ WICHTIG:
                     result["ui_components"] = ui_data.get("components", [])
                     result["screens"] = ui_data.get("screens", [])
                     result["design_tokens"] = ui_data.get("design_tokens", {})
-                print(f"  [INFO] Loaded {len(result['ui_components'])} components, {len(result['screens'])} screens")
+                print(f"  [INFO] Loaded {len(result['ui_components'])} components, {len(result['screens'])} screens from JSON")
             except Exception as e:
                 print(f"  [WARN] Could not parse ui_spec.json: {e}")
+
+        # Load individual screen markdown files from ui_design/screens/
+        screens_dir = project_dir / "ui_design" / "screens"
+        if screens_dir.exists():
+            try:
+                parsed_screens = parse_screen_markdown_files(screens_dir)
+
+                # Merge with JSON screens (JSON has priority)
+                json_screen_ids = {s.get('id') for s in result["screens"]}
+                for parsed_screen in parsed_screens:
+                    if parsed_screen.get('id') not in json_screen_ids:
+                        result["screens"].append(parsed_screen)
+
+                print(f"  [INFO] Loaded {len(parsed_screens)} screens from markdown files (total: {len(result['screens'])})")
+            except Exception as e:
+                print(f"  [WARN] Could not parse screen markdown files: {e}")
 
         # Load task_list.json
         tasks_file = project_dir / "tasks" / "task_list.json"
@@ -1134,6 +1240,89 @@ WICHTIG:
                 print(f"  [INFO] Loaded {result['task_summary']['total_tasks']} tasks ({result['task_summary']['total_hours']}h)")
             except Exception as e:
                 print(f"  [WARN] Could not parse task_list.json: {e}")
+
+        # ========== LOAD STATE MACHINES ==========
+        state_machines_file = project_dir / "state_machines" / "state_machines.json"
+        if state_machines_file.exists():
+            try:
+                state_machines = parse_state_machines_json(state_machines_file)
+                result["state_machines"] = state_machines
+                print(f"  [INFO] Loaded {len(state_machines)} state machines")
+            except Exception as e:
+                print(f"  [WARN] Could not parse state_machines.json: {e}")
+
+        # Also load individual state machine .mmd files
+        sm_dir = project_dir / "state_machines"
+        if sm_dir.exists():
+            for mmd_file in sorted(sm_dir.glob("*.mmd")):
+                try:
+                    mermaid_code = mmd_file.read_text(encoding="utf-8")
+                    sm_id = mmd_file.stem.upper().replace("_", "-")
+
+                    # Try to match with existing state machine
+                    matched = False
+                    for sm in result.get("state_machines", []):
+                        if sm.get("entity", "").replace("_", "-") == mmd_file.stem:
+                            sm["mermaid_file"] = str(mmd_file)
+                            matched = True
+                            break
+
+                    # If no match, add as standalone diagram
+                    if not matched:
+                        result["diagrams"].append({
+                            "id": f"SM-{sm_id}",
+                            "type": "stateDiagram",
+                            "mermaid_code": mermaid_code,
+                            "title": mmd_file.stem.replace("_", " ").title()
+                        })
+                except Exception as e:
+                    print(f"  [WARN] Could not read {mmd_file.name}: {e}")
+
+        # ========== LOAD INFRASTRUCTURE ==========
+        infra_file = project_dir / "infrastructure" / "infrastructure.json"
+        if infra_file.exists():
+            try:
+                infra = parse_infrastructure_json(infra_file)
+                if infra:
+                    result["infrastructure"] = infra
+                    print(f"  [INFO] Loaded infrastructure with {infra.get('service_count', 0)} services")
+            except Exception as e:
+                print(f"  [WARN] Could not parse infrastructure.json: {e}")
+
+        # ========== LOAD UI COMPOSITIONS ==========
+        compositions_dir = project_dir / "ui_design" / "compositions"
+        if compositions_dir.exists():
+            try:
+                compositions = parse_ui_compositions_json(compositions_dir)
+                result["ui_compositions"] = compositions
+                print(f"  [INFO] Loaded {len(compositions)} UI compositions")
+            except Exception as e:
+                print(f"  [WARN] Could not parse UI compositions: {e}")
+
+        # ========== LOAD TEST FACTORIES ==========
+        factories_file = project_dir / "testing" / "factories" / "factories.json"
+        if factories_file.exists():
+            try:
+                factories = parse_test_factories_json(factories_file)
+                result["test_factories"] = factories
+                print(f"  [INFO] Loaded {len(factories)} test factories")
+            except Exception as e:
+                print(f"  [WARN] Could not parse factories.json: {e}")
+
+        # ========== LOAD ARCHITECTURE ==========
+        arch_file = project_dir / "architecture" / "architecture.json"
+        if arch_file.exists():
+            try:
+                arch = parse_architecture_json(arch_file)
+                if arch:
+                    result["architecture"] = arch
+                    print(f"  [INFO] Loaded architecture with {arch.get('service_count', 0)} services ({arch.get('architecture_pattern', 'unknown')} pattern)")
+
+                    # Add architecture diagrams to main diagrams list
+                    for diagram in arch.get("diagrams", []):
+                        result["diagrams"].append(diagram)
+            except Exception as e:
+                print(f"  [WARN] Could not parse architecture.json: {e}")
 
         # ========================================
 
@@ -1258,21 +1447,129 @@ WICHTIG:
             try:
                 with open(us_json_file, encoding="utf-8") as f:
                     us_data = json.load(f)
-                # Enrich existing user stories with JSON data
-                if isinstance(us_data, list) and us_data:
-                    for us in us_data:
-                        us_id = us.get("id", "")
-                        # Find and enrich matching story
-                        for existing in result.get("user_stories", []):
-                            if existing.get("id") == us_id:
-                                existing.update({
-                                    k: v for k, v in us.items()
-                                    if k not in existing or not existing[k]
-                                })
-                                break
-                    print(f"  [INFO] Enriched user stories from JSON ({len(us_data)} stories)")
+                # Handle dict format: {user_stories: [...], epics: [...]}
+                stories_list = []
+                if isinstance(us_data, dict):
+                    stories_list = us_data.get("user_stories", [])
+                    if not isinstance(stories_list, list):
+                        stories_list = []
+                    # Also pick up epics if not already loaded
+                    json_epics = us_data.get("epics", [])
+                    if isinstance(json_epics, list) and json_epics and not result.get("epics"):
+                        result["epics"] = json_epics
+                        print(f"  [INFO] Loaded {len(json_epics)} epics from user_stories.json")
+                elif isinstance(us_data, list):
+                    stories_list = us_data
+
+                if stories_list:
+                    existing_stories = result.get("user_stories", [])
+                    existing_ids = {s.get("id") for s in existing_stories}
+                    if existing_stories:
+                        # Enrich existing user stories with JSON data
+                        for us in stories_list:
+                            us_id = us.get("id", "")
+                            for existing in existing_stories:
+                                if existing.get("id") == us_id:
+                                    existing.update({
+                                        k: v for k, v in us.items()
+                                        if k not in existing or not existing[k]
+                                    })
+                                    break
+                        print(f"  [INFO] Enriched user stories from JSON ({len(stories_list)} stories)")
+                    else:
+                        # No stories from MD - use JSON as primary source
+                        result["user_stories"] = stories_list
+                        print(f"  [INFO] Loaded {len(stories_list)} user stories from JSON")
             except Exception as e:
                 print(f"  [WARN] Could not parse user_stories.json: {e}")
+
+        # ========== GROUP API ENDPOINTS BY RESOURCE ==========
+        COMMON_PREFIXES = {"api", "v1", "v2", "v3", "rest", "graphql"}
+        MIN_PACKAGE_SIZE = 5  # merge smaller groups into "misc"
+        raw_packages: dict = {}
+        for ep in result.get("api_endpoints", []):
+            path = ep.get("path", "/")
+            segments = [s for s in path.strip("/").split("/") if s and not s.startswith("{")]
+            # Skip common API prefixes to get the actual resource name
+            while segments and segments[0].lower() in COMMON_PREFIXES:
+                segments = segments[1:]
+            resource = segments[0] if segments else "root"
+            # Normalize ws:// paths
+            if resource.startswith("ws:"):
+                resource = "websocket"
+            if resource not in raw_packages:
+                raw_packages[resource] = {"tag": resource, "endpoints": [], "method_counts": {}}
+            raw_packages[resource]["endpoints"].append(ep)
+            m = ep.get("method", "GET").upper()
+            raw_packages[resource]["method_counts"][m] = raw_packages[resource]["method_counts"].get(m, 0) + 1
+
+        # Merge small packages into "misc"
+        api_packages = {}
+        misc_pkg = {"tag": "misc", "endpoints": [], "method_counts": {}}
+        for tag, pkg in raw_packages.items():
+            if len(pkg["endpoints"]) >= MIN_PACKAGE_SIZE:
+                api_packages[tag] = pkg
+            else:
+                misc_pkg["endpoints"].extend(pkg["endpoints"])
+                for m, c in pkg["method_counts"].items():
+                    misc_pkg["method_counts"][m] = misc_pkg["method_counts"].get(m, 0) + c
+        if misc_pkg["endpoints"]:
+            api_packages["misc"] = misc_pkg
+
+        result["api_packages"] = api_packages
+        if api_packages:
+            print(f"  [INFO] Grouped {len(result.get('api_endpoints', []))} API endpoints into {len(api_packages)} packages")
+
+        # ========== MERGE COMPOSITIONS INTO SCREENS ==========
+        for comp in result.get("ui_compositions", []):
+            route = comp.get("route", "")
+            if not route:
+                continue
+            for screen in result.get("screens", []):
+                if screen.get("route") == route:
+                    screen["composition"] = comp
+                    break
+
+        # ========== LOAD MISSING DATA FILES ==========
+        # llm_usage_summary.json
+        llm_usage_file = project_dir / "llm_usage_summary.json"
+        if llm_usage_file.exists():
+            try:
+                with open(llm_usage_file, encoding="utf-8") as f:
+                    result["llm_usage"] = json.load(f)
+                print(f"  [INFO] Loaded LLM usage: {result['llm_usage'].get('total_calls', 0)} calls, ${result['llm_usage'].get('total_cost_usd', 0):.2f}")
+            except Exception as e:
+                print(f"  [WARN] Could not parse llm_usage_summary.json: {e}")
+
+        # pipeline_manifest.json
+        manifest_file = project_dir / "pipeline_manifest.json"
+        if manifest_file.exists():
+            try:
+                with open(manifest_file, encoding="utf-8") as f:
+                    result["pipeline_manifest"] = json.load(f)
+                print(f"  [INFO] Loaded pipeline manifest: {len(result['pipeline_manifest'].get('stages', []))} stages")
+            except Exception as e:
+                print(f"  [WARN] Could not parse pipeline_manifest.json: {e}")
+
+        # content_analysis.json
+        content_analysis_file = project_dir / "content_analysis.json"
+        if content_analysis_file.exists():
+            try:
+                with open(content_analysis_file, encoding="utf-8") as f:
+                    result["content_analysis"] = json.load(f)
+                print(f"  [INFO] Loaded content analysis")
+            except Exception as e:
+                print(f"  [WARN] Could not parse content_analysis.json: {e}")
+
+        # html_review_report.json
+        review_file = project_dir / "html_review_report.json"
+        if review_file.exists():
+            try:
+                with open(review_file, encoding="utf-8") as f:
+                    result["html_review_report"] = json.load(f)
+                print(f"  [INFO] Loaded HTML review report")
+            except Exception as e:
+                print(f"  [WARN] Could not parse html_review_report.json: {e}")
 
         # Load ux_design/accessibility_checklist.md
         a11y_file = project_dir / "ux_design" / "accessibility_checklist.md"
@@ -1293,6 +1590,7 @@ WICHTIG:
                 print(f"  [WARN] Could not load information_architecture.md: {e}")
 
         # Compute project summary stats
+        arch_services = result.get("architecture", {}).get("services", []) if isinstance(result.get("architecture"), dict) else []
         result["project_stats"] = {
             "total_requirements": len(result.get("nodes", {})) or len(result.get("requirements", [])),
             "total_epics": len(result.get("epics", [])),
@@ -1300,12 +1598,25 @@ WICHTIG:
             "total_tests": len(result.get("tests", [])),
             "total_diagrams": len(result.get("diagrams", [])),
             "total_api_endpoints": len(result.get("api_endpoints", [])),
+            "total_api_packages": len(result.get("api_packages", {})),
             "total_features": len(result.get("features", [])),
             "total_personas": len(result.get("personas", [])),
             "total_screens": len(result.get("screens", [])),
             "total_components": len(result.get("ui_components", [])),
             "total_entities": len(result.get("data_dictionary", {}).get("entities", [])),
+            "total_services": len(arch_services),
+            "total_state_machines": len(result.get("state_machines", [])),
         }
+        # Enrich with LLM usage if available
+        llm = result.get("llm_usage")
+        if llm:
+            result["project_stats"]["llm_total_calls"] = llm.get("total_calls", 0)
+            result["project_stats"]["llm_total_cost"] = llm.get("total_cost_usd", 0)
+            result["project_stats"]["llm_total_tokens"] = llm.get("total_input_tokens", 0) + llm.get("total_output_tokens", 0)
+        manifest = result.get("pipeline_manifest")
+        if manifest:
+            result["project_stats"]["pipeline_duration_ms"] = manifest.get("total_duration_ms", 0)
+            result["project_stats"]["pipeline_stages"] = len(manifest.get("stages", []))
         print(f"  [INFO] Project stats: {result['project_stats']}")
 
         # Build requirements from traceability data (if no journal.json)
@@ -1666,6 +1977,453 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
         else:
             # Fallback: redirect to main dashboard with wizard tab
             return web.HTTPFound("/")
+
+    # ============ Pipeline Execution Endpoints ============
+
+    async def _handle_config_validate(self, request: web.Request) -> web.Response:
+        """Validate configuration: API keys, config file, dependencies."""
+        issues = []
+        api_key = os.environ.get("OPENROUTER_API_KEY", "")
+        api_key_set = bool(api_key and len(api_key) > 10)
+
+        if not api_key_set:
+            issues.append("OPENROUTER_API_KEY not set or too short")
+
+        config_path = Path(__file__).parent.parent / "re_config.yaml"
+        if not config_path.exists():
+            issues.append("re_config.yaml not found")
+
+        return web.json_response({
+            "valid": len(issues) == 0,
+            "issues": issues,
+            "api_key_set": api_key_set
+        })
+
+    async def _handle_pipeline_run(self, request: web.Request) -> web.Response:
+        """Start the enterprise pipeline as a background task (single project)."""
+        if self._pipeline_task and not self._pipeline_task.done():
+            return web.json_response(
+                {"error": "Pipeline already running"}, status=409
+            )
+
+        try:
+            data = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+
+        project_path = data.get("project_path", "")
+        config_path = data.get("config_path") or str(Path(__file__).parent.parent / "re_config.yaml")
+
+        if not project_path or not Path(project_path).exists():
+            return web.json_response(
+                {"error": f"Project file not found: {project_path}"}, status=400
+            )
+
+        if not os.environ.get("OPENROUTER_API_KEY"):
+            return web.json_response(
+                {"error": "OPENROUTER_API_KEY not set"}, status=400
+            )
+
+        self._start_batch_pipeline([{"project_path": project_path, "config_path": config_path}])
+        return web.json_response({"status": "started", "projects": 1})
+
+    async def _handle_pipeline_batch(self, request: web.Request) -> web.Response:
+        """Start the enterprise pipeline for multiple projects sequentially."""
+        if self._pipeline_task and not self._pipeline_task.done():
+            return web.json_response(
+                {"error": "Pipeline already running"}, status=409
+            )
+
+        try:
+            data = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+
+        projects = data.get("projects", [])
+        config_path = data.get("config_path") or str(Path(__file__).parent.parent / "re_config.yaml")
+
+        if not projects:
+            return web.json_response({"error": "No projects provided"}, status=400)
+
+        if not os.environ.get("OPENROUTER_API_KEY"):
+            return web.json_response(
+                {"error": "OPENROUTER_API_KEY not set"}, status=400
+            )
+
+        # Validate all project files exist
+        missing = [p for p in projects if not Path(p).exists()]
+        if missing:
+            return web.json_response(
+                {"error": f"Files not found: {', '.join(missing)}"}, status=400
+            )
+
+        queue = [{"project_path": p, "config_path": config_path} for p in projects]
+        self._start_batch_pipeline(queue)
+        return web.json_response({"status": "started", "projects": len(queue)})
+
+    def _start_batch_pipeline(self, queue: list):
+        """Initialize status and launch the batch runner task."""
+        self._pipeline_queue = list(queue)
+        first_name = Path(queue[0]["project_path"]).stem
+        self._pipeline_status = {
+            "running": True, "step": 0, "total": 15,
+            "description": "Starting...", "error": None, "output_dir": None,
+            "project_index": 1, "project_total": len(queue),
+            "project_name": first_name
+        }
+
+        # Register progress tracker (idempotent — old callback replaced)
+        if hasattr(self, '_progress_cb'):
+            self.emitter.remove_callback(self._progress_cb)
+
+        async def _track_progress(event):
+            if event.type == EventType.PIPELINE_PROGRESS:
+                self._pipeline_status["step"] = event.data.get("step", 0)
+                self._pipeline_status["description"] = event.data.get("description", "")
+            elif event.type == EventType.PIPELINE_COMPLETE:
+                # Will be handled per-project in the batch loop
+                pass
+            elif event.type == EventType.PIPELINE_ERROR:
+                self._pipeline_status["error"] = event.data.get("error", "Unknown error")
+
+        self._progress_cb = _track_progress
+        self.emitter.add_callback(_track_progress)
+
+        self._pipeline_task = asyncio.create_task(self._run_batch_pipeline())
+
+    async def _run_batch_pipeline(self):
+        """Run all queued projects sequentially."""
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+        from requirements_engineer.run_re_system import run_enterprise_mode
+
+        total_projects = len(self._pipeline_queue)
+        results = []
+
+        for idx, item in enumerate(self._pipeline_queue):
+            project_path = item["project_path"]
+            config_path = item["config_path"]
+            project_name = Path(project_path).stem
+
+            # Update status for this project
+            self._pipeline_status.update({
+                "running": True, "step": 0, "error": None,
+                "project_index": idx + 1, "project_total": total_projects,
+                "project_name": project_name
+            })
+
+            # Emit a batch progress event so the UI knows which project
+            await self.emitter.emit(EventType.PIPELINE_PROGRESS, {
+                "step": 0, "total": 15,
+                "description": f"Starting {project_name}...",
+                "percent": 0, "cost_usd": 0, "total_tokens": 0,
+                "project_index": idx + 1, "project_total": total_projects,
+                "project_name": project_name
+            })
+
+            try:
+                output_dir = await run_enterprise_mode(
+                    project_path=project_path,
+                    config_path=config_path,
+                    emitter=self.emitter,
+                )
+                results.append({
+                    "project": project_name, "status": "complete",
+                    "output_dir": str(output_dir) if output_dir else None
+                })
+            except asyncio.CancelledError:
+                results.append({"project": project_name, "status": "cancelled"})
+                break
+            except Exception as e:
+                import traceback
+                error_msg = f"{type(e).__name__}: {e}"
+                print(f"[PIPELINE ERROR] {project_name}: {error_msg}")
+                traceback.print_exc()
+                results.append({"project": project_name, "status": "error", "error": error_msg})
+                # Continue to next project — don't abort the batch
+                await self.emitter.emit(EventType.PIPELINE_ERROR, {
+                    "error": f"{project_name}: {error_msg}",
+                    "project_index": idx + 1, "project_total": total_projects,
+                    "continues": idx + 1 < total_projects
+                })
+
+        # All done
+        self._pipeline_status["running"] = False
+        self._pipeline_status["step"] = 15
+        self._pipeline_status["description"] = "All projects complete"
+        self._pipeline_queue = []
+
+        completed = [r for r in results if r["status"] == "complete"]
+        failed = [r for r in results if r["status"] == "error"]
+
+        await self.emitter.emit(EventType.PIPELINE_COMPLETE, {
+            "summary": {
+                "projects_total": total_projects,
+                "projects_completed": len(completed),
+                "projects_failed": len(failed),
+                "results": results,
+                "output_dir": completed[-1]["output_dir"] if completed else None
+            }
+        })
+
+    async def _handle_pipeline_status(self, request: web.Request) -> web.Response:
+        """Get current pipeline execution status."""
+        return web.json_response(self._pipeline_status)
+
+    async def _handle_pipeline_stop(self, request: web.Request) -> web.Response:
+        """Stop a running pipeline (cancels current project and remaining queue)."""
+        if self._pipeline_task and not self._pipeline_task.done():
+            self._pipeline_queue = []  # Clear remaining queue
+            self._pipeline_task.cancel()
+            self._pipeline_status["running"] = False
+            self._pipeline_status["error"] = "Cancelled by user"
+            await self.emitter.emit(EventType.PIPELINE_ERROR, {"error": "Cancelled by user"})
+            return web.json_response({"status": "cancelled"})
+        return web.json_response({"status": "not_running"})
+
+    async def _handle_pipeline_manifest(self, request: web.Request) -> web.Response:
+        """Load pipeline_manifest.json from the most recent (or specified) output directory."""
+        import json as _json
+        # Allow specifying a custom output_dir via query param
+        output_dir = request.query.get("output_dir", "")
+        if not output_dir:
+            # Try to get from current pipeline status
+            output_dir = self._pipeline_status.get("output_dir", "")
+        if not output_dir:
+            # Fall back: find most recent enterprise_output folder
+            enterprise_root = Path("enterprise_output")
+            if enterprise_root.exists():
+                subdirs = sorted(enterprise_root.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
+                for d in subdirs:
+                    if d.is_dir() and (d / "pipeline_manifest.json").exists():
+                        output_dir = str(d)
+                        break
+        if not output_dir:
+            return web.json_response({"error": "No pipeline output found"}, status=404)
+
+        manifest_path = Path(output_dir) / "pipeline_manifest.json"
+        if not manifest_path.exists():
+            return web.json_response({"error": "pipeline_manifest.json not found"}, status=404)
+
+        try:
+            with open(manifest_path, "r", encoding="utf-8") as f:
+                data = _json.load(f)
+            return web.json_response(data)
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=500)
+
+    # ============ Trace Explorer Endpoints ============
+
+    async def _handle_trace_stats(self, request: web.Request) -> web.Response:
+        """Return artifact counts and graph statistics."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+        return web.json_response(self._trace_index.get_stats())
+
+    async def _handle_trace_tree(self, request: web.Request) -> web.Response:
+        """Return hierarchical navigation tree with type counts."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+        return web.json_response(self._trace_index.get_tree())
+
+    async def _handle_trace_artifacts(self, request: web.Request) -> web.Response:
+        """Paginated, sorted, filtered artifact list."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        artifact_type = request.query.get("type", None)
+        sort_by = request.query.get("sort_by", "id")
+        sort_dir = request.query.get("sort_dir", "asc")
+        search = request.query.get("search", "")
+        try:
+            page = int(request.query.get("page", "1"))
+        except ValueError:
+            page = 1
+        try:
+            page_size = int(request.query.get("page_size", "50"))
+        except ValueError:
+            page_size = 50
+
+        # Parse field filters (e.g. filter_priority=must)
+        filters = {}
+        for key, val in request.query.items():
+            if key.startswith("filter_"):
+                filters[key[7:]] = val
+
+        result = self._trace_index.query(
+            artifact_type=artifact_type,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            page=page,
+            page_size=page_size,
+            filters=filters if filters else None,
+            search=search,
+        )
+        return web.json_response(result)
+
+    async def _handle_trace_detail(self, request: web.Request) -> web.Response:
+        """Full artifact detail with connections."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        artifact_id = request.match_info["artifact_id"]
+        detail = self._trace_index.get_detail(artifact_id)
+        if not detail:
+            return web.json_response({"error": "Artifact not found"}, status=404)
+        return web.json_response(detail)
+
+    async def _handle_trace_chain(self, request: web.Request) -> web.Response:
+        """Upstream + downstream trace chain for an artifact."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        artifact_id = request.match_info["artifact_id"]
+        try:
+            depth = int(request.query.get("depth", "5"))
+        except ValueError:
+            depth = 5
+
+        chain = self._trace_index.get_trace_chain(artifact_id, depth=depth)
+        return web.json_response(chain)
+
+    async def _handle_trace_impact(self, request: web.Request) -> web.Response:
+        """Downstream impact analysis for an artifact."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        artifact_id = request.match_info["artifact_id"]
+        try:
+            depth = int(request.query.get("depth", "3"))
+        except ValueError:
+            depth = 3
+
+        impact = self._trace_index.get_impact(artifact_id, depth=depth)
+        return web.json_response(impact)
+
+    async def _handle_trace_search(self, request: web.Request) -> web.Response:
+        """Full-text search across artifacts."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        query_text = request.query.get("q", "")
+        if not query_text:
+            return web.json_response({"results": []})
+
+        types_str = request.query.get("types", "")
+        types = [t.strip() for t in types_str.split(",") if t.strip()] if types_str else None
+
+        try:
+            limit = int(request.query.get("limit", "50"))
+        except ValueError:
+            limit = 50
+
+        results = self._trace_index.search(query_text, types=types, limit=limit)
+        return web.json_response({"results": results})
+
+    async def _handle_trace_edit(self, request: web.Request) -> web.Response:
+        """Edit a single field on an artifact (in-memory + write-back)."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        artifact_id = request.match_info["artifact_id"]
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+
+        field = body.get("field")
+        value = body.get("value")
+        if not field:
+            return web.json_response({"error": "Missing 'field'"}, status=400)
+
+        result = self._trace_index.update_artifact(artifact_id, field, value)
+
+        # Emit trace edit event via WebSocket
+        await self.emitter.emit_raw("trace_edit", {
+            "artifact_id": artifact_id,
+            "field": field,
+            "impacted_ids": result.get("impacted_ids", []),
+        })
+
+        return web.json_response(result)
+
+    async def _handle_trace_kilo(self, request: web.Request) -> web.Response:
+        """AI-assisted edit via Kilo agent with trace context."""
+        if not self._trace_index:
+            return web.json_response({"error": "No project loaded"}, status=404)
+
+        artifact_id = request.match_info["artifact_id"]
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+
+        prompt = body.get("prompt", "")
+        if not prompt:
+            return web.json_response({"error": "Missing 'prompt'"}, status=400)
+
+        # Get artifact detail + trace chain for context
+        detail = self._trace_index.get_detail(artifact_id)
+        if not detail:
+            return web.json_response({"error": "Artifact not found"}, status=404)
+
+        chain = self._trace_index.get_trace_chain(artifact_id, depth=3)
+
+        try:
+            # Try gRPC kilo agent
+            from .grpc_client import get_propagation_client
+
+            client = get_propagation_client()
+            await client.connect()
+
+            response = await client.process_change(
+                project_id=self._current_project_id or "default",
+                node_id=artifact_id,
+                node_type=detail.get("type", "unknown"),
+                old_content=json.dumps(detail.get("data", {})),
+                new_content=json.dumps(detail.get("data", {})),
+                kilo_prompt=prompt,
+                max_depth=2,
+            )
+
+            if response.get("success"):
+                # Emit impact event
+                await self.emitter.emit_raw("trace_kilo_complete", {
+                    "artifact_id": artifact_id,
+                    "affected_ids": response.get("affected_node_ids", []),
+                    "kilo_response": response.get("kilo_response", ""),
+                })
+
+                return web.json_response({
+                    "success": True,
+                    "artifact_id": artifact_id,
+                    "kilo_response": response.get("kilo_response", ""),
+                    "affected_ids": response.get("affected_node_ids", []),
+                    "change_id": response.get("change_id", ""),
+                })
+            else:
+                return web.json_response({
+                    "success": False,
+                    "error": response.get("error", "Kilo agent error"),
+                })
+
+        except ImportError:
+            # gRPC not available — return context for manual edit
+            return web.json_response({
+                "success": False,
+                "error": "Kilo Agent (gRPC) nicht verfügbar",
+                "artifact": detail,
+                "trace_chain": chain,
+                "prompt": prompt,
+            })
+
+        except Exception as e:
+            return web.json_response({
+                "success": False,
+                "error": str(e),
+            }, status=500)
+
+    # ============ Wizard Endpoints ============
 
     async def _handle_wizard_extract(self, request: web.Request) -> web.Response:
         """
@@ -2490,6 +3248,241 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
                 "success": False,
                 "error": str(e)
             }, status=500)
+
+    # ============ Wizard Auto-Enrich (AutoGen Agent Teams) ============
+
+    def _get_suggestion_queue(self):
+        """Lazy-init and return the WizardSuggestionQueue."""
+        if self._wizard_suggestion_queue is None:
+            from ..wizard.suggestion_queue import WizardSuggestionQueue
+            self._wizard_suggestion_queue = WizardSuggestionQueue(
+                emitter=self.emitter,
+                config=self._get_wizard_config(),
+            )
+        return self._wizard_suggestion_queue
+
+    def _get_wizard_config(self) -> Dict[str, Any]:
+        """Load wizard config from re_config.yaml."""
+        try:
+            from omegaconf import OmegaConf
+            config_path = Path(__file__).parent.parent / "re_config.yaml"
+            if config_path.exists():
+                cfg = OmegaConf.load(str(config_path))
+                wizard_cfg = OmegaConf.to_container(cfg.get("wizard", {}), resolve=True)
+                return wizard_cfg if isinstance(wizard_cfg, dict) else {}
+        except Exception as e:
+            print(f"[SERVER] Could not load wizard config: {e}")
+        return {}
+
+    async def _handle_wizard_auto_enrich(self, request: web.Request) -> web.Response:
+        """
+        Trigger AutoGen agent teams for a wizard step.
+
+        POST /api/wizard/auto-enrich
+        Body: { step: 1|3|5, project_name, description, domain, ... }
+        Returns: { auto_applied: [...], pending: [...], errors: [...] }
+        """
+        try:
+            data = await request.json()
+            step = data.get("step")
+
+            if step not in (1, 3, 5):
+                return web.json_response(
+                    {"success": False, "error": f"Step {step} does not support auto-enrichment"},
+                    status=400,
+                )
+
+            queue = self._get_suggestion_queue()
+            wizard_config = self._get_wizard_config()
+            agent_config = wizard_config.get("agents", {})
+
+            # Emit start event
+            await self.emitter.wizard_enrichment_started(step, f"step_{step}_agents")
+
+            auto_applied = []
+            pending = []
+            errors = []
+
+            from ..wizard.suggestion_queue import WizardSuggestion, SuggestionType
+
+            def _make_suggestion(raw: Dict[str, Any], wizard_step: int, team_name: str) -> WizardSuggestion:
+                """Convert raw agent dict to WizardSuggestion."""
+                type_map = {
+                    "stakeholder": SuggestionType.STAKEHOLDER,
+                    "requirement": SuggestionType.REQUIREMENT,
+                    "constraint": SuggestionType.CONSTRAINT,
+                    "context": SuggestionType.CONTEXT,
+                }
+                return WizardSuggestion.create(
+                    suggestion_type=type_map.get(raw.get("type", ""), SuggestionType.CONTEXT),
+                    content=raw.get("content", {}),
+                    confidence=float(raw.get("confidence", 0.5)),
+                    reasoning=raw.get("reasoning", ""),
+                    source_team=team_name,
+                    wizard_step=wizard_step,
+                )
+
+            if step == 1:
+                # Run StakeholderTeam + ContextEnricher in parallel
+                from ..wizard.wizard_agents import StakeholderTeam, ContextEnricher
+
+                stakeholder_team = StakeholderTeam(agent_config.get("stakeholder_team", {}))
+                context_enricher = ContextEnricher(agent_config.get("context_enricher", {}))
+
+                project_name = data.get("project_name", "")
+                description = data.get("description", "")
+                domain = data.get("domain", "")
+                target_users = data.get("target_users", [])
+
+                # Run both teams concurrently
+                stakeholder_coro = stakeholder_team.run(
+                    project_name=project_name,
+                    description=description,
+                    domain=domain,
+                    target_users=target_users,
+                )
+                context_coro = context_enricher.run(
+                    project_name=project_name,
+                    description=description,
+                    domain=domain,
+                )
+
+                results = await asyncio.gather(
+                    stakeholder_coro, context_coro, return_exceptions=True
+                )
+
+                for result in results:
+                    if isinstance(result, Exception):
+                        errors.append(str(result))
+                        continue
+                    for raw in result.suggestions:
+                        ws = _make_suggestion(raw, step, result.team_name)
+                        outcome = await queue.submit(ws)
+                        if outcome["action"] == "auto_applied":
+                            auto_applied.append(outcome["suggestion"])
+                        elif outcome["action"] == "pending":
+                            pending.append(outcome["suggestion"])
+
+            elif step == 3:
+                # Run RequirementGapTeam
+                from ..wizard.wizard_agents import RequirementGapTeam
+
+                gap_team = RequirementGapTeam(agent_config.get("requirement_gap_team", {}))
+                requirements = data.get("requirements", [])
+                # Convert string requirements to dicts if needed
+                req_dicts = [
+                    r if isinstance(r, dict) else {"title": r, "description": r}
+                    for r in requirements
+                ]
+                description = data.get("description", "")
+                domain = data.get("domain", "")
+                stakeholders = data.get("stakeholders", [])
+
+                try:
+                    result = await gap_team.run(
+                        requirements=req_dicts,
+                        stakeholders=stakeholders,
+                        domain=domain,
+                        description=description,
+                    )
+                    for raw in result.suggestions:
+                        ws = _make_suggestion(raw, step, result.team_name)
+                        outcome = await queue.submit(ws)
+                        if outcome["action"] == "auto_applied":
+                            auto_applied.append(outcome["suggestion"])
+                        elif outcome["action"] == "pending":
+                            pending.append(outcome["suggestion"])
+                except Exception as e:
+                    errors.append(str(e))
+
+            elif step == 5:
+                # Run ConstraintTeam
+                from ..wizard.wizard_agents import ConstraintTeam
+
+                constraint_team = ConstraintTeam(agent_config.get("constraint_team", {}))
+                requirements = data.get("requirements", [])
+                req_dicts = [
+                    r if isinstance(r, dict) else {"title": r, "description": r}
+                    for r in requirements
+                ]
+                existing_constraints = data.get("constraints", {})
+                domain = data.get("domain", "")
+
+                try:
+                    result = await constraint_team.run(
+                        requirements=req_dicts,
+                        existing_constraints=existing_constraints,
+                        domain=domain,
+                    )
+                    for raw in result.suggestions:
+                        ws = _make_suggestion(raw, step, result.team_name)
+                        outcome = await queue.submit(ws)
+                        if outcome["action"] == "auto_applied":
+                            auto_applied.append(outcome["suggestion"])
+                        elif outcome["action"] == "pending":
+                            pending.append(outcome["suggestion"])
+                except Exception as e:
+                    errors.append(str(e))
+
+            # Emit complete event
+            await self.emitter.wizard_enrichment_complete(
+                step, len(auto_applied), len(pending)
+            )
+
+            return web.json_response({
+                "success": True,
+                "auto_applied": auto_applied,
+                "pending": pending,
+                "errors": errors,
+            })
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return web.json_response(
+                {"success": False, "error": str(e)}, status=500
+            )
+
+    async def _handle_wizard_get_suggestions(self, request: web.Request) -> web.Response:
+        """GET /api/wizard/suggestions - return all pending suggestions."""
+        queue = self._get_suggestion_queue()
+        step = request.query.get("step")
+        wizard_step = int(step) if step and step.isdigit() else None
+        return web.json_response({
+            "success": True,
+            "pending": queue.get_pending(wizard_step),
+            "history": queue.get_history(limit=20),
+        })
+
+    async def _handle_wizard_approve_suggestion(self, request: web.Request) -> web.Response:
+        """POST /api/wizard/suggestions/{id}/approve"""
+        suggestion_id = request.match_info["suggestion_id"]
+        queue = self._get_suggestion_queue()
+        suggestion = await queue.approve(suggestion_id)
+        if suggestion:
+            return web.json_response({
+                "success": True,
+                "suggestion": suggestion.to_dict(),
+            })
+        return web.json_response(
+            {"success": False, "error": "Suggestion not found"}, status=404
+        )
+
+    async def _handle_wizard_reject_suggestion(self, request: web.Request) -> web.Response:
+        """POST /api/wizard/suggestions/{id}/reject"""
+        suggestion_id = request.match_info["suggestion_id"]
+        data = await request.json() if request.can_read_body else {}
+        reason = data.get("reason", "") if isinstance(data, dict) else ""
+        queue = self._get_suggestion_queue()
+        suggestion = await queue.reject(suggestion_id, reason)
+        if suggestion:
+            return web.json_response({
+                "success": True,
+                "suggestion": suggestion.to_dict(),
+            })
+        return web.json_response(
+            {"success": False, "error": "Suggestion not found"}, status=404
+        )
 
     # ============ Change Propagation & Auto-Link Methods ============
 

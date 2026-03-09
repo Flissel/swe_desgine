@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="static/css/edit-modal.css">
     <link rel="stylesheet" href="static/css/wizard.css">
+    <link rel="stylesheet" href="static/css/pipeline.css">
+    <link rel="stylesheet" href="static/css/trace.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -28,6 +30,12 @@
             </button>
             <button class="header-tab" data-tab="wizard" id="tab-wizard">
                 <span class="tab-icon">🧙</span> Wizard
+            </button>
+            <button class="header-tab" data-tab="pipeline" id="tab-pipeline">
+                <span class="tab-icon">&#9881;</span> Pipeline
+            </button>
+            <button class="header-tab" data-tab="trace" id="tab-trace">
+                <span class="tab-icon">&#9776;</span> Trace Explorer
             </button>
         </div>
         <div class="header-center">
@@ -175,6 +183,24 @@
                 <div class="item-list" id="tasks-list"></div>
             </div>
 
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">&#9881;</span>
+                    Services
+                    <span class="badge" id="service-count">0</span>
+                </h3>
+                <div class="item-list" id="services-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <span class="section-icon">&#9654;</span>
+                    State Machines
+                    <span class="badge" id="state-machine-count">0</span>
+                </h3>
+                <div class="item-list" id="state-machines-list"></div>
+            </div>
+
             <!-- Change Propagation Section -->
             <div class="sidebar-section propagation-section">
                 <h3 class="section-title">
@@ -200,7 +226,7 @@
                     <span class="badge" id="orphan-count" style="display: none;">0</span>
                 </h3>
                 <div class="autolink-controls">
-                    <button class="btn-secondary" onclick="discoverLinks()">
+                    <button id="btn-discover-links" class="btn-secondary">
                         Auto-Discover
                     </button>
                 </div>
@@ -226,6 +252,12 @@
 
         <!-- Wizard (embedded, hidden by default) -->
         <div id="wizard-container" class="wizard-container" style="display:none;"></div>
+
+        <!-- Pipeline View (embedded, hidden by default) -->
+        <div id="pipeline-container" style="display:none;"></div>
+
+        <!-- Trace Explorer (embedded, hidden by default) -->
+        <div id="trace-container" style="display:none;"></div>
 
         <!-- Log Panel -->
         <div id="log-panel" class="log-panel">
@@ -254,33 +286,10 @@
         <button class="layout-btn active" data-layout="by_matrix" onclick="setLayout('by_matrix')" title="Matrix/Tabelle (Spalten=Verzeichnisse, Zeilen=Typen)">📊 Matrix</button>
     </div>
 
-    <!-- Connection Legend -->
+    <!-- Connection Legend (dynamically populated by buildLegend()) -->
     <div id="connection-legend" class="connection-legend">
         <h4>Verbindungstypen</h4>
-        <div class="legend-item">
-            <span class="legend-line epic-story"></span>
-            <span>Epic → User Story</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-line epic-req"></span>
-            <span>Epic → Requirement</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-line req-story"></span>
-            <span>Requirement → Story</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-line story-test"></span>
-            <span>Story → Test</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-line req-diagram"></span>
-            <span>Requirement → Diagram</span>
-        </div>
-        <div class="legend-item">
-            <span class="legend-line default"></span>
-            <span>Andere Verbindung</span>
-        </div>
+        <div id="legend-items"></div>
     </div>
 
     <!-- Package Matrix Panel (collapsed by default) -->
@@ -512,6 +521,6 @@
         </div>
     </template>
 
-    <script type="module" src="static/app.js"></script>
+    <script type="module" src="static/app.js?v=2"></script>
 </body>
 </html>

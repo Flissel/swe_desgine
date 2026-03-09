@@ -49,6 +49,9 @@ class Task:
     status: str = "todo"  # todo, in_progress, review, done
     acceptance_criteria: List[str] = field(default_factory=list)
 
+    # Development phase
+    phase: str = "CORE"  # FOUNDATION, CORE, INTEGRATION, POLISH, LAUNCH
+
 
 @dataclass_json
 @dataclass
@@ -94,6 +97,7 @@ Erstelle Tasks im folgenden JSON-Format:
             "title": "Kurzer Task-Titel",
             "description": "Detaillierte Beschreibung was zu tun ist",
             "task_type": "development|design|testing|devops|documentation",
+            "phase": "FOUNDATION|CORE|INTEGRATION|POLISH|LAUNCH",
             "estimated_hours": 8,
             "complexity": "trivial|simple|medium|complex|epic",
             "story_points": 3,
@@ -115,6 +119,16 @@ Beachte:
 - Complexity: trivial (1h), simple (2-4h), medium (4-8h), complex (8-16h), epic (>16h)
 - Story Points: 1, 2, 3, 5, 8, 13 (Fibonacci)
 - Definiere Abhaengigkeiten zwischen Tasks
+- Jeder Task MUSS eine Phase haben:
+  - FOUNDATION: Infrastruktur, CI/CD, Auth-System, Datenbank-Setup
+  - CORE: Feature-Implementierung (Hauptfunktionalitaet)
+  - INTEGRATION: Cross-Service Integration, End-to-End Tests, API Integration
+  - POLISH: UX-Verbesserungen, Performance-Optimierung, Barrierefreiheit
+  - LAUNCH: Deployment, Monitoring-Dashboards, Dokumentation, Runbooks
+- Cross-Cutting Concerns (Auth, Logging, Monitoring, Error Handling, Validation) als EINZELNE geteilte Tasks erstellen, NICHT pro Feature wiederholen
+- DevOps-Tasks einschliessen: CI/CD Pipeline, Docker Setup, Kubernetes Configs, Monitoring Dashboards
+- Dokumentations-Tasks einschliessen: API Docs, Architecture Decision Records, Runbooks
+- Realistische Schaetzungen: API Endpoint = 4-8h, UI Screen = 8-16h, Integration = 16-24h
 
 Antworte NUR mit dem JSON-Objekt."""
 
@@ -207,15 +221,17 @@ Antworte NUR mit dem JSON-Objekt."""
             )
             latency_ms = int((time.time() - start_time) * 1000)
 
+            content = response.choices[0].message.content.strip()
+
             # Log the LLM call
             log_llm_call(
                 component="task_generator",
                 model=self.model,
                 response=response,
-                latency_ms=latency_ms
+                latency_ms=latency_ms,
+                user_message=prompt,
+                response_text=content,
             )
-
-            content = response.choices[0].message.content.strip()
 
             # Extract JSON
             if "```json" in content:
@@ -242,7 +258,8 @@ Antworte NUR mit dem JSON-Objekt."""
                     depends_on=task_data.get("depends_on", []),
                     required_skills=task_data.get("required_skills", []),
                     suggested_assignee_role=task_data.get("suggested_assignee_role", ""),
-                    acceptance_criteria=task_data.get("acceptance_criteria", [])
+                    acceptance_criteria=task_data.get("acceptance_criteria", []),
+                    phase=task_data.get("phase", "CORE"),
                 )
                 tasks.append(task)
 
@@ -343,7 +360,7 @@ Antworte NUR mit dem JSON-Objekt."""
         tasks = []
         # Handle both list and dict of entities
         entity_list = list(entities.values()) if isinstance(entities, dict) else list(entities)
-        for i, entity in enumerate(entity_list[:10], 1):
+        for i, entity in enumerate(entity_list, 1):
             self.task_counter += 1
             name = getattr(entity, 'name', str(entity)) if hasattr(entity, 'name') else entity.get('name', f'Entity{i}')
 
@@ -383,7 +400,7 @@ Antworte NUR mit dem JSON-Objekt."""
             resource = path.split('/')[1] if len(path.split('/')) > 1 else 'root'
             resources.setdefault(resource, []).append(ep)
 
-        for resource, eps in list(resources.items())[:10]:
+        for resource, eps in list(resources.items()):
             self.task_counter += 1
             # Generate API resource ID to match Dashboard naming convention
             api_resource_id = f"API-{resource.upper().replace(' ', '-')}"
@@ -457,6 +474,69 @@ Antworte NUR mit dem JSON-Objekt."""
                 longest_path = path
 
         return longest_path
+
+    @staticmethod
+    def deduplicate_tasks(all_tasks: List[Task]) -> List[Task]:
+        """Remove near-duplicate tasks using Jaccard similarity on title words.
+
+        Cross-cutting concerns (auth, logging, monitoring, etc.) are detected
+        and consolidated into single shared tasks.
+        """
+        CROSS_CUTTING_KEYWORDS = {
+            "auth", "authentication", "login", "logout", "session",
+            "logging", "log", "monitoring", "metrics", "observability",
+            "error", "handling", "validation", "middleware",
+            "security", "permission", "authorization", "rbac",
+        }
+
+        def _title_words(title: str) -> set:
+            return set(title.lower().split())
+
+        def _jaccard(a: set, b: set) -> float:
+            if not a or not b:
+                return 0.0
+            return len(a & b) / len(a | b)
+
+        # Pass 1: Identify cross-cutting tasks and keep only the first of each group
+        seen_cross_cutting: Dict[str, Task] = {}  # keyword -> first task
+        cross_cutting_ids = set()
+        for task in all_tasks:
+            words = _title_words(task.title)
+            matching_kw = words & CROSS_CUTTING_KEYWORDS
+            if matching_kw:
+                key = frozenset(matching_kw)
+                key_str = ",".join(sorted(key))
+                if key_str in seen_cross_cutting:
+                    # Merge acceptance criteria into the first task
+                    first = seen_cross_cutting[key_str]
+                    for ac in task.acceptance_criteria:
+                        if ac not in first.acceptance_criteria:
+                            first.acceptance_criteria.append(ac)
+                    cross_cutting_ids.add(task.id)
+                else:
+                    seen_cross_cutting[key_str] = task
+
+        # Pass 2: General Jaccard dedup on remaining tasks
+        filtered = [t for t in all_tasks if t.id not in cross_cutting_ids]
+        result = []
+        for task in filtered:
+            words = _title_words(task.title)
+            is_dup = False
+            for kept in result:
+                if _jaccard(words, _title_words(kept.title)) > 0.6:
+                    # Merge acceptance criteria
+                    for ac in task.acceptance_criteria:
+                        if ac not in kept.acceptance_criteria:
+                            kept.acceptance_criteria.append(ac)
+                    is_dup = True
+                    break
+            if not is_dup:
+                result.append(task)
+
+        removed = len(all_tasks) - len(result)
+        if removed > 0:
+            print(f"    Deduplicated: removed {removed} redundant tasks ({len(result)} remaining)")
+        return result
 
 
 def save_task_list(breakdown: TaskBreakdown, output_dir) -> None:

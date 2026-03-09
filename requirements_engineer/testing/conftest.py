@@ -15,9 +15,9 @@ import json
 import tempfile
 
 # Import training data components
-from ai_scientist.training.collector import TrainingDataCollector
-from ai_scientist.training.live_logger import LiveLogger, EventType, reset_live_logger
-from ai_scientist.training.schemas import StageEvaluationResult
+from requirements_engineer.training.collector import TrainingDataCollector
+from requirements_engineer.training.live_logger import LiveLogger, EventType, reset_live_logger
+from requirements_engineer.training.schemas import StageEvaluationResult
 
 # Import evaluator components
 from .stage_evaluators.base_evaluator import EvaluatorConfig

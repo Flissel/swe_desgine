@@ -433,15 +433,20 @@ Return ONLY valid JSON."""
         )
         latency_ms = int((time.time() - start_time) * 1000)
 
+        response_text = response.choices[0].message.content.strip()
+
         # Log the LLM call
         log_llm_call(
             component="self_critique",
             model=self.model_name,
             response=response,
-            latency_ms=latency_ms
+            latency_ms=latency_ms,
+            system_message="You are a senior Requirements Engineering expert. Analyze artifacts critically and return valid JSON.",
+            user_message=prompt,
+            response_text=response_text,
         )
 
-        return response.choices[0].message.content.strip()
+        return response_text
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         """Extract JSON from LLM response."""
@@ -613,8 +618,12 @@ Return ONLY valid JSON."""
 
         return issues
 
-    def _calculate_quality_score(self, issues: List[CritiqueIssue]) -> float:
-        """Calculate overall quality score based on issues found."""
+    def _calculate_quality_score(self, issues: List[CritiqueIssue], artifact_count: int = 0) -> float:
+        """Calculate overall quality score based on issues found.
+
+        Score is normalized by artifact count so large projects with many
+        requirements aren't penalized more than small ones.
+        """
         if not issues:
             return 10.0
 
@@ -628,6 +637,12 @@ Return ONLY valid JSON."""
         }
 
         total_deduction = sum(deductions.get(i.severity, 0.5) for i in issues)
+
+        # Normalize: scale deductions per 10 artifacts reviewed
+        # so 28 issues across 252 artifacts (126 req + 126 stories) isn't 0.0
+        if artifact_count > 10:
+            total_deduction = total_deduction / (artifact_count / 10)
+
         score = max(0.0, 10.0 - total_deduction)
 
         return round(score, 1)
@@ -819,8 +834,8 @@ Return ONLY valid JSON."""
                     best_score = overlap
                     best_story = story
 
-            if best_story and best_score > 0:
-                # Link the story to the requirement
+            if best_story and best_score >= 2:
+                # Link the story to the requirement (require >=2 keyword overlap)
                 story_id = getattr(best_story, "id", "")
                 if hasattr(best_story, "linked_requirement_ids"):
                     if orphan_id not in best_story.linked_requirement_ids:
@@ -871,16 +886,29 @@ Return ONLY valid JSON."""
             title = getattr(story, "title", story_id)
             parent_req = getattr(story, "parent_requirement_id", "")
 
+            # Build meaningful steps from acceptance criteria
+            ac_list = getattr(story, "acceptance_criteria", None) or []
+            if ac_list and isinstance(ac_list, list) and len(ac_list) > 0:
+                steps = [
+                    TestStep(step_type="Given", description=f"{persona} is authenticated and on the relevant page"),
+                    TestStep(step_type="When", description=f"{persona} performs: {action}"),
+                ]
+                for ac in ac_list[:5]:
+                    ac_text = ac if isinstance(ac, str) else str(ac)
+                    steps.append(TestStep(step_type="Then", description=ac_text))
+            else:
+                steps = [
+                    TestStep(step_type="Given", description=f"{persona} is authenticated"),
+                    TestStep(step_type="When", description=f"{persona} {action}"),
+                    TestStep(step_type="Then", description=f"System confirms: {benefit}"),
+                ]
+
             stub_tc = TestCase(
                 id=tc_id,
                 title=f"Verify {title}",
-                description=f"Stub test case for {story_id}",
-                preconditions=[f"{persona} is authenticated"],
-                steps=[
-                    TestStep(step_type="Given", description=f"{persona} is on the relevant page"),
-                    TestStep(step_type="When", description=f"{persona} {action}"),
-                    TestStep(step_type="Then", description=f"{benefit} is verified"),
-                ],
+                description=f"Test case for {story_id} - verifies acceptance criteria",
+                preconditions=[f"{persona} is authenticated", "System is in a valid state"],
+                steps=steps,
                 expected_result=benefit,
                 priority="medium",
                 test_type="functional",
@@ -1223,8 +1251,9 @@ Return ONLY valid JSON."""
         all_issues.extend(traceability_issues)
         print(f"      Found {len(traceability_issues)} traceability issues")
 
-        # Calculate quality score
-        quality_score = self._calculate_quality_score(all_issues)
+        # Calculate quality score (normalized by total artifacts reviewed)
+        artifact_count = len(requirements) + len(user_stories) + len(test_cases)
+        quality_score = self._calculate_quality_score(all_issues, artifact_count)
 
         # Generate recommendations
         recommendations = self._generate_recommendations(all_issues)
@@ -1245,7 +1274,7 @@ Return ONLY valid JSON."""
 
             # Recalculate quality score excluding fixed issues
             unfixed_issues = [i for i in all_issues if not i.fixed]
-            quality_score = self._calculate_quality_score(unfixed_issues)
+            quality_score = self._calculate_quality_score(unfixed_issues, artifact_count)
 
             fix_summary = {
                 "auto_fixed": fix_result["fixed_count"],
