@@ -220,10 +220,12 @@ class DashboardServer:
             await self.runner.cleanup()
 
     async def _handle_index(self, request: web.Request) -> web.Response:
-        """Serve the main dashboard HTML."""
+        """Serve the main dashboard HTML (no-cache for dev)."""
         index_path = self._static_path / "index.html"
         if index_path.exists():
-            return web.FileResponse(index_path)
+            resp = web.FileResponse(index_path)
+            resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            return resp
         else:
             return web.Response(text="Dashboard HTML not found", status=404)
 

@@ -9,39 +9,8 @@
 // ============================================
 
 export const state = {
-    canvas: {
-        x: 0,
-        y: 0,
-        zoom: 1.0,
-        minZoom: 0.1,
-        maxZoom: 3.0
-    },
-    dragging: {
-        active: false,
-        node: null,
-        startX: 0,
-        startY: 0,
-        nodeStartX: 0,
-        nodeStartY: 0
-    },
-    panning: {
-        active: false,
-        startX: 0,
-        startY: 0,
-        canvasStartX: 0,
-        canvasStartY: 0
-    },
-    nodes: {},
-    nodeCounters: {},  // Track count per node type for positioning
-    connections: [],
     ws: null,
-    connected: false,
-    // Group state for collapsed/expanded node groups
-    groupState: {
-        expanded: new Set(),   // Groups explicitly expanded by user
-        collapsed: new Set(),  // Groups explicitly collapsed by user
-        groups: {}             // Detected groups cache
-    }
+    connected: false
 };
 
 // ============================================
@@ -49,22 +18,13 @@ export const state = {
 // ============================================
 
 export const elements = {
-    canvas: null,
-    canvasContainer: null,
-    canvasNodes: null,
-    nodesLayer: null,  // Alias for canvasNodes
-    connectionsLayer: null,
-    minimap: null,
-    minimapViewport: null,
-    minimapNodes: null,
     sidebar: null,
-    sidebarList: null,
     projectList: null,
+    projectInfo: null,
+    progressFill: null,
+    progressText: null,
     logContent: null,
-    detailPanel: null,
-    qualityGateStatus: null,
-    statusText: null,
-    statusDot: null
+    connectionStatus: null
 };
 
 // ============================================
@@ -118,45 +78,12 @@ export function highlightGherkin(code) {
  * Initialize DOM element references
  */
 export function initElements() {
-    elements.canvas = document.getElementById('canvas');
-    elements.canvasContainer = document.getElementById('canvas-container');
-    elements.canvasNodes = document.getElementById('canvas-nodes');
-    elements.nodesLayer = elements.canvasNodes;  // Alias
-    elements.connectionsLayer = document.getElementById('connections-layer');
     elements.projectInfo = document.getElementById('project-info');
     elements.progressFill = document.getElementById('progress-fill');
     elements.progressText = document.getElementById('progress-text');
-    elements.zoomLevel = document.getElementById('zoom-level');
     elements.logContent = document.getElementById('log-content');
-    elements.minimapContent = document.getElementById('minimap-content');
-    elements.minimapViewport = document.getElementById('minimap-viewport');
     elements.connectionStatus = document.getElementById('connection-status');
-    elements.requirementsList = document.getElementById('requirements-list');
-    elements.userStoriesList = document.getElementById('user-stories-list');
-    elements.epicsList = document.getElementById('epics-list');
-    elements.testsList = document.getElementById('tests-list');
-    elements.diagramsList = document.getElementById('diagrams-list');
-    elements.screensList = document.getElementById('screens-list');
-    elements.apiList = document.getElementById('api-list');
-    elements.personasList = document.getElementById('personas-list');
-    elements.componentsList = document.getElementById('components-list');
-    elements.tasksList = document.getElementById('tasks-list');
-    elements.servicesList = document.getElementById('services-list');
-    elements.stateMachinesList = document.getElementById('state-machines-list');
-    elements.reqCount = document.getElementById('req-count');
-    elements.usCount = document.getElementById('us-count');
-    elements.epicCount = document.getElementById('epic-count');
-    elements.testCount = document.getElementById('test-count');
-    elements.diagramCount = document.getElementById('diagram-count');
-    elements.screenCount = document.getElementById('screen-count');
-    elements.apiCount = document.getElementById('api-count');
-    elements.personaCount = document.getElementById('persona-count');
-    elements.componentCount = document.getElementById('component-count');
-    elements.taskCount = document.getElementById('task-count');
-    elements.serviceCount = document.getElementById('service-count');
-    elements.stateMachineCount = document.getElementById('state-machine-count');
     elements.projectList = document.getElementById('project-list');
-    elements.detailPanel = document.getElementById('detail-panel');
     elements.sidebar = document.getElementById('sidebar');
 }
 
