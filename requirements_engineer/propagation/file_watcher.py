@@ -17,6 +17,7 @@ try:
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
+    FileSystemEventHandler = object  # stub so class definition doesn't fail
     print("[FileWatcher] watchdog not installed. Install with: pip install watchdog")
 
 
