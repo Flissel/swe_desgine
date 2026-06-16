@@ -822,6 +822,62 @@ WICHTIG:
         return web.json_response(self.emitter.get_history())
 
     async def _handle_list_projects(self, request: web.Request) -> web.Response:
+        """List RE pipeline runs — Supabase first, filesystem as fallback.
+
+        Supabase is the source of truth once runs have been synced. If the
+        DB is unreachable or empty (e.g. fresh checkout, sync disabled), the
+        legacy enterprise_output/ scan still serves the list.
+        """
+        supa = self._list_projects_from_supabase()
+        if supa is not None and supa:
+            return web.json_response({"projects": supa, "source": "supabase"})
+        fs = self._list_projects_from_fs()
+        return web.json_response({"projects": fs, "source": "filesystem"})
+
+    def _list_projects_from_supabase(self) -> Optional[List[Dict[str, Any]]]:
+        """List runs from Supabase. Returns None if the DB is unreachable."""
+        import sys as _sys
+        try:
+            voice_python = self._locate_voice_python()
+            if not voice_python:
+                return None
+            if voice_python not in _sys.path:
+                _sys.path.insert(0, voice_python)
+            from data.swe_design_repository import SweDesignRepository
+
+            repo = SweDesignRepository()
+            runs = repo.list_runs(limit=200)
+            projects = []
+            for run in runs:
+                artifacts = repo.list_artifacts(run["id"])
+                by_type: Dict[str, int] = {}
+                for a in artifacts:
+                    t = a.get("artifact_type", "other")
+                    by_type[t] = by_type.get(t, 0) + 1
+                projects.append({
+                    "id": run["id"],
+                    "name": run.get("project_name", "Unnamed"),
+                    "path": run.get("output_dir", ""),
+                    "format": "supabase",
+                    "status": run.get("status", "unknown"),
+                    "has_journal": by_type.get("journal", 0) > 0,
+                    "has_user_stories": by_type.get("user_stories", 0) > 0,
+                    "has_diagrams": by_type.get("mermaid", 0) > 0,
+                    "has_tests": by_type.get("tests", 0) > 0,
+                    "diagram_count": by_type.get("mermaid", 0),
+                    "us_count": by_type.get("user_stories", 0),
+                    "artifact_count": len(artifacts),
+                    "total_stages": run.get("total_stages", 0),
+                    "completed_stages": run.get("completed_stages", 0),
+                    "created": run.get("created_at"),
+                    "gitea_commit_sha": run.get("gitea_commit_sha"),
+                })
+            return projects
+        except Exception as e:
+            print(f"[SUPABASE-LIST] falling back to filesystem: {e}")
+            return None
+
+    def _list_projects_from_fs(self) -> List[Dict[str, Any]]:
         """List all projects from enterprise_output folder (both formats)."""
         projects = []
         output_dir = Path(__file__).parent.parent.parent / "enterprise_output"
@@ -889,11 +945,17 @@ WICHTIG:
                     "created": extract_timestamp(project_dir.name)
                 })
 
-        return web.json_response({"projects": projects})
+        return projects
 
     async def _handle_load_project(self, request: web.Request) -> web.Response:
-        """Load a specific project's data (supports both formats)."""
+        """Load a project — Supabase run if the id matches, else filesystem."""
         project_id = request.match_info["project_id"]
+
+        # Supabase-first: the id may be a swe_design_runs id.
+        supa = self._load_project_from_supabase(project_id)
+        if supa is not None:
+            return web.json_response(supa)
+
         output_dir = Path(__file__).parent.parent.parent / "enterprise_output"
         project_dir = output_dir / project_id
 
@@ -936,6 +998,73 @@ WICHTIG:
 
         except (json.JSONDecodeError, IOError) as e:
             return web.json_response({"error": str(e)}, status=500)
+
+    def _load_project_from_supabase(self, run_id: str) -> Optional[dict]:
+        """Load a run + artifacts from Supabase. Returns None if not found.
+
+        Structured (JSON) artifacts are passed through under their type key;
+        raw text artifacts (markdown / mermaid / .feature) are returned as a
+        `raw_artifacts` list so the frontend can render them directly.
+        """
+        import sys as _sys
+        try:
+            voice_python = self._locate_voice_python()
+            if not voice_python:
+                return None
+            if voice_python not in _sys.path:
+                _sys.path.insert(0, voice_python)
+            from data.swe_design_repository import SweDesignRepository
+
+            repo = SweDesignRepository()
+            run = repo.get_run(run_id)
+            if not run:
+                return None  # not a Supabase id → caller falls back to FS
+
+            artifacts = repo.list_artifacts(run_id)
+            result: Dict[str, Any] = {
+                "project_name": run.get("project_name", "Unnamed"),
+                "format": "supabase",
+                "run_id": run_id,
+                "status": run.get("status"),
+                "output_dir": run.get("output_dir"),
+                "gitea_commit_sha": run.get("gitea_commit_sha"),
+                "nodes": {},
+                "raw_artifacts": [],
+            }
+            for art in artifacts:
+                a_type = art.get("artifact_type", "other")
+                cj = art.get("content_json")
+                if cj is not None:
+                    if isinstance(cj, str):
+                        try:
+                            cj = json.loads(cj)
+                        except ValueError:
+                            cj = None
+                    if cj is not None:
+                        if a_type == "journal" and isinstance(cj, dict):
+                            result["nodes"] = cj.get("nodes", result["nodes"])
+                        else:
+                            # Collapse same-type structured artifacts into a list.
+                            result.setdefault(a_type, [])
+                            if isinstance(result[a_type], list):
+                                result[a_type].append(cj)
+                            else:
+                                result[a_type] = [result[a_type], cj]
+                        continue
+                # Raw-text artifact
+                result["raw_artifacts"].append({
+                    "type": a_type,
+                    "name": art.get("name"),
+                    "rel_path": art.get("rel_path"),
+                    "format": art.get("format", "text"),
+                    "content": art.get("content_text", ""),
+                })
+            self._current_project_id = run_id
+            print(f"[SERVER] Loaded project from Supabase: {run_id}")
+            return result
+        except Exception as e:
+            print(f"[SUPABASE-LOAD] not a Supabase run / error: {e}")
+            return None
 
     def _load_folder_format(self, project_dir: Path) -> dict:
         """Load project data from folder-based format."""
@@ -2133,6 +2262,10 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
                     "project": project_name, "status": "complete",
                     "output_dir": str(output_dir) if output_dir else None
                 })
+                # Persist the completed run to Supabase + Rowboat.
+                # Fire-and-forget: a sync failure must never fail the pipeline.
+                if output_dir:
+                    self._sync_run_to_supabase(project_name, str(output_dir))
             except asyncio.CancelledError:
                 results.append({"project": project_name, "status": "cancelled"})
                 break
@@ -2213,6 +2346,87 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
             return web.json_response(data)
         except Exception as e:
             return web.json_response({"error": str(e)}, status=500)
+
+    def _locate_voice_python(self) -> Optional[str]:
+        """Resolve the vibemind-os/voice/python dir so we can import publishing.
+
+        The RE dashboard runs as a standalone submodule; the VibeMind data
+        layer + publishers live under voice/python. Order: explicit env
+        override, then walk up to find voice/python next to vibemind-os.
+        """
+        env_path = os.environ.get("VIBEMIND_VOICE_PYTHON")
+        if env_path and Path(env_path).is_dir():
+            return env_path
+        # server.py → dashboard → requirements_engineer → swe_desgine
+        #   → shuttles → spaces → vibemind-os
+        here = Path(__file__).resolve()
+        for parent in here.parents:
+            candidate = parent / "voice" / "python"
+            if (candidate / "publishing").is_dir():
+                return str(candidate)
+        return None
+
+    def _sync_run_to_supabase(self, project_name: str, output_dir: str) -> None:
+        """Persist a completed RE run to Supabase + Rowboat.
+
+        Fire-and-forget: any failure is logged and swallowed — the pipeline
+        result is never affected. Triggered after each successful
+        run_enterprise_mode in the batch loop.
+        """
+        import json as _json
+        import sys as _sys
+
+        try:
+            voice_python = self._locate_voice_python()
+            if not voice_python:
+                print("[SUPABASE-SYNC] voice/python not found — set "
+                      "VIBEMIND_VOICE_PYTHON to enable run persistence")
+                return
+            if voice_python not in _sys.path:
+                _sys.path.insert(0, voice_python)
+
+            # Load the pipeline manifest written by run_enterprise_mode.
+            manifest_path = Path(output_dir) / "pipeline_manifest.json"
+            manifest_data = {}
+            if manifest_path.exists():
+                try:
+                    manifest_data = _json.loads(
+                        manifest_path.read_text(encoding="utf-8")
+                    )
+                except (OSError, ValueError) as e:
+                    print(f"[SUPABASE-SYNC] manifest read failed: {e}")
+
+            from publishing.swe_design_publisher import SweDesignPublisher
+
+            publisher = SweDesignPublisher()
+            run_id = publisher.publish_pipeline_full(
+                project_name=project_name,
+                output_dir=output_dir,
+                manifest_data=manifest_data,
+            )
+            if not run_id:
+                print("[SUPABASE-SYNC] Supabase persistence returned no run_id")
+                return
+            print(f"[SUPABASE-SYNC] Persisted '{project_name}' (run {run_id})")
+
+            # Rowboat semantic index — only if Mongo publishing is configured.
+            try:
+                from publishing.config import is_mongo_enabled
+                if is_mongo_enabled():
+                    from publishing.rowboat_mongo_publisher import (
+                        RowboatMongoPublisher,
+                    )
+                    rb = RowboatMongoPublisher()
+                    rb.publish_swe_design_pipeline(run_id)
+                    rb.close()
+                    print(f"[SUPABASE-SYNC] Indexed '{project_name}' in Rowboat")
+            except Exception as e:
+                print(f"[SUPABASE-SYNC] Rowboat index skipped: {e}")
+
+        except Exception as e:
+            import traceback
+            print(f"[SUPABASE-SYNC] Sync failed for '{project_name}': {e}")
+            traceback.print_exc()
 
     # ============ Trace Explorer Endpoints ============
 
