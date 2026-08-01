@@ -106,6 +106,15 @@ class DashboardServer:
         self.runner: Optional[web.AppRunner] = None
         self._static_path = Path(__file__).parent / "static"
 
+        # re_config.yaml (importer models etc.); handlers read via .get with
+        # defaults, so an empty dict keeps the server functional without it.
+        try:
+            from requirements_engineer.core.re_agent_manager import load_config
+            self.config = load_config()
+        except Exception as e:
+            print(f"[DASHBOARD] re_config.yaml not loaded ({e}) — using defaults")
+            self.config = {}
+
         # Shared state for canvas
         self.canvas_state: Dict[str, Any] = {
             "nodes": {},
