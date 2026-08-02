@@ -537,7 +537,7 @@ dashboard:
 # Importers (importers/arch_team_importer.py)
 importers:
   arch_team:
-    model: "anthropic/claude-haiku-4.5"
+    model: "gpt-4o-mini"
     temperature: 0.3
     max_tokens: 4000
 
@@ -549,16 +549,16 @@ wizard:
   agents:
     enabled: true
     stakeholder_team:
-      model: "google/gemini-3-flash-preview"
+      model: "gpt-4o-mini"
       temperature: 0.5
     context_enricher:
-      model: "google/gemini-3-flash-preview"
+      model: "gpt-4o-mini"
       temperature: 0.4
     requirement_gap_team:
-      model: "anthropic/claude-opus-4.6"
+      model: "gpt-4o"
       temperature: 0.4
     constraint_team:
-      model: "google/gemini-3-flash-preview"
+      model: "gpt-4o-mini"
       temperature: 0.3
   thresholds:
     auto_apply: 0.85
