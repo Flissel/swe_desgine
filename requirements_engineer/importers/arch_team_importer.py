@@ -14,7 +14,7 @@ Integration modes:
 import sys
 import os
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 
 from .base_importer import BaseImporter, ImportResult
@@ -94,6 +94,17 @@ class ArchTeamImporter(BaseImporter):
         self.model = importer_config.get("model", self.DEFAULT_MODEL)
         self.temperature = importer_config.get("temperature", 0.3)
         self.max_tokens = importer_config.get("max_tokens", 4000)
+        # Validate-on-import: run the same validate->decide->rewrite loop the
+        # wizard uses, so directly imported documents don't feed unchecked
+        # requirements into the pipeline. Env RE_VALIDATE_ON_IMPORT overrides.
+        env_flag = os.environ.get("RE_VALIDATE_ON_IMPORT", "").lower()
+        if env_flag in ("0", "false", "no"):
+            self.validate_on_import = False
+        elif env_flag in ("1", "true", "yes"):
+            self.validate_on_import = True
+        else:
+            self.validate_on_import = bool(importer_config.get("validate_on_import", True))
+        self.validate_threshold = float(importer_config.get("validate_threshold", 0.7))
 
     @classmethod
     def can_import(cls, file_path: str) -> bool:
@@ -167,6 +178,11 @@ class ArchTeamImporter(BaseImporter):
 
         print(f"  [ArchTeamImporter] Extracted {len(items)} requirements")
 
+        # Quality gate: validate + auto-rewrite before anything enters the pipeline
+        validation_summary: Dict[str, Any] = {"validated": False}
+        if self.validate_on_import and items:
+            items, validation_summary = await self._validate_and_improve(items)
+
         # Convert arch_team DTOs to RequirementNode format
         requirements = self._convert_dtos_to_nodes(items)
 
@@ -187,11 +203,97 @@ class ArchTeamImporter(BaseImporter):
                 "model_used": self.DEFAULT_MODEL,
                 "raw_item_count": len(items),
                 "chunk_size": self.CHUNK_SIZE,
-                "chunk_overlap": self.CHUNK_OVERLAP
+                "chunk_overlap": self.CHUNK_OVERLAP,
+                "validation": validation_summary
             },
             import_timestamp=datetime.now().isoformat(),
             source_format="arch_team_extraction"
         )
+
+    async def _validate_and_improve(
+        self, items: List[Dict[str, Any]]
+    ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        """
+        Run the wizard's validate->decide->rewrite loop over mined DTOs.
+
+        Returns the (possibly rewritten/split) DTO list plus a summary dict.
+        Skips gracefully (loud warning, original items) when the evaluation
+        backend or the orchestrator is unavailable, so imports never hard-fail
+        on a missing sidecar service.
+        """
+        # Preflight: evaluation backend reachable? (same URL logic as
+        # arch_team.tools.validation_tools)
+        backend_port = os.environ.get("BACKEND_PORT", "8087")
+        api_base = os.environ.get("VALIDATION_API_BASE", f"http://localhost:{backend_port}")
+        try:
+            import urllib.request
+            urllib.request.urlopen(f"{api_base}/health", timeout=3)
+        except Exception as e:
+            print(f"  [ArchTeamImporter] WARNUNG: Validation-Backend {api_base} nicht erreichbar "
+                  f"({e}) — Requirements gehen UNVALIDIERT in die Pipeline.")
+            return items, {"validated": False, "skipped_reason": f"backend_unreachable: {api_base}"}
+
+        try:
+            from arch_team.agents.requirements_orchestrator import (
+                RequirementsOrchestrator,
+                OrchestratorConfig,
+                WorkflowMode,
+            )
+        except ImportError as e:
+            print(f"  [ArchTeamImporter] WARNUNG: RequirementsOrchestrator nicht importierbar "
+                  f"({e}) — Requirements gehen UNVALIDIERT in die Pipeline.")
+            return items, {"validated": False, "skipped_reason": f"orchestrator_import: {e}"}
+
+        print(f"  [ArchTeamImporter] Validating {len(items)} requirements "
+              f"(threshold {self.validate_threshold})...")
+        by_id = {item.get("req_id"): item for item in items}
+        reqs = [
+            {
+                "req_id": item.get("req_id", f"REQ-{idx+1:03d}"),
+                "title": item.get("title", ""),
+                "tag": item.get("tag", "functional"),
+            }
+            for idx, item in enumerate(items)
+        ]
+        orchestrator = RequirementsOrchestrator(
+            config=OrchestratorConfig(
+                quality_threshold=self.validate_threshold,
+                max_iterations=2,
+                mode=WorkflowMode.AUTO,
+            )
+        )
+        result = await orchestrator.run(requirements=reqs)
+
+        # Rebuild DTO list from orchestrator output so rewrites, splits and
+        # drops flow through; carry original DTO fields (evidence etc.) over.
+        out: List[Dict[str, Any]] = []
+        rewritten = 0
+        for r in result.requirements:
+            base = dict(by_id.get(r.get("req_id"), {}))
+            base.update({
+                "req_id": r.get("req_id"),
+                "title": r.get("title", base.get("title", "")),
+                "tag": r.get("tag", base.get("tag", "functional")),
+                "_validation_score": r.get("_validation_score"),
+                "_rewritten": r.get("_rewritten", False),
+            })
+            if base["_rewritten"]:
+                rewritten += 1
+            out.append(base)
+
+        summary = {
+            "validated": True,
+            "threshold": self.validate_threshold,
+            "input_count": len(items),
+            "output_count": len(out),
+            "rewritten_count": rewritten,
+            "initial_pass_rate": getattr(result, "initial_pass_rate", None),
+            "final_pass_rate": getattr(result, "final_pass_rate", None),
+        }
+        print(f"  [ArchTeamImporter] Validation done: {summary['input_count']}→"
+              f"{summary['output_count']} reqs, {rewritten} rewritten, "
+              f"pass-rate {summary['initial_pass_rate']}→{summary['final_pass_rate']}")
+        return out, summary
 
     def _convert_dtos_to_nodes(self, items: List[Dict[str, Any]]) -> List[RequirementNode]:
         """

@@ -540,6 +540,11 @@ importers:
     model: "gpt-4o-mini"
     temperature: 0.3
     max_tokens: 4000
+    # Nach dem Mining denselben Validate->Decide->Rewrite-Loop fahren wie der
+    # Wizard (braucht Evaluation-Backend :8087; bei down: lauter Skip).
+    # Env-Override: RE_VALIDATE_ON_IMPORT=0|1
+    validate_on_import: true
+    validate_threshold: 0.7
 
 # ============================================================================
 # WIZARD AGENT CONFIGURATION
