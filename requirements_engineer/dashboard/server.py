@@ -2650,6 +2650,59 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
 
     # ============ Wizard Endpoints ============
 
+    async def _persist_wizard_session(
+        self,
+        fields: Dict[str, Any],
+        correlation_id: Optional[str] = None,
+    ) -> Optional[str]:
+        """
+        Upsert a wizard session row into Supabase swe_design_wizard_sessions.
+
+        Fail-soft: persistence must never break the wizard endpoints, so all
+        errors are logged and swallowed. Kill-switch: VIBEMIND_WIZARD_PERSIST=0.
+        With a correlation_id, validate-batch and improve land on the same row
+        (PostgREST upsert on the UNIQUE correlation_id column).
+        """
+        if os.environ.get("VIBEMIND_WIZARD_PERSIST", "1").lower() in ("0", "false", "no"):
+            return None
+        base = os.environ.get("SUPABASE_URL", "http://192.168.178.65:54321").rstrip("/")
+        key = (os.environ.get("SUPABASE_ANON_KEY")
+               or os.environ.get("VITE_SUPABASE_ANON_KEY", ""))
+        if not key:
+            print("[WIZARD-PERSIST] kein SUPABASE_ANON_KEY in Env — Session nicht persistiert")
+            return None
+
+        row = dict(fields)
+        url = f"{base}/rest/v1/swe_design_wizard_sessions"
+        prefer = "return=representation"
+        if correlation_id:
+            row["correlation_id"] = correlation_id
+            url += "?on_conflict=correlation_id"
+            prefer = "resolution=merge-duplicates,return=representation"
+        headers = {
+            "apikey": key,
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+            "Prefer": prefer,
+        }
+        try:
+            import aiohttp
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    url, json=row, headers=headers,
+                    timeout=aiohttp.ClientTimeout(total=10),
+                ) as resp:
+                    body = await resp.json(content_type=None)
+                    if resp.status in (200, 201) and isinstance(body, list) and body:
+                        session_id = body[0].get("id")
+                        print(f"[WIZARD-PERSIST] Session {session_id} "
+                              f"({row.get('status')}) -> Supabase")
+                        return session_id
+                    print(f"[WIZARD-PERSIST] HTTP {resp.status}: {str(body)[:200]}")
+        except Exception as e:
+            print(f"[WIZARD-PERSIST] fehlgeschlagen (fail-soft): {e}")
+        return None
+
     async def _handle_wizard_extract(self, request: web.Request) -> web.Response:
         """
         Extract requirements from uploaded documents using arch_team.
@@ -3030,6 +3083,17 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
                     batch_result.total_time_ms
                 )
 
+                wizard_session_id = await self._persist_wizard_session({
+                    "status": "validated",
+                    "threshold": threshold,
+                    "model": os.environ.get("OPENAI_MODEL", ""),
+                    "mined_count": len(requirements),
+                    "validated_count": batch_result.total_count,
+                    "validation_report": results,
+                    "requirements": requirements,
+                    "source_files": data.get("source_files", []),
+                }, correlation_id)
+
                 return web.json_response({
                     "success": True,
                     "total_count": batch_result.total_count,
@@ -3038,7 +3102,8 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
                     "error_count": batch_result.error_count,
                     "total_time_ms": batch_result.total_time_ms,
                     "avg_time_per_item_ms": batch_result.avg_time_per_item_ms,
-                    "results": results
+                    "results": results,
+                    "wizard_session_id": wizard_session_id
                 })
 
             except ImportError as e:
@@ -3265,6 +3330,16 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
                     for r in result.requirements
                 ]
 
+                from datetime import datetime, timezone
+                wizard_session_id = await self._persist_wizard_session({
+                    "status": "completed",
+                    "requirements": improved_reqs,
+                    "rewritten_count": sum(1 for r in result.requirements if r.get("_rewritten")),
+                    "initial_pass_rate": result.initial_pass_rate,
+                    "final_pass_rate": result.final_pass_rate,
+                    "completed_at": datetime.now(timezone.utc).isoformat(),
+                }, correlation_id)
+
                 return web.json_response({
                     "success": result.success,
                     "workflow_id": result.workflow_id,
@@ -3273,7 +3348,8 @@ Bitte fuehre die angeforderte Aenderung durch und gib den aktualisierten Inhalt 
                     "total_iterations": result.total_iterations,
                     "requirements": improved_reqs,
                     "improved_count": sum(1 for r in result.requirements if r.get("_rewritten")),
-                    "total_time_ms": result.total_time_ms
+                    "total_time_ms": result.total_time_ms,
+                    "wizard_session_id": wizard_session_id
                 })
 
             except ImportError as e:
