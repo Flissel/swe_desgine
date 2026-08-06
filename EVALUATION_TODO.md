@@ -95,27 +95,30 @@ Dokument (PDF/DOCX/MD)
 
 ---
 
-## TODO (offen, priorisiert)
+## TODO (Stand 2026-08-06, Abarbeitung live verifiziert)
 
-- [ ] **P1 — Direkter Import validiert nicht:** `ArchTeamImporter` (server.py ~2670) ruft
-      ChunkMiner roh, ohne validate/improve-Loop. Ungeprüfte Requirements landen in der
-      Pipeline. → Nach Mining denselben Validate→Decide→Rewrite-Pfad fahren (Config-Flag).
-- [ ] **P1 — Mock-Fallback laut machen:** `_heuristic_mock_evaluation` (backend/core/llm.py)
-      sollte im Response ein `"mock": true`-Flag setzen und WARNING loggen — sonst sehen
-      Fake-Scores wie echte aus (Ground-Truth-Prinzip verletzt).
-- [ ] **P2 — `init_db()` beim Backend-Start automatisch** aufrufen (lifespan-Hook), statt
-      manuellem Seed; idempotent ist es schon.
-- [ ] **P2 — `_score: null` im improve-Response:** Rewrite-Entscheidung fällt ohne sichtbaren
-      Score; Score aus der Validierung durchreichen, damit UI/Aufrufer nachvollziehen können,
-      warum (nicht) umgeschrieben wurde.
-- [ ] **P3 — Wizard-Ergebnisse persistieren:** validate/improve-Resultate landen aktuell
-      nirgends dauerhaft (nur System-2-SQLite lokal). Kandidat: `swe_design_artifacts`
-      (artifact_type `validation_report`), Schema existiert seit 2026-08-01 auf Proxmox.
-- [ ] **P3 — Autostart beider Prozesse** (ein Startscript oder Launcher-Sidecar), inkl.
-      Port-Check gegen Orphan-Worker (Falle 2).
+- [x] **P1 — Direkter Import validiert nicht** — ERLEDIGT: `ArchTeamImporter` fährt nach dem
+      Mining den Validate→Decide→Rewrite-Loop (`_validate_and_improve`, RequirementsOrchestrator
+      AUTO). Config `importers.arch_team.validate_on_import`/`validate_threshold` (Default an/0.7),
+      Env-Override `RE_VALIDATE_ON_IMPORT`; Backend down → lauter Skip, Summary in
+      `ImportResult.metadata.validation`. Live: 5 Reqs, pass-rate 1.0. (swe_desgine-Commits s. git log)
+- [x] **P1 — Mock-Fallback laut machen** — ERLEDIGT: `_heuristic_mock_evaluation` loggt immer
+      WARNING (`llm.evaluate.mock_fallback`) und markiert jedes Detail mit `mock: true`
+      (EvalDetailV2-Feld). arch_team `186cba8`.
+- [x] **P2 — `init_db()` beim Backend-Start** — ERLEDIGT: startup-Hook in backend/main.py,
+      idempotent. arch_team `186cba8`.
+- [x] **P2 — `_score: null` im improve-Response** — ERLEDIGT: Orchestrator stempelt
+      `_validation_score`/`_validation_verdict` auf die Requirement-Dicts. Live: 0.87 (unangetastet)
+      bzw. 1.0 (nach Rewrite). arch_team `186cba8`.
+- [x] **P3 — Autostart beider Prozesse** — ERLEDIGT: `start_wizard_stack.ps1` (pwsh) killt
+      Orphan-Worker, startet Backend `:8087` + Dashboard `:8080`, verifiziert runtime-config.
+- [x] **P4 — Desktop-Kopie gesichert** — ERLEDIGT: 5 AutoGen-4.7.2-Agenten + Tests als Branch
+      `backup/autogen-472-agents` (`486bb14`) auf Flissel/-req-orchestrator gepusht (Worktree
+      unverändert). Pin-Bump-Entscheidung weiter offen (Agenten sind nirgends verdrahtet).
+- [ ] **P3 — Wizard-Ergebnisse persistieren:** validate/improve-Resultate landen weiterhin
+      nur in der System-2-SQLite lokal. Kandidat: `swe_design_artifacts` (artifact_type
+      `validation_report`), Schema seit 2026-08-01 auf Proxmox — braucht Design-Entscheidung
+      zum Run-Kontext (Wizard-Session ≠ Pipeline-Run).
 - [ ] **P3 — OpenRouter-Rückbau dokumentiert lassen:** bei neuem Guthaben `.env`s
       (swe_desgine/ + external/arch_team/) löschen und `a40a924` reverten → Multi-Vendor-
       Modelle (Gemini Flash/Opus) wieder aktiv.
-- [ ] **P4 — Submodule vs. Desktop-Kopie:** 5 neue AutoGen-4.7.2-Agenten (+Tests) liegen
-      uncommitted NUR in `C:/Users/User/Desktop/-req-orchestrator` (Cross-Chunk-Extraktion,
-      LLM-KG, Mermaid, OutputValidator). Committen/pushen, dann entscheiden ob Pin-Bump.
