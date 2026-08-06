@@ -1,11 +1,11 @@
-# start_wizard_stack.ps1 — RE-Wizard-Flow komplett hochfahren.
+# start_wizard_stack.ps1 - RE-Wizard-Flow komplett hochfahren.
 #
 # Startet beide Prozesse des Wizard-Flows:
 #   1. Evaluation-Backend :8087  (external/arch_team, python -m backend.main)
 #   2. RE-Dashboard       :8080  (start_dashboard.py, Wizard-UI unter /wizard)
 #
 # Raeumt vorher verwaiste Uvicorn-Worker weg (Windows: multiprocessing.spawn-
-# Kinder ueberleben den Parent-Kill und halten den Port mit ALTER Env — siehe
+# Kinder ueberleben den Parent-Kill und halten den Port mit ALTER Env - siehe
 # EVALUATION_TODO.md, Falle 2).
 #
 # Aufruf:  powershell -File start_wizard_stack.ps1 [-SkipDashboard] [-SkipBackend]
@@ -58,13 +58,13 @@ if (-not $SkipBackend) {
     Write-Host "[1/2] Evaluation-Backend :8087 ..."
     Stop-PortOwners 8087
     if (-not (Test-Path (Join-Path $ArchTeam ".env"))) {
-        Write-Warning "external/arch_team/.env fehlt — Backend faellt ohne LLM-Zugang STILL auf Mock-Scores zurueck (erkennbar an mock=true im Response)."
+        Write-Warning "external/arch_team/.env fehlt - Backend faellt ohne LLM-Zugang STILL auf Mock-Scores zurueck (erkennbar an mock=true im Response)."
     }
     Start-Process -WorkingDirectory $ArchTeam -WindowStyle Hidden python -ArgumentList "-m", "backend.main"
     if (-not (Wait-Http "http://localhost:8087/health" 30)) { throw "Backend :8087 kam nicht hoch" }
     $cfg = (Invoke-RestMethod "http://localhost:8087/api/runtime-config").llm
-    Write-Host "  OK — model=$($cfg.model), key=$($cfg.openrouter_api_key_present)"
-    if (-not $cfg.openrouter_api_key_present) { Write-Warning "Kein API-Key im Backend — Bewertungen werden Mock sein!" }
+    Write-Host "  OK - model=$($cfg.model), key=$($cfg.openrouter_api_key_present)"
+    if (-not $cfg.openrouter_api_key_present) { Write-Warning "Kein API-Key im Backend - Bewertungen werden Mock sein!" }
 }
 
 if (-not $SkipDashboard) {
@@ -72,7 +72,7 @@ if (-not $SkipDashboard) {
     Stop-PortOwners 8080
     Start-Process -WorkingDirectory $Root -WindowStyle Hidden python -ArgumentList "start_dashboard.py", "--no-browser"
     if (-not (Wait-Http "http://localhost:8080/wizard" 45)) { throw "Dashboard :8080 kam nicht hoch" }
-    Write-Host "  OK — Wizard-UI: http://localhost:8080/wizard"
+    Write-Host "  OK - Wizard-UI: http://localhost:8080/wizard"
 }
 
 Write-Host ""
