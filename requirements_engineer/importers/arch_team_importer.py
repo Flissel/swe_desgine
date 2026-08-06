@@ -89,6 +89,17 @@ class ArchTeamImporter(BaseImporter):
             config: Configuration dict with importers.arch_team section
         """
         self._arch_team_available = _ensure_arch_team_in_path()
+        if config is None:
+            # Registry instantiates importers without arguments - without this
+            # the importer silently runs on DEFAULT_MODEL and ignores
+            # re_config.yaml (importers.arch_team.model etc.).
+            try:
+                from requirements_engineer.core.re_agent_manager import load_config
+                from omegaconf import OmegaConf
+                config = OmegaConf.to_container(load_config(), resolve=True)
+            except Exception as e:
+                print(f"  [ArchTeamImporter] re_config.yaml nicht ladbar ({e}) — Defaults aktiv")
+                config = {}
         self.config = config or {}
         importer_config = self.config.get("importers", {}).get("arch_team", {})
         self.model = importer_config.get("model", self.DEFAULT_MODEL)
@@ -290,9 +301,9 @@ class ArchTeamImporter(BaseImporter):
             "initial_pass_rate": getattr(result, "initial_pass_rate", None),
             "final_pass_rate": getattr(result, "final_pass_rate", None),
         }
-        print(f"  [ArchTeamImporter] Validation done: {summary['input_count']}→"
+        print(f"  [ArchTeamImporter] Validation done: {summary['input_count']}->"
               f"{summary['output_count']} reqs, {rewritten} rewritten, "
-              f"pass-rate {summary['initial_pass_rate']}→{summary['final_pass_rate']}")
+              f"pass-rate {summary['initial_pass_rate']}->{summary['final_pass_rate']}")
         return out, summary
 
     def _convert_dtos_to_nodes(self, items: List[Dict[str, Any]]) -> List[RequirementNode]:
