@@ -115,10 +115,19 @@ Dokument (PDF/DOCX/MD)
 - [x] **P4 — Desktop-Kopie gesichert** — ERLEDIGT: 5 AutoGen-4.7.2-Agenten + Tests als Branch
       `backup/autogen-472-agents` (`486bb14`) auf Flissel/-req-orchestrator gepusht (Worktree
       unverändert). Pin-Bump-Entscheidung weiter offen (Agenten sind nirgends verdrahtet).
-- [ ] **P3 — Wizard-Ergebnisse persistieren:** validate/improve-Resultate landen weiterhin
-      nur in der System-2-SQLite lokal. Kandidat: `swe_design_artifacts` (artifact_type
-      `validation_report`), Schema seit 2026-08-01 auf Proxmox — braucht Design-Entscheidung
-      zum Run-Kontext (Wizard-Session ≠ Pipeline-Run).
+- [x] **P3 — Wizard-Ergebnisse persistieren** — ERLEDIGT (User-Entscheidung: eigene Tabelle):
+      `swe_design_wizard_sessions` auf Proxmox-Supabase (Migration `20260806_…`, vibemind-os),
+      1 Zeile pro Session, Report+Requirements als JSONB, Upsert-Key `correlation_id`
+      (validate-batch und improve landen auf derselben Zeile), `run_id` NULLABLE als
+      Back-Link auf spätere Pipeline-Runs. Persist-Hook im Dashboard fail-soft, Kill-Switch
+      `VIBEMIND_WIZARD_PERSIST=0`. Live bewiesen: validate→improve→unabhängiger Re-Read→Cleanup.
+- [ ] **NÄCHST — Agent-Execution via OpenFang (User-Auftrag 2026-08-06):**
+      Stufe 1 (LLM-Calls durchs Gateway) ist in beiden `.env`s vorbereitet — auskommentierte
+      `OPENROUTER_BASE_URL=http://localhost:4200/v1`-Zeile aktivieren sobald OpenFang wieder
+      läuft, dann Livetest (Calls müssen in OpenFangs Usage-/Audit-Ledger erscheinen).
+      Stufe 2 (ChunkMiner/Validator/Rewriter als OpenFang-Agenten, agent.toml nach
+      rowboat-chat-Muster PR #12) gehört in den Codex-OpenFang-Execution-Pfad — nicht
+      parallel dazu bauen.
 - [ ] **P3 — OpenRouter-Rückbau dokumentiert lassen:** bei neuem Guthaben `.env`s
       (swe_desgine/ + external/arch_team/) löschen und `a40a924` reverten → Multi-Vendor-
       Modelle (Gemini Flash/Opus) wieder aktiv.
