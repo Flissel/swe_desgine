@@ -220,3 +220,6 @@ sakana-ai-repos-uebersicht.md
 
 # runtime sqlite of the arch_team evaluation backend
 app.db
+
+# Schluessel-Sicherungen vor einer Rotation - nie committen
+.env.bak*
